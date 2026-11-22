@@ -12,8 +12,11 @@ export function BilingualSection({ section }: { section: Section }) {
   const id = "row-bilingual";
   return (
     <section>
-      <div className="relative isolate -mx-1 overflow-hidden rounded-[24px] border border-white/[0.10] bg-[#10121B] px-4 py-5 shadow-[0_24px_70px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.08)] sm:-mx-2 sm:rounded-[30px] sm:px-6 sm:py-6 lg:px-7">
-        <div className={section.sectionClass ?? ""} />
+      <div
+        className={`relative isolate -mx-1 overflow-hidden rounded-[24px] border border-white/[0.10] bg-[#10121B] px-4 py-5 shadow-[0_24px_70px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.08)] sm:-mx-2 sm:rounded-[30px] sm:px-6 sm:py-6 lg:px-7 ${
+          section.sectionClass ?? ""
+        }`}
+      >
         <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-px bg-gradient-to-r from-transparent via-white/[0.35] to-transparent" />
         <div className="pointer-events-none absolute -right-24 top-10 -z-10 h-28 w-[420px] rotate-[-18deg] bg-gradient-to-r from-transparent via-white/[0.06] to-transparent blur-sm" />
 

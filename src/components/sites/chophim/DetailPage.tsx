@@ -1,7 +1,8 @@
 "use client";
 
 import { withBasePath } from "@/lib/base-path";
-import { useState } from "react";
+import { isInList, toggleList } from "@/lib/user-library";
+import { useEffect, useState } from "react";
 import { fillStyle } from "./types";
 import {
   IconLanguages,
@@ -167,27 +168,44 @@ function InfoGrid({ movie, size }: { movie: MovieDetail; size: "md" | "sm" }) {
 
 /* ── nút hành động (desktop một nhóm, mobile một nhóm) ─────────────────── */
 
-function ActionButtons({ mobile }: { mobile: boolean }) {
-  const goComment = () => document.getElementById("comment-section")?.scrollIntoView({ behavior: "smooth" });
-  const cls = "group/fav flex flex-col items-center justify-center gap-1 transition-all hover:-translate-y-0.5 active:scale-95 px-2";
-  const addCls = "group/add flex flex-col items-center justify-center gap-1 transition-all hover:-translate-y-0.5 active:scale-95 px-2";
-  const commCls = "group/comm flex flex-col items-center justify-center gap-1 transition-all hover:-translate-y-0.5 active:scale-95 px-2";
+function ActionButtons({ mobile, movie }: { mobile: boolean; movie: MovieDetail }) {
+  const [fav, setFav] = useState(false);
+  const [added, setAdded] = useState(false);
+  const entry = {
+    slug: movie.slug,
+    title: movie.title,
+    poster: movie.poster || movie.backdrop,
+    origin: movie.origin,
+  };
+
+  useEffect(() => {
+    setFav(isInList("favorites", movie.slug));
+    setAdded(isInList("watchlist", movie.slug));
+  }, [movie.slug]);
+
+  const goComment = () => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.getElementById("comment-section")?.scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
+  };
+  const cls = "group/fav flex flex-col items-center justify-center gap-1 transition-colors px-2 active:scale-[0.97] motion-reduce:transform-none";
+  const addCls = "group/add flex flex-col items-center justify-center gap-1 transition-colors px-2 active:scale-[0.97] motion-reduce:transform-none";
+  const commCls = "group/comm flex flex-col items-center justify-center gap-1 transition-colors px-2 active:scale-[0.97] motion-reduce:transform-none";
   const label = "text-[13px] font-medium transition-colors text-white/80 group-hover:text-white";
 
   return (
     <div className={mobile ? "flex md:hidden gap-5 justify-center pt-2" : "hidden md:flex items-center"}>
-      <button className={cls} title="Yêu thích">
-        <svg className="transition-all duration-500 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] w-6 h-6 group-hover/fav:scale-110 text-white/90 scale-100" fill="currentColor" viewBox="0 0 24 24">
+      <button className={cls} title="Yêu thích" aria-pressed={fav} onClick={() => setFav(toggleList("favorites", entry))}>
+        <svg className={`w-6 h-6 transition-colors ${fav ? "text-[#FFD166]" : "text-white/90"}`} fill="currentColor" viewBox="0 0 24 24">
           <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
         </svg>
-        <span className={label}>Yêu thích</span>
+        <span className={label}>{fav ? "Đã yêu thích" : "Yêu thích"}</span>
       </button>
       <div className="relative">
-        <button className={addCls} title="Thêm vào danh sách">
-          <svg className="transition-all duration-300 w-6 h-6 group-hover/add:scale-110 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+        <button className={addCls} title="Thêm vào danh sách" aria-pressed={added} onClick={() => setAdded(toggleList("watchlist", entry))}>
+          <svg className={`w-6 h-6 transition-colors ${added ? "text-[#FFD166]" : "text-white/90"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
           </svg>
-          <span className={label}>Thêm vào</span>
+          <span className={label}>{added ? "Đã thêm" : "Thêm vào"}</span>
         </button>
       </div>
       <button className={commCls} title="Bình luận" onClick={goComment}>
@@ -395,10 +413,10 @@ export function DetailPage({
                 </a>
               )}
               <div className="hidden md:block w-px h-8 bg-white/10 mx-1" />
-              <ActionButtons mobile={false} />
+              <ActionButtons mobile={false} movie={movie} />
             </div>
 
-            <ActionButtons mobile />
+            <ActionButtons mobile movie={movie} />
 
             {/* Thông tin phim (mobile) */}
             <div className="md:hidden w-full mb-6 mt-2 flex flex-col items-center">

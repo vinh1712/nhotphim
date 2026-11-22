@@ -6,7 +6,7 @@
  * (xem .github/workflows/deploy.yml). Khi chạy local hoặc host ở root,
  * biến không có nghĩa là không đổi gì cả.
  */
-const basePath = (process.env.NEXT_PUBLIC_BASE_PATH ?? "").replace(/\/$/, "");
+const basePath = (process.env.NEXT_PUBLIC_BASE_PATH ?? process.env.PAGES_BASE_PATH ?? "").replace(/\/$/, "");
 
 /** Thêm basePath vào một đường dẫn nội bộ bắt đầu bằng `/`. */
 export function withBasePath(path: string): string {

@@ -29,13 +29,13 @@ export function LoginBanner() {
               Lưu phim đang xem, đồng bộ trên nhiều thiết bị, tạo danh sách riêng — hoàn toàn miễn
               phí.
             </p>
-            <button
-              type="button"
-              className="mt-4 inline-flex h-9 w-fit items-center gap-2 rounded-lg bg-[#FFD166] px-5 text-[13px] font-bold text-[#171717] hover:bg-[#FFE099] active:scale-[0.97] transition-all"
+            <a
+              href={withBasePath("/dang-nhap")}
+              className="mt-4 inline-flex h-9 w-fit items-center gap-2 rounded-lg bg-[#FFD166] px-5 text-[13px] font-bold text-[#171717] transition-colors hover:bg-[#FFE099] active:scale-[0.97] motion-reduce:transform-none"
             >
               <IconLogIn className="h-4 w-4" />
               Đăng nhập
-            </button>
+            </a>
           </div>
 
           <div className="order-3 hidden w-full items-center px-8 pb-6 sm:flex lg:order-none lg:w-auto lg:flex-1 lg:justify-center lg:px-4 lg:pb-0 z-10">

@@ -10,6 +10,7 @@ import { withBasePath } from "@/lib/base-path";
 // scale giảm liền mạch 0.25/bậc, mờ + tối + blur dần theo khoảng cách; thả tay đủ ngưỡng thì
 // snap tiếp quãng đang kéo (0.55s cubic-bezier(.22,.9,.34,1)), chưa đủ thì nảy về.
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { home } from "./types";
 import { IconPlay, IconInfo } from "./icons";
 
@@ -28,6 +29,7 @@ const PILLS = [
 ];
 
 export function MobileHero() {
+  const router = useRouter();
   const slides = home.hero.slides;
   const n = slides.length;
   const [active, setActive] = useState(0);
@@ -37,15 +39,24 @@ export function MobileHero() {
   const swipedAt = useRef(0);
   const touchingRef = useRef(false);
 
-  // tự chuyển slide (tạm dừng khi đang chạm/kéo, như nhotphim)
+  // Autoplay đúng chophim.wtf: Swiper mobile dùng autoplay delay 7000,
+  // disableOnInteraction:false, pauseOnMouseEnter:false — chỉ tạm dừng khi đang chạm/kéo.
+  const [pageHidden, setPageHidden] = useState(false);
   useEffect(() => {
-    if (n <= 1) return;
+    const update = () => setPageHidden(document.visibilityState === "hidden");
+    update();
+    document.addEventListener("visibilitychange", update);
+    return () => document.removeEventListener("visibilitychange", update);
+  }, []);
+
+  useEffect(() => {
+    if (pageHidden || n <= 1) return;
     const t = setInterval(() => {
       if (touchingRef.current) return;
       setActive((a) => (a + 1) % n);
-    }, 5000);
+    }, 7000);
     return () => clearInterval(t);
-  }, [n]);
+  }, [n, pageHidden]);
 
   // vuốt ngang: poster bám theo ngón tay, thả tay mới đổi phim
   useEffect(() => {
@@ -135,7 +146,7 @@ export function MobileHero() {
   return (
     <section
       ref={rootRef}
-      className="relative isolate -mt-16 min-h-[620px] w-full touch-pan-y overflow-hidden bg-[#0f111a] pb-5 pt-[92px] select-none lg:hidden"
+      className="relative isolate -mt-16 min-h-[620px] w-full touch-pan-y overflow-hidden bg-[#0f111a] pb-5 pt-[92px] select-none md:hidden"
       onClickCapture={(e) => {
         if (Date.now() - swipedAt.current < 350) {
           e.preventDefault();
@@ -205,7 +216,7 @@ export function MobileHero() {
                 aria-current={isActive}
                 onClick={() => {
                   if (Date.now() - swipedAt.current < 350) return;
-                  if (isActive) window.location.href = s.hrefWatch;
+                  if (isActive) router.push(s.hrefWatch);
                   else setActive(i);
                 }}
                 className="mhero-p absolute left-1/2 top-0 block w-[min(52vw,230px)] aspect-[2/3] overflow-hidden rounded-2xl border-2 bg-[#171a26] will-change-transform"

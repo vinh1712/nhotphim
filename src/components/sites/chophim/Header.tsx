@@ -1,5 +1,9 @@
 import { withBasePath } from "@/lib/base-path";
+import { moviesData } from "@/data";
+import type { MovieDetail } from "./detail-types";
+import { toCard } from "./movie-filter";
 import { home } from "./types";
+import { MobileHeaderBar, SearchAutocomplete } from "./SearchAutocomplete";
 
 const LOGO_384 = withBasePath("/sites/chophim/0ec7eba077af57ab.png");
 const LOGO_640 = withBasePath("/sites/chophim/56983f90e6a3c741.png");
@@ -7,33 +11,23 @@ const LOGO_640 = withBasePath("/sites/chophim/56983f90e6a3c741.png");
 const DROPDOWN_W = ["w-[480px]", "w-[400px]", "w-[200px]"];
 
 export function Header() {
-  const topLinks = home.header.nav.slice(0, 3);
+  // Source dùng đúng 2 link đầu cho lưới menu mobile (Phim Lẻ / Phim Bộ).
+  const topLinks = home.header.nav.slice(0, 2);
   const dropdowns = home.header.dropdowns;
+  const cards = Object.values(moviesData as unknown as Record<string, MovieDetail>).map(toCard);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent backdrop-blur-none">
       <div className="w-full px-2 lg:px-4 flex items-center justify-between h-[68px] lg:h-[76px] pt-1 lg:pt-2">
-        {/* --- mobile: logo + hamburger --- */}
-        <div className="flex items-center gap-2 lg:hidden w-full">
-          <button className="p-2 -ml-2 text-text-secondary hover:text-text-primary" aria-label="Menu">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-          <a className="flex items-center shrink-0" href={withBasePath("/")}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img alt="ChoPhim" width={160} height={45} decoding="async" className="h-10 w-auto object-contain" src={LOGO_384} />
-          </a>
-        </div>
-
-        {/* --- mobile: search --- */}
-        <div className="flex items-center gap-3 lg:hidden shrink-0">
-          <a className="p-2 text-text-secondary hover:text-text-primary" aria-label="Search" href={withBasePath("/tim-kiem")}>
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </a>
-        </div>
+        {/* --- mobile: menu + logo + Search overlay (giống chophim.wtf) --- */}
+        <MobileHeaderBar
+          movies={cards}
+          logoSrc={LOGO_384}
+          nav={topLinks}
+          groups={dropdowns}
+          accountHref={withBasePath("/dang-nhap")}
+          appHref={withBasePath("/tai-ung-dung")}
+        />
 
         {/* --- desktop --- */}
         <div className="hidden lg:flex items-center w-full justify-between h-full">
@@ -43,19 +37,7 @@ export function Header() {
               <img alt="ChoPhim" loading="lazy" width={200} height={60} decoding="async" className="h-10 xl:h-14 w-auto object-contain" src={LOGO_640} />
             </a>
             <div className="ml-1 xl:ml-2 w-[240px] xl:w-[340px] 2xl:w-[400px] shrink-0 transition-all duration-300">
-              <div className="relative">
-                <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/60 pointer-events-none z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <form action={withBasePath("/tim-kiem")} method="get" className="w-full">
-                  <input
-                    placeholder="Tìm kiếm phim, diễn viên"
-                    type="text"
-                    name="keyword"
-                    className="h-[42px] bg-white/10 text-[15px] text-text-primary placeholder:text-[#FFFFFF] focus:outline-none border transition-all w-full pl-10 pr-4 border-white/0 focus:border-white rounded-[8px]"
-                  />
-                </form>
-              </div>
+              <SearchAutocomplete movies={cards} />
             </div>
 
             <nav className="flex items-center gap-0.5 xl:gap-1 ml-4 xl:ml-8">

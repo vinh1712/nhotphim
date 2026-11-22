@@ -1,7 +1,9 @@
 "use client";
 
 import { withBasePath } from "@/lib/base-path";
+import { getList, toggleList } from "@/lib/user-library";
 import { useEffect, useState } from "react";
+import { useMotionPaused } from "@/lib/use-motion-paused";
 import { home, fillStyle } from "./types";
 import { IconPlay, IconHeartSolid, IconInfo, IconChevronRight } from "./icons";
 
@@ -12,7 +14,17 @@ const stripTags = (html: string) => html.replace(/<[^>]*>/g, "").trim();
 /* ------------------------------------------------------------------ */
 /* Slide bản desktop                                                   */
 /* ------------------------------------------------------------------ */
-function DeskSlide({ s, active }: { s: ASlide; active: boolean }) {
+function DeskSlide({
+  s,
+  active,
+  favorite,
+  onFavorite,
+}: {
+  s: ASlide;
+  active: boolean;
+  favorite: boolean;
+  onFavorite: (s: ASlide) => void;
+}) {
   const desc = stripTags(s.content);
   return (
     <div
@@ -97,16 +109,25 @@ function DeskSlide({ s, active }: { s: ASlide; active: boolean }) {
                 </a>
                 <div className="flex bg-white/5 border border-white/20 rounded-full backdrop-blur-md h-14 items-center overflow-hidden shrink-0">
                   <button
+                    type="button"
                     className="group/btn w-20 h-full flex items-center justify-center transition-all text-white active:scale-75"
-                    title="Yêu thích"
+                    title={favorite ? "Bỏ yêu thích" : "Yêu thích"}
+                    aria-pressed={favorite}
+                    onClick={() => onFavorite(s)}
                   >
-                    <IconHeartSolid className="w-6 h-6 transition-all duration-500 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] group-hover/btn:scale-110 text-white scale-100" />
+                    <IconHeartSolid
+                      className={`w-6 h-6 transition-all duration-500 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] group-hover/btn:scale-110 ${
+                        favorite
+                          ? "scale-110 text-[#FECF59] drop-shadow-[0_0_12px_rgba(254,207,89,0.6)]"
+                          : "scale-100 text-white"
+                      }`}
+                    />
                   </button>
                   <div className="w-[1px] h-3/5 bg-white/20" />
                   <a
                     className="group/link w-20 h-full flex items-center justify-center transition-colors text-white"
                     title="Chi tiết phim"
-                    href={withBasePath(`/phim/${s.slug}`)}
+                    href={s.href}
                   >
                     <IconInfo className="w-7 h-7 text-[#0f1115] fill-white group-hover/link:fill-[#FECF59] [&>circle]:stroke-white group-hover/link:[&>circle]:stroke-[#FECF59] transition-all" />
                   </a>
@@ -185,7 +206,7 @@ function MobSlide({ s, active }: { s: ASlide; active: boolean }) {
           <a
             className="absolute inset-0 z-50 pointer-events-none"
             title="Chi tiết phim"
-            href={withBasePath(`/phim/${s.slug}`)}
+            href={s.href}
           />
         </div>
       </div>
@@ -199,11 +220,31 @@ function MobSlide({ s, active }: { s: ASlide; active: boolean }) {
 export function AnimeSection() {
   const slides = home.anime.slides;
   const [active, setActive] = useState(0);
+  const [favoriteSlugs, setFavoriteSlugs] = useState<string[]>([]);
 
   useEffect(() => {
+    const load = () => setFavoriteSlugs(getList("favorites").map((item) => item.slug));
+    load();
+    window.addEventListener("storage", load);
+    return () => window.removeEventListener("storage", load);
+  }, []);
+
+  const toggleFavorite = (s: ASlide) => {
+    const next = toggleList("favorites", {
+      slug: s.slug,
+      title: s.title,
+      poster: s.poster || s.backdrop,
+      origin: s.origin,
+    });
+    setFavoriteSlugs((prev) => (next ? [...prev, s.slug] : prev.filter((x) => x !== s.slug)));
+  };
+
+  const motionPaused = useMotionPaused();
+  useEffect(() => {
+    if (motionPaused || slides.length <= 1) return;
     const t = setInterval(() => setActive((a) => (a + 1) % slides.length), 5000);
     return () => clearInterval(t);
-  }, [slides.length]);
+  }, [slides.length, motionPaused]);
 
   return (
     <section>
@@ -232,7 +273,12 @@ export function AnimeSection() {
                       pointerEvents: i === active ? "auto" : "none",
                     }}
                   >
-                    <DeskSlide s={s} active={i === active} />
+                    <DeskSlide
+                      s={s}
+                      active={i === active}
+                      favorite={favoriteSlugs.includes(s.slug)}
+                      onFavorite={toggleFavorite}
+                    />
                   </div>
                 ))}
               </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { withBasePath } from "@/lib/base-path";
+import { getProgress, isInList, removeProgress, saveProgress, toggleList } from "@/lib/user-library";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
 import { fillStyle } from "./types";
@@ -193,6 +194,13 @@ const fmt = (s: number) => {
 
 const isHlsUrl = (u: string | null) => !!u && /\.m3u8(\?|#|$)/i.test(u);
 
+function preferredServer(movie: MovieDetail): number {
+  const hls = movie.servers.findIndex((s) => s.episodes.some((e) => isHlsUrl(e.url)));
+  if (hls >= 0) return hls;
+  const playable = movie.servers.findIndex((s) => s.episodes.some((e) => !!e.url));
+  return playable >= 0 ? playable : 0;
+}
+
 /* ── component chính ────────────────────────────────────────────────────── */
 
 export function WatchPage({
@@ -204,7 +212,7 @@ export function WatchPage({
   comments: DetailComment[];
   suggestions: WatchSuggestion[];
 }) {
-  const [serverIdx, setServerIdx] = useState(0);
+  const [serverIdx, setServerIdx] = useState(() => preferredServer(movie));
   const [epIdx, setEpIdx] = useState(0);
   const [drawer, setDrawer] = useState(false);
   const [autoNext, setAutoNext] = useState(true);
@@ -212,6 +220,8 @@ export function WatchPage({
   const [fav, setFav] = useState(false);
   const [added, setAdded] = useState(false);
   const [hideImg, setHideImg] = useState(false);
+  const [ambient, setAmbient] = useState(false);
+  const [notice, setNotice] = useState("");
   const [descOpen, setDescOpen] = useState(false);
   const [sort, setSort] = useState<"new" | "top">("new");
   const [showMore, setShowMore] = useState(false);
@@ -224,31 +234,52 @@ export function WatchPage({
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
+  const pendingTimeRef = useRef(0);
+  const lastSavedRef = useRef(0);
 
   const sIdx = Math.min(serverIdx, Math.max(movie.servers.length - 1, 0));
   const server = movie.servers[sIdx];
   const eIdx = server ? Math.min(epIdx, Math.max(server.episodes.length - 1, 0)) : 0;
   const episode = server?.episodes[eIdx] ?? null;
   const hls = isHlsUrl(episode?.url ?? null);
+  const firstPlayable = server?.episodes.findIndex((e) => !!e.url) ?? -1;
 
-  /* ── đọc hash (#tap=tap-N&sv=...&server_id=N) khi vào trang ── */
+  /* ── khôi phục tiến trình + đọc hash (#tap=tap-N&sv=...&server_id=N&t=giây) ── */
   useEffect(() => {
-    const raw = window.location.hash.replace(/^#/, "");
-    if (!raw) return;
-    const p = new URLSearchParams(raw);
-    let si = 0;
-    const sid = p.get("server_id");
-    const svName = p.get("sv");
-    if (sid && /^\d+$/.test(sid) && movie.servers[Number(sid)]) si = Number(sid);
-    else if (svName) {
-      const i = movie.servers.findIndex((s) => s.name === svName);
-      if (i >= 0) si = i;
-    }
-    const m = (p.get("tap") || "").match(/^tap-(\d+)$/);
+    const saved = getProgress(movie.slug)[0];
+    let si = preferredServer(movie);
     let ei = 0;
-    if (m) ei = Math.max(0, Math.min(Number(m[1]) - 1, (movie.servers[si]?.episodes.length ?? 1) - 1));
+    let resumeTime = 0;
+
+    if (saved) {
+      si = Math.min(Math.max(0, saved.server), Math.max(movie.servers.length - 1, 0));
+      ei = saved.episode;
+      resumeTime = saved.time;
+    }
+
+    const raw = window.location.hash.replace(/^#/, "");
+    if (raw) {
+      const p = new URLSearchParams(raw);
+      const sid = p.get("server_id");
+      const svName = p.get("sv");
+      if (sid && /^\d+$/.test(sid) && movie.servers[Number(sid)]) si = Number(sid);
+      else if (svName) {
+        const i = movie.servers.findIndex((s) => s.name === svName);
+        if (i >= 0) si = i;
+      }
+      const tap = (p.get("tap") || "").match(/^tap-(\d+)$/);
+      if (tap) {
+        ei = Number(tap[1]) - 1;
+        resumeTime = 0;
+      }
+      const t = Number(p.get("t") ?? "");
+      if (Number.isFinite(t) && t > 0) resumeTime = t;
+    }
+
+    ei = Math.max(0, Math.min(ei, (movie.servers[si]?.episodes.length ?? 1) - 1));
     setServerIdx(si);
     setEpIdx(ei);
+    pendingTimeRef.current = Number.isFinite(resumeTime) && resumeTime > 0 ? resumeTime : 0;
   }, [movie]);
 
   const writeHash = useCallback(
@@ -269,6 +300,7 @@ export function WatchPage({
       setPlaying(false);
       setCur(0);
       setDur(0);
+      pendingTimeRef.current = 0;
       writeHash(si, ei);
       document.getElementById("watch-player")?.scrollIntoView({ behavior: "smooth", block: "center" });
     },
@@ -281,6 +313,52 @@ export function WatchPage({
       selectEp(si, ei);
     },
     [epIdx, movie, selectEp]
+  );
+
+  useEffect(() => {
+    setFav(isInList("favorites", movie.slug));
+    setAdded(isInList("watchlist", movie.slug));
+  }, [movie.slug]);
+
+  useEffect(() => {
+    lastSavedRef.current = 0;
+  }, [sIdx, eIdx]);
+
+  useEffect(() => {
+    if (!notice) return;
+    const timer = window.setTimeout(() => setNotice(""), 4000);
+    return () => window.clearTimeout(timer);
+  }, [notice]);
+
+  const scrollToServers = () => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.getElementById("episodes-section")?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  };
+
+  const libraryEntry = {
+    slug: movie.slug,
+    title: movie.title,
+    poster: movie.poster || movie.backdrop,
+    origin: movie.origin,
+  };
+
+  const toggleFavorite = () => setFav(toggleList("favorites", libraryEntry));
+  const toggleWatchlist = () => setAdded(toggleList("watchlist", libraryEntry));
+
+  const persist = useCallback(
+    (time: number, total?: number) => {
+      if (!Number.isFinite(time) || time < 1) return;
+      saveProgress({
+        ...libraryEntry,
+        server: sIdx,
+        serverName: server?.name ?? "",
+        episode: eIdx,
+        time,
+        duration: total ?? dur,
+      });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [dur, eIdx, movie, sIdx, server?.name]
   );
 
   /* ── HLS cho link .m3u8 ── */
@@ -335,7 +413,7 @@ export function WatchPage({
           <div
             id="watch-player"
             ref={wrapRef}
-            className="relative w-full aspect-video"
+            className={`relative w-full aspect-video transition-shadow duration-[350ms] ${ambient ? "shadow-[0_0_70px_rgba(255,209,102,0.18)]" : ""}`}
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
           >
@@ -351,14 +429,39 @@ export function WatchPage({
                       preload="auto"
                       poster={movie.backdrop || movie.poster}
                       onClick={togglePlay}
-                      onPlay={() => {
+                      onPlay={(e) => {
                         setPlaying(true);
                         setStarted(true);
+                        const v = e.currentTarget;
+                        if (autoSkip && v.duration > 180 && v.currentTime < 8) {
+                          v.currentTime = Math.min(90, v.duration - 30);
+                        }
                       }}
-                      onPause={() => setPlaying(false)}
-                      onTimeUpdate={(e) => setCur(e.currentTarget.currentTime)}
-                      onLoadedMetadata={(e) => setDur(e.currentTarget.duration || 0)}
-                      onEnded={onEnded}
+                      onPause={(e) => {
+                        setPlaying(false);
+                        persist(e.currentTarget.currentTime, e.currentTarget.duration || dur);
+                      }}
+                      onTimeUpdate={(e) => {
+                        const t = e.currentTarget.currentTime;
+                        setCur(t);
+                        if (t - lastSavedRef.current >= 5) {
+                          lastSavedRef.current = t;
+                          persist(t, e.currentTarget.duration || dur);
+                        }
+                      }}
+                      onLoadedMetadata={(e) => {
+                        const v = e.currentTarget;
+                        const d = v.duration || 0;
+                        setDur(d);
+                        if (pendingTimeRef.current > 0 && d > 0) {
+                          v.currentTime = Math.min(pendingTimeRef.current, Math.max(0, d - 5));
+                          pendingTimeRef.current = 0;
+                        }
+                      }}
+                      onEnded={() => {
+                        persist(dur || 0, dur || 0);
+                        onEnded();
+                      }}
                       onVolumeChange={(e) => setVol(e.currentTarget.volume)}
                     />
                   )}
@@ -372,9 +475,20 @@ export function WatchPage({
                     />
                   )}
                   {!url && (
-                    <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-white/70">
+                    <div className="flex h-full w-full flex-col items-center justify-center gap-3 px-4 text-center text-white/70">
                       <IcPlay className="w-10 h-10 text-white/30" />
-                      <p className="text-sm">Phim chưa có nguồn xem.</p>
+                      <p className="text-sm">Tập này chưa có nguồn xem.</p>
+                      {firstPlayable >= 0 ? (
+                        <button
+                          type="button"
+                          onClick={() => selectEp(sIdx, firstPlayable)}
+                          className="rounded-lg bg-[#FFD166] px-4 py-2 text-[13px] font-bold text-[#171717] transition-colors hover:bg-[#FFE099]"
+                        >
+                          Chuyển sang {server?.episodes[firstPlayable]?.label ?? "tập có nguồn"}
+                        </button>
+                      ) : (
+                        <p className="text-[12px] text-white/45">Hãy thử máy chủ khác bên dưới.</p>
+                      )}
                     </div>
                   )}
                 </div>
@@ -444,7 +558,11 @@ export function WatchPage({
                               className={`relative w-[90px] sm:w-[100px] aspect-[16/9] rounded shrink-0 overflow-hidden bg-black/50 bg-cover bg-center ${
                                 active ? "ring-2 ring-[#eab308] ring-offset-[2px] ring-offset-[#1f2025]" : ""
                               }`}
-                              style={{ backgroundImage: `url("${movie.backdrop || movie.poster}")` }}
+                              style={
+                                hideImg
+                                  ? { backgroundColor: "#10121b" }
+                                  : { backgroundImage: `url("${movie.backdrop || movie.poster}")` }
+                              }
                               aria-label={ep.label}
                             />
                             <div className="flex-1 min-w-0">
@@ -548,28 +666,42 @@ export function WatchPage({
                               <IcSkipFwd className="w-5 h-5 sm:w-7 sm:h-7" />
                             </button>
                           </div>
-                          <button type="button" aria-label="Phụ đề" title="Phụ đề" className="hidden transition-all hover:text-white/80 focus:outline-none sm:flex items-center justify-center text-white">
+                          <button
+                            type="button"
+                            aria-label="Phụ đề"
+                            title="Phụ đề"
+                            onClick={() => setNotice(`Ngôn ngữ phim: ${movie.lang}.`)}
+                            className="hidden transition-colors hover:text-white/80 focus:outline-none sm:flex items-center justify-center text-white"
+                          >
                             <IcCaptions className="h-7 w-7" />
                           </button>
                           <div className="relative flex items-center justify-center">
                             <button
                               type="button"
-                              className="text-white hover:text-white/80 transition-all duration-200 focus:outline-none flex h-9 w-9 sm:h-auto sm:w-auto items-center justify-center relative hover:scale-105 active:scale-95 group"
+                              onClick={() => setNotice("Đây là bản song ngữ/gốc; chọn máy chủ để đổi bản lồng tiếng nếu có.")}
+                              className="text-white transition-colors hover:text-white/80 focus:outline-none flex h-9 w-9 sm:h-auto sm:w-auto items-center justify-center relative active:scale-[0.97] motion-reduce:transform-none group"
                             >
-                              <IcMic className="w-5 h-5 sm:w-7 sm:h-7 transition-transform duration-300 group-hover:rotate-12" />
+                              <IcMic className="w-5 h-5 sm:w-7 sm:h-7 transition-[transform] duration-[220ms] group-hover:rotate-12 motion-reduce:transform-none" />
                               <div className="absolute -top-1.5 -right-3 bg-white text-black text-[9px] font-bold px-1 rounded-sm shadow-sm pointer-events-none leading-tight">Song</div>
                             </button>
                           </div>
                           <div className="hidden sm:flex">
                             <div className="relative flex items-center justify-center">
-                              <button type="button" aria-label="Máy chủ" title="Máy chủ" className="group relative flex h-9 sm:h-auto w-9 sm:w-auto items-center justify-center text-white transition-all duration-200 hover:scale-105 hover:text-white/80 active:scale-95 focus:outline-none">
+                              <button type="button" aria-label="Máy chủ" title="Máy chủ" onClick={scrollToServers} className="group relative flex h-9 sm:h-auto w-9 sm:w-auto items-center justify-center text-white transition-colors hover:text-white/80 active:scale-[0.97] focus:outline-none motion-reduce:transform-none">
                                 <IcRouter className="h-5 w-5 sm:h-7 sm:w-7 transition-transform duration-300" />
                                 <IcSignalZero className="pointer-events-none absolute -right-3 -top-1.5 h-4 w-4 rounded-sm bg-black/60 p-0.5 shadow-sm text-white/45" />
                               </button>
                             </div>
                           </div>
-                          <button type="button" aria-label="Cài đặt" className="relative flex h-9 w-9 items-center justify-center text-white transition-all hover:text-white/80 focus:outline-none sm:h-auto sm:w-auto">
-                            <IcSettings className="w-5 h-5 transition-transform duration-300 sm:h-7 sm:w-7" />
+                          <button
+                            type="button"
+                            aria-label="Bật/tắt ánh sáng môi trường"
+                            aria-pressed={ambient}
+                            title="Ánh sáng môi trường"
+                            onClick={() => setAmbient((v) => !v)}
+                            className="relative flex h-9 w-9 items-center justify-center text-white transition-colors hover:text-white/80 focus:outline-none sm:h-auto sm:w-auto"
+                          >
+                            <IcSettings className={`w-5 h-5 sm:h-7 sm:w-7 ${ambient ? "text-[#FFD166]" : ""}`} />
                           </button>
                           <button type="button" onClick={fullscreen} aria-label="Toàn màn hình" className="text-white hover:text-white/80 transition-all focus:outline-none flex h-9 w-9 sm:h-auto sm:w-auto items-center justify-center">
                             <IcMaximize className="w-5 h-5 sm:w-7 sm:w-7 sm:h-7" />
@@ -585,12 +717,17 @@ export function WatchPage({
 
           {/* thanh di động dưới trình phát */}
           <div className="relative z-30 flex items-center justify-between gap-3 bg-white/[0.04] px-4 py-2 text-white md:hidden">
-            <button type="button" className="group relative flex h-8 min-h-8 min-w-0 items-center justify-center gap-1 px-0 text-white/80 transition-all hover:text-white focus:outline-none">
+            <button type="button" onClick={scrollToServers} className="group relative flex h-8 min-h-8 min-w-0 items-center justify-center gap-1 px-0 text-white/80 transition-colors hover:text-white focus:outline-none">
               <IcRouter className="h-4 w-4" />
               <span className="text-xs font-semibold leading-none">Kiểm tra máy chủ</span>
               <IcSignalZero className="pointer-events-none absolute -right-3 -top-1.5 h-4 w-4 rounded-sm bg-black/60 p-0.5 shadow-sm text-white/45" />
             </button>
-            <button type="button" className="inline-flex shrink-0 items-center gap-1.5 text-[13px] font-medium text-white/75 transition-colors hover:text-white whitespace-nowrap" title={movie.lang}>
+            <button
+              type="button"
+              onClick={() => setNotice(`Ngôn ngữ phim: ${movie.lang}.`)}
+              className="inline-flex shrink-0 items-center gap-1.5 text-[13px] font-medium text-white/75 transition-colors hover:text-white whitespace-nowrap"
+              title={movie.lang}
+            >
               <IcCaptions className="h-4 w-4" />
               <span>{movie.lang}</span>
             </button>
@@ -602,20 +739,22 @@ export function WatchPage({
               <button
                 type="button"
                 title="Yêu thích"
-                onClick={() => setFav((v) => !v)}
-                className="group/fav flex items-center justify-center gap-2.5 transition-all outline-none active:scale-95"
+                aria-pressed={fav}
+                onClick={toggleFavorite}
+                className="group/fav flex items-center justify-center gap-2.5 transition-colors outline-none active:scale-[0.97] motion-reduce:transform-none"
               >
-                <IcHeart className={`transition-all duration-500 w-4 h-4 group-hover/fav:scale-110 ${fav ? "fill-[#FFD166] text-[#FFD166]" : "text-white/90"}`} />
+                <IcHeart className={`w-4 h-4 transition-colors ${fav ? "fill-[#FFD166] text-[#FFD166]" : "text-white/90"}`} />
                 <span className="hidden sm:inline-block text-[13px] font-medium transition-colors text-white">Yêu thích</span>
               </button>
               <div className="relative">
                 <button
                   type="button"
                   title="Thêm vào danh sách"
-                  onClick={() => setAdded((v) => !v)}
-                  className="group/add flex items-center justify-center gap-2.5 transition-all outline-none active:scale-95"
+                  aria-pressed={added}
+                  onClick={toggleWatchlist}
+                  className="group/add flex items-center justify-center gap-2.5 transition-colors outline-none active:scale-[0.97] motion-reduce:transform-none"
                 >
-                  <IcFolderPlus className={`transition-all duration-300 w-4 h-4 group-hover/add:scale-110 ${added ? "text-[#FFD166]" : "text-white/90"}`} />
+                  <IcFolderPlus className={`w-4 h-4 transition-colors ${added ? "text-[#FFD166]" : "text-white/90"}`} />
                   <span className="hidden sm:inline-block text-[13px] font-medium transition-colors text-white">{added ? "Đã thêm" : "Thêm vào"}</span>
                 </button>
               </div>
@@ -639,6 +778,7 @@ export function WatchPage({
               <button
                 type="button"
                 title="Tự động bỏ qua intro"
+                aria-pressed={autoSkip}
                 onClick={() => setAutoSkip((v) => !v)}
                 className="hidden items-center gap-2 rounded-lg px-3 py-1.5 outline-none transition-colors hover:bg-white/10 md:flex group"
               >
@@ -650,23 +790,46 @@ export function WatchPage({
               </button>
               <button
                 type="button"
-                title="Mở cài đặt ánh sáng môi trường"
-                className="hidden items-center gap-2 rounded-lg px-3 py-1.5 outline-none transition-colors hover:bg-white/10 md:flex group"
+                title="Bật/tắt ánh sáng môi trường"
+                aria-pressed={ambient}
+                onClick={() => setAmbient((v) => !v)}
+                className={`hidden items-center gap-2 rounded-lg px-3 py-1.5 outline-none transition-colors hover:bg-white/10 md:flex group ${ambient ? "text-[#FFD166]" : ""}`}
               >
                 <IcLightbulb className="w-5 h-5 text-white/70 transition-colors group-hover:text-[#FFD166]" />
                 <span className="hidden md:inline-block text-[13px] font-medium text-white/90 transition-colors group-hover:text-[#FFD166]">Ánh sáng môi trường</span>
-                <span className="hidden md:inline-block rounded bg-white/[0.06] px-1.5 py-[3px] text-[10px] font-bold text-white/40 transition-colors group-hover:bg-[#FECF59]/10 group-hover:text-[#FECF59]">CÀI ĐẶT</span>
+                <span className="hidden md:inline-block rounded bg-white/[0.06] px-1.5 py-[3px] text-[10px] font-bold text-white/40 transition-colors group-hover:bg-[#FECF59]/10 group-hover:text-[#FECF59]">
+                  {ambient ? "ON" : "CÀI ĐẶT"}
+                </span>
               </button>
-              <button type="button" className="flex items-center gap-2 hover:bg-white/10 transition-colors group outline-none py-1.5 px-2 md:px-3 rounded-lg">
+              <button
+                type="button"
+                onClick={() => setNotice("Gặp lỗi phát? Đổi máy chủ ở danh sách tập hoặc báo qua Telegram ở footer.")}
+                className="flex items-center gap-2 hover:bg-white/10 transition-colors group outline-none py-1.5 px-2 md:px-3 rounded-lg"
+              >
                 <IcBug className="w-5 h-5 text-white/70 group-hover:text-[#eab308] transition-colors" />
                 <span className="hidden md:inline-block text-[13px] font-medium text-white/70 group-hover:text-[#eab308] transition-colors">Báo lỗi</span>
               </button>
-              <button type="button" className="flex items-center justify-center py-1.5 px-2 rounded-lg hover:bg-white/10 transition-colors" aria-label="Hướng dẫn thao tác" title="Hướng dẫn thao tác">
+              <button
+                type="button"
+                onClick={() => setNotice("Phím tắt: Space = phát/dừng, ←/→ = tua 10s, F = toàn màn hình.")}
+                className="flex items-center justify-center py-1.5 px-2 rounded-lg hover:bg-white/10 transition-colors"
+                aria-label="Hướng dẫn thao tác"
+                title="Hướng dẫn thao tác"
+              >
                 <IcQuestion className="w-5 h-5 transition-colors text-white/40" />
               </button>
             </div>
           </div>
         </div>
+
+        {notice && (
+          <div
+            role="status"
+            className="animate-fade-in mt-3 rounded-lg border border-[#FFD166]/20 bg-[#FFD166]/10 px-4 py-2.5 text-[13px] text-[#FFD166]"
+          >
+            {notice}
+          </div>
+        )}
 
         {/* ── Nội dung ── */}
         <div className="flex flex-col xl:flex-row gap-8 mt-4 xl:mt-8">
@@ -830,10 +993,14 @@ export function WatchPage({
                       key={`${server?.name}-grid-${i}`}
                       type="button"
                       onClick={() => selectEp(sIdx, i)}
+                      disabled={!ep.url && firstPlayable >= 0}
+                      title={!ep.url ? "Tập này chưa có nguồn" : ep.label}
                       className={`group flex items-center justify-center gap-1.5 rounded-lg border-2 border-transparent px-2 py-2 text-[13px] transition-colors ${
-                        active
-                          ? "bg-[#FFD166] text-[#1c1c1c] font-semibold shadow-[0_4px_20px_rgba(255,209,102,0.2)]"
-                          : "bg-[#191b24] text-white/90 hover:border-[#FFD166] hover:text-[#FFD166] shadow-sm"
+                        !ep.url && firstPlayable >= 0
+                          ? "cursor-not-allowed bg-[#191b24] text-white/35"
+                          : active
+                            ? "bg-[#FFD166] text-[#1c1c1c] font-semibold shadow-[0_4px_20px_rgba(255,209,102,0.2)]"
+                            : "bg-[#191b24] text-white/90 hover:border-[#FFD166] hover:text-[#FFD166] shadow-sm"
                       }`}
                     >
                       <IcPlay className={`h-3 w-3 shrink-0 ${active ? "fill-[#1c1c1c]" : "fill-white/80 group-hover:fill-[#FFD166]"}`} />
