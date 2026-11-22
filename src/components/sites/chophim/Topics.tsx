@@ -35,9 +35,8 @@ export function Topics() {
           ))}
         </div>
         <a className={home.moreTopics.class} href={home.moreTopics.href}>
-          <h3 className="min-w-0 max-w-full break-words text-[14px] font-extrabold leading-[1.25] sm:max-w-[12.5rem] sm:text-[21px] lg:max-w-full lg:text-[20px]">
-            {home.moreTopics.label}
-          </h3>
+          <span>{home.moreTopics.label}</span>
+          <IconChevronRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" stroke={3} />
         </a>
       </div>
     </section>

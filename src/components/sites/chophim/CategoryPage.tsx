@@ -1,10 +1,10 @@
 "use client";
 
-import { withBasePath } from "@/lib/base-path";
+import { stripBasePath, withBasePath } from "@/lib/base-path";
 // Trang danh mục / tìm kiếm: tiêu đề + bộ lọc + lưới poster + phân trang.
 // Số trang mặc định đọc từ ?page= để page vẫn build được thành HTML tĩnh (output: "export").
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 import { BottomBadges } from "./Badges";
 import { fillStyle, type MovieItem } from "./types";
 import {
@@ -12,7 +12,10 @@ import {
   FILTER_GROUPS,
   applyFilters,
   bottomBadgeText,
+  filtersFromParams,
+  lockedFiltersFromPath,
   paginate,
+  sortQueryValue,
   type CardMovie,
   type MovieFilters,
 } from "./movie-filter";
@@ -173,7 +176,7 @@ export function CategoryGrid({
   );
 }
 
-type PillOption = string | { value: string; label: string };
+type PillOption = { value: string; label: string; disabled?: boolean; title?: string };
 
 const PILL_BASE =
   "px-3 py-1.5 md:py-1 rounded-md transition-all text-[13px] md:text-sm whitespace-nowrap shrink-0";
@@ -188,15 +191,19 @@ function PillRow({
   values,
   onChange,
   onToggle,
+  disabled,
+  disabledTitle,
   footer,
 }: {
-  label: string;
+  label: ReactNode;
   options: readonly PillOption[];
   value?: string;
   values?: string[];
   onChange?: (value: string) => void;
   onToggle?: (value: string) => void;
-  footer?: React.ReactNode;
+  disabled?: (value: string) => boolean;
+  disabledTitle?: string;
+  footer?: ReactNode;
 }) {
   const selected = (v: string) =>
     values ? (v === "" ? values.length === 0 : values.includes(v)) : value === v;
@@ -206,16 +213,19 @@ function PillRow({
       <span className="text-text-primary/90 font-medium md:w-32 shrink-0 md:pt-1 text-sm">{label}</span>
       <div className="flex flex-wrap gap-2 w-full">
         {options.map((option) => {
-          const v = typeof option === "string" ? option : option.value;
-          const text = v === "" ? "Tất cả" : typeof option === "string" ? option : option.label;
+          const isDisabled = option.disabled ?? disabled?.(option.value) ?? false;
           return (
             <button
-              key={v}
+              key={option.value}
               type="button"
-              onClick={() => (onToggle ? onToggle(v) : onChange?.(v))}
-              className={`${PILL_BASE} ${selected(v) ? PILL_ACTIVE : PILL_IDLE}`}
+              disabled={isDisabled}
+              title={option.title ?? (isDisabled ? disabledTitle : undefined)}
+              onClick={() => (onToggle ? onToggle(option.value) : onChange?.(option.value))}
+              className={`${PILL_BASE} ${selected(option.value) ? PILL_ACTIVE : PILL_IDLE} ${
+                isDisabled ? "cursor-not-allowed opacity-60 hover:text-text-muted" : ""
+              }`}
             >
-              {text}
+              {option.label}
             </button>
           );
         })}
@@ -230,14 +240,27 @@ export function CategoryPage({
   movies,
   basePath,
   emptyText = "Không tìm thấy phim nào.",
+  lockedFilters,
+  hideTitle = false,
+  mainClassName = "flex-1 pt-16",
+  banner,
 }: {
   title: string;
   movies: CardMovie[];
   basePath: string;
   emptyText?: string;
+  lockedFilters?: Partial<MovieFilters>;
+  hideTitle?: boolean;
+  mainClassName?: string;
+  banner?: ReactNode;
 }) {
-  const [applied, setApplied] = useState<MovieFilters>(EMPTY_FILTERS);
-  const [draft, setDraft] = useState<MovieFilters>(EMPTY_FILTERS);
+  const pathname = usePathname() ?? (typeof window !== "undefined" ? window.location.pathname : "/");
+  const locked = useMemo<Partial<MovieFilters>>(
+    () => ({ ...lockedFiltersFromPath(stripBasePath(pathname)), ...lockedFilters }),
+    [pathname, lockedFilters]
+  );
+  const [applied, setApplied] = useState<MovieFilters>({ ...EMPTY_FILTERS, ...locked });
+  const [draft, setDraft] = useState<MovieFilters>({ ...EMPTY_FILTERS, ...locked });
   const [filterOpen, setFilterOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -246,29 +269,28 @@ export function CategoryPage({
   const hasFilter =
     !!applied.country || !!applied.type || applied.genres.length > 0 || !!applied.lang || !!applied.year;
 
-  // Đọc bộ lọc từ URL ngay khi mount (source dùng router.push + refresh).
+  // Source dùng router.push + refresh; bản static đọc/đồng bộ query bằng history API.
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const fromUrl: MovieFilters = {
-      country: params.get("country") ?? "",
-      type: params.get("type") ?? "",
-      genres: (params.get("genre") ?? "").split(",").filter(Boolean).slice(0, 5),
-      lang: params.get("lang") ?? "",
-      year: params.get("year") ?? "",
-      sort: params.get("sort") === "updated" ? "updated" : "new",
+    const sync = () => {
+      const next = filtersFromParams(new URLSearchParams(window.location.search), locked);
+      setApplied(next);
+      setDraft(next);
+      setPage(1);
     };
-    setApplied(fromUrl);
-    setDraft(fromUrl);
+    sync();
+    window.addEventListener("popstate", sync);
     return () => {
+      window.removeEventListener("popstate", sync);
       if (loadingTimer.current) clearTimeout(loadingTimer.current);
     };
-  }, []);
+  }, [locked]);
 
   const edit = <K extends keyof MovieFilters>(key: K, value: MovieFilters[K]) => {
     setDraft((prev) => ({ ...prev, [key]: value }));
   };
 
   const toggleGenre = (genre: string) => {
+    if (locked.genres?.length) return;
     setDraft((prev) => {
       if (genre === "") return { ...prev, genres: [] };
       if (prev.genres.includes(genre)) {
@@ -280,16 +302,32 @@ export function CategoryPage({
   };
 
   const apply = () => {
-    const params = new URLSearchParams();
+    // Giữ lại mọi param khác (đặc biệt là `keyword` của trang tìm kiếm).
+    const params = new URLSearchParams(window.location.search);
     if (draft.country) params.set("country", draft.country);
+    else params.delete("country");
     if (draft.type) params.set("type", draft.type);
+    else params.delete("type");
     if (draft.genres.length) params.set("genre", draft.genres.join(","));
-    if (draft.lang) params.set("lang", draft.lang);
+    else params.delete("genre");
+    if (draft.lang) params.set("language", draft.lang);
+    else params.delete("language");
     if (draft.year) params.set("year", draft.year);
-    if (draft.sort !== "new") params.set("sort", draft.sort);
+    else params.delete("year");
+    if (draft.sort !== "new") params.set("sort", sortQueryValue(draft.sort));
+    else params.delete("sort");
+
+    // Route cố định (phim-le, quoc-gia/..., chu-de/...) luôn được áp lại như source.
+    if (locked.country) params.set("country", locked.country);
+    if (locked.type) params.set("type", locked.type);
+    if (locked.genres?.length) params.set("genre", locked.genres.join(","));
+    params.delete("page");
+
     const query = params.toString();
     window.history.pushState({}, "", `${window.location.pathname}${query ? `?${query}` : ""}`);
-    setApplied(draft);
+    const next = filtersFromParams(params, locked);
+    setApplied(next);
+    setDraft(next);
     setPage(1);
     setFilterOpen(false);
     setLoading(true);
@@ -297,12 +335,25 @@ export function CategoryPage({
     loadingTimer.current = setTimeout(() => setLoading(false), 300);
   };
 
+  const all = { value: "", label: "Tất cả" } as const;
+
   return (
-    <main className="flex-1 pt-16">
-      <div className="max-w-[1400px] mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-bold text-text-primary flex items-center gap-2 text-xl sm:text-2xl">{title}</h2>
+    <main className={mainClassName}>
+      {loading && (
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0A0A0F]/90 backdrop-blur-sm">
+          <div className="animate-spin mb-5 h-12 w-12 rounded-full border-4 border-[#FFD166] border-t-transparent" />
+          <p className="text-lg font-medium text-white">Đang tìm kiếm phim...</p>
         </div>
+      )}
+
+      {banner}
+
+      <div className="mx-auto max-w-[1400px] px-4 py-8">
+        {!hideTitle && (
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="flex items-center gap-2 text-xl font-bold text-text-primary sm:text-2xl">{title}</h2>
+          </div>
+        )}
 
         <div className="mb-8 font-sans">
           <button
@@ -313,10 +364,10 @@ export function CategoryPage({
               setDraft(applied);
               setFilterOpen((v) => !v);
             }}
-            className="flex items-center gap-2 text-[15px] font-semibold text-text-primary hover:text-white transition-colors mb-4"
+            className="mb-4 flex items-center gap-2 text-[15px] font-semibold text-text-primary transition-colors hover:text-white"
           >
             <svg
-              className={`w-4 h-4 transition-transform duration-300 ${filterOpen ? "rotate-180 text-[#FFD166]" : ""}`}
+              className={`h-4 w-4 transition-transform duration-300 ${filterOpen ? "rotate-180 text-[#FFD166]" : ""}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -334,73 +385,106 @@ export function CategoryPage({
           {filterOpen && (
             <div
               id="category-filter-panel"
-              className="animate-fade-in bg-white/[0.02] backdrop-blur-xl border border-dashed border-white/15 rounded-2xl p-4 md:p-6"
+              className="animate-fade-in overflow-hidden rounded-2xl border border-dashed border-white/[0.25] bg-white/[0.02] p-4 text-sm shadow-2xl backdrop-blur-xl md:p-6"
             >
-              <div className="space-y-5">
+              <div className="space-y-4 md:space-y-6">
                 <PillRow
-                  label="Quốc gia"
-                  options={["", ...FILTER_GROUPS.countries]}
+                  label="Quốc gia:"
+                  options={[all, ...FILTER_GROUPS.countries]}
                   value={draft.country}
                   onChange={(v) => edit("country", v)}
+                  disabled={() => !!locked.country}
                 />
                 <PillRow
-                  label="Loại phim"
-                  options={["", ...FILTER_GROUPS.types]}
+                  label="Loại phim:"
+                  options={[all, ...FILTER_GROUPS.types]}
                   value={draft.type}
                   onChange={(v) => edit("type", v)}
+                  disabled={() => !!locked.type}
                 />
                 <PillRow
-                  label={`Thể loại: ${draft.genres.length}/5`}
-                  options={["", ...FILTER_GROUPS.genres]}
+                  label={
+                    <>
+                      Thể loại:
+                      {draft.genres.length > 0 && (
+                        <span className="ml-1.5 inline-flex h-4 items-center justify-center rounded-full bg-[#FFD166] px-1.5 text-[10px] font-bold text-[#1c1c1c]">
+                          {draft.genres.length}/5
+                        </span>
+                      )}
+                    </>
+                  }
+                  options={[all, ...FILTER_GROUPS.genres]}
                   values={draft.genres}
                   onToggle={toggleGenre}
-                  footer={<span className="self-center text-[11px] text-text-muted">Tối đa 5 thể loại</span>}
+                  disabled={(v) =>
+                    !!locked.genres?.length ||
+                    (v !== "" && !draft.genres.includes(v) && draft.genres.length >= 5)
+                  }
+                  disabledTitle="Tối đa 5 thể loại"
                 />
                 <PillRow
-                  label="Ngôn ngữ"
-                  options={["", ...FILTER_GROUPS.langs]}
+                  label="Ngôn ngữ:"
+                  options={[all, ...FILTER_GROUPS.langs]}
                   value={draft.lang}
                   onChange={(v) => edit("lang", v)}
                 />
                 <PillRow
-                  label="Năm sản xuất"
-                  options={["", ...FILTER_GROUPS.years]}
+                  label="Năm sản xuất:"
+                  options={[
+                    all,
+                    ...FILTER_GROUPS.years.map((y) => ({ value: y, label: y })),
+                  ]}
                   value={draft.year}
                   onChange={(v) => edit("year", v)}
                   footer={
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="Nhập năm"
-                      value={draft.year && !FILTER_GROUPS.years.includes(draft.year as (typeof FILTER_GROUPS.years)[number]) ? draft.year : ""}
-                      onChange={(e) => edit("year", e.target.value.replace(/\D/g, "").slice(0, 4))}
-                      className="h-8 w-24 rounded-md border border-white/15 bg-white/5 px-2 text-[13px] text-white placeholder:text-white/40 focus:border-white/40 focus:outline-none"
-                    />
+                    <div className="relative flex-none">
+                      <svg
+                        className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="Nhập năm"
+                        value={
+                          draft.year &&
+                          !FILTER_GROUPS.years.includes(draft.year as (typeof FILTER_GROUPS.years)[number])
+                            ? draft.year
+                            : ""
+                        }
+                        onChange={(e) => edit("year", e.target.value.replace(/\D/g, "").slice(0, 4))}
+                        className="w-full rounded-full border border-white/10 bg-white/5 py-1.5 pl-9 pr-4 text-sm text-white placeholder:text-white/30 focus:border-white/40 focus:bg-white/10 focus:outline-none md:w-32"
+                      />
+                    </div>
                   }
                 />
                 <PillRow
-                  label="Sắp xếp"
+                  label="Sắp xếp:"
                   options={FILTER_GROUPS.sorts}
                   value={draft.sort}
                   onChange={(v) => edit("sort", v as MovieFilters["sort"])}
                 />
               </div>
 
-              <div className="flex items-center gap-3 md:gap-4 mt-8 pt-6 border-t border-dashed border-white/[0.12]">
+              <div className="mt-8 flex items-center gap-3 border-t border-dashed border-white/[0.12] pt-6 md:gap-4">
                 <button
                   type="button"
                   onClick={apply}
-                  className="bg-[#FFD166] bg-gradient-to-r from-[#FFD166] to-[#ffb347] text-[#1c1c1c] hover:opacity-90 font-bold py-2.5 px-6 rounded-full transition-all flex items-center justify-center gap-2 flex-1 md:flex-none active:scale-[0.98] whitespace-nowrap"
+                  className="flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-[#FFD166] bg-gradient-to-r from-[#FFD166] to-[#ffb347] px-6 py-2.5 font-bold text-[#1c1c1c] transition-all hover:opacity-90 active:scale-[0.98] md:flex-none"
                 >
                   Lọc kết quả
-                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>
                 </button>
                 <button
                   type="button"
                   onClick={() => setFilterOpen(false)}
-                  className="bg-transparent border border-white/10 hover:bg-white/5 text-white/50 hover:text-white font-medium py-2.5 px-6 rounded-full transition-colors flex-1 md:flex-none whitespace-nowrap"
+                  className="flex-1 whitespace-nowrap rounded-full border border-white/10 bg-transparent px-6 py-2.5 font-medium text-white/50 transition-colors hover:bg-white/5 hover:text-white md:flex-none"
                 >
                   Đóng
                 </button>
@@ -409,22 +493,15 @@ export function CategoryPage({
           )}
         </div>
 
-        <div className="relative">
-          {loading && (
-            <div className="absolute inset-0 z-10 flex items-start justify-center pt-16 text-[15px] text-text-muted">
-              Đang tìm kiếm phim...
-            </div>
-          )}
-          <Suspense fallback={<div className="py-20 text-center text-text-muted text-[15px]">{emptyText}</div>}>
-            <CategoryGrid
-              movies={filtered}
-              basePath={basePath}
-              emptyText={hasFilter ? "Không có phim khớp bộ lọc." : emptyText}
-              pageOverride={page}
-              onPageChange={setPage}
-            />
-          </Suspense>
-        </div>
+        <Suspense fallback={<div className="py-20 text-center text-[15px] text-text-muted">{emptyText}</div>}>
+          <CategoryGrid
+            movies={filtered}
+            basePath={basePath}
+            emptyText={hasFilter ? "Không có phim khớp bộ lọc." : emptyText}
+            pageOverride={page}
+            onPageChange={setPage}
+          />
+        </Suspense>
       </div>
     </main>
   );

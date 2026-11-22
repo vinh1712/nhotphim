@@ -8,6 +8,15 @@
  */
 const basePath = (process.env.NEXT_PUBLIC_BASE_PATH ?? process.env.PAGES_BASE_PATH ?? "").replace(/\/$/, "");
 
+export { basePath };
+
+/** Bỏ prefix GitHub Pages để so sánh pathname với route của chophim.wtf. */
+export function stripBasePath(path: string): string {
+  if (!basePath || !path.startsWith(basePath)) return path;
+  const rest = path.slice(basePath.length);
+  return rest || "/";
+}
+
 /** Thêm basePath vào một đường dẫn nội bộ bắt đầu bằng `/`. */
 export function withBasePath(path: string): string {
   if (!path.startsWith("/") || path.startsWith("//") || !basePath) return path;

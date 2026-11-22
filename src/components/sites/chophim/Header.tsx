@@ -1,4 +1,7 @@
-import { withBasePath } from "@/lib/base-path";
+"use client";
+
+import { usePathname } from "next/navigation";
+import { stripBasePath, withBasePath } from "@/lib/base-path";
 import { moviesData } from "@/data";
 import type { MovieDetail } from "./detail-types";
 import { toCard } from "./movie-filter";
@@ -16,8 +19,21 @@ export function Header() {
   const dropdowns = home.header.dropdowns;
   const cards = Object.values(moviesData as unknown as Record<string, MovieDetail>).map(toCard);
 
+  // chophim.wtf dùng header trong suốt ở home/detail/watch/topic detail,
+  // và nền đen mờ ở các trang danh mục/tìm kiếm/chủ đề.
+  const pathname = stripBasePath((usePathname() ?? "/").replace(/\/$/, "") || "/");
+  const transparent =
+    pathname === "/" ||
+    pathname === "/phim-song-ngu" ||
+    /^\/phim\/[^/]+$/.test(pathname) ||
+    /^\/xem\/[^/]+$/.test(pathname) ||
+    /^\/chu-de\/[^/]+$/.test(pathname);
+  const headerClass = `fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+    transparent ? "bg-transparent backdrop-blur-none" : "bg-[#0a0a0f]/95 backdrop-blur-md"
+  }`;
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent backdrop-blur-none">
+    <header className={headerClass}>
       <div className="w-full px-2 lg:px-4 flex items-center justify-between h-[68px] lg:h-[76px] pt-1 lg:pt-2">
         {/* --- mobile: menu + logo + Search overlay (giống chophim.wtf) --- */}
         <MobileHeaderBar

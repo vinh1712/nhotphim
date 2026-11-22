@@ -1,4 +1,5 @@
 // Bộ lọc / tìm kiếm / phân trang dùng chung cho các trang danh mục.
+import { taxonomiesData } from "@/data";
 import type { MovieDetail } from "./detail-types";
 
 export const PAGE_SIZE = 16;
@@ -23,6 +24,7 @@ export type CardMovie = Pick<
   | "rating"
   | "createdAt"
   | "lang"
+  | "director"
 >;
 
 export function toCard(m: MovieDetail): CardMovie {
@@ -44,6 +46,7 @@ export function toCard(m: MovieDetail): CardMovie {
     rating: m.rating,
     createdAt: m.createdAt,
     lang: m.lang,
+    director: m.director,
   };
 }
 
@@ -97,6 +100,52 @@ export const GENRE_ALIAS: Record<string, string> = {
 
 export const resolveGenreSlug = (slug: string) => GENRE_ALIAS[slug] ?? slug;
 
+/* ── Ánh xạ slug/tên query params như chophim.wtf ──────────────────────── */
+type Taxonomy = { type: string; name: string; slug: string };
+const taxonomies = taxonomiesData as unknown as Taxonomy[];
+
+function taxonomyName(type: string, slug: string): string {
+  return taxonomies.find((t) => t.type === type && t.slug === slug)?.name ?? slug;
+}
+
+function taxonomySlug(type: string, name: string): string {
+  const found = taxonomies.find((t) => t.type === type && t.name === name)?.slug;
+  if (found) return found;
+  return stripVn(name).replace(/\s+/g, "-");
+}
+
+export const countryNameFromSlug = (slug: string) => taxonomyName("country", slug);
+export const countrySlugFromName = (name: string) => taxonomySlug("country", name);
+export const genreNameFromSlug = (slug: string) => taxonomyName("category", resolveGenreSlug(slug));
+export const genreSlugFromName = (name: string) => taxonomySlug("category", name);
+
+/** Slug dùng trong DB đang lệch với slug source ở 2 thể loại (xem GENRE_ALIAS). */
+export function sourceGenreSlug(slug: string): string {
+  if (slug === "khoa-hoc-vt") return "khoa-hoc";
+  if (slug === "anime-hoat-hinh") return "hoat-hinh";
+  return slug;
+}
+
+export const LANGUAGE_OPTIONS = [
+  { label: "Tất cả", value: "" },
+  { label: "Phụ đề", value: "PD" },
+  { label: "Thuyết minh", value: "TM" },
+  { label: "Lồng tiếng", value: "LT" },
+] as const;
+
+export function languageLabel(value: string): string {
+  return LANGUAGE_OPTIONS.find((o) => o.value === value)?.label ?? "Tất cả";
+}
+
+export function languageValue(label: string): string {
+  return LANGUAGE_OPTIONS.find((o) => o.label === label)?.value ?? "";
+}
+
+export type SortFilter = "new" | "updated";
+export const sortQueryValue = (sort: SortFilter) => (sort === "updated" ? "mới cập nhật" : "mới nhất");
+export const sortFromQuery = (value: string | null): SortFilter =>
+  value === "updated" || stripVn(value ?? "").includes("cap nhat") ? "updated" : "new";
+
 /* ── Bộ lọc dùng chung cho trang danh mục / tìm kiếm ───────────────────── */
 /* Danh sách lấy nguyên từ trang chophim.wtf để khớp giao diện + hành vi. */
 
@@ -119,19 +168,91 @@ export const EMPTY_FILTERS: MovieFilters = {
   sort: "new",
 };
 
+/** Bộ lọc cố định của route (giống prop `lockedFilters` trong source). */
+export function lockedFiltersFromPath(pathname: string): Partial<MovieFilters> {
+  const p = pathname.replace(/\/$/, "") || "/";
+  if (p.startsWith("/quoc-gia/")) return { country: p.split("/").pop() ?? "" };
+  if (p === "/phim-le") return { type: "phim lẻ" };
+  if (p === "/phim-bo" || p === "/tv-shows") return { type: "phim bộ" };
+  if (p.startsWith("/the-loai/")) return { genres: [p.split("/").pop() ?? ""] };
+  if (p === "/hoat-hinh") return { genres: ["hoat-hinh"] };
+  return {};
+}
+
+/** Đọc query params theo đúng tên/source: country, type, genre, language, year, sort. */
+export function filtersFromParams(params: URLSearchParams, locked: Partial<MovieFilters> = {}): MovieFilters {
+  const genres = locked.genres?.length
+    ? locked.genres
+    : (params.get("genre") ?? "").split(",").filter(Boolean).slice(0, 5);
+  return {
+    country: locked.country || params.get("country") || "",
+    type: locked.type || params.get("type") || "",
+    genres,
+    lang: params.get("language") || "",
+    year: params.get("year") || "",
+    sort: sortFromQuery(params.get("sort")),
+  };
+}
+
+/** Copy nguyên COUNTRIES/GENRES từ source-044bbf185c899afc.js để khớp pill + query. */
 export const FILTER_GROUPS = {
   countries: [
-    "Trung Quốc", "Hàn Quốc", "Nhật Bản", "Thái Lan", "Âu Mỹ", "Đài Loan", "Hồng Kông", "Ấn Độ",
-    "Anh", "Pháp", "Canada", "Việt Nam", "Nga", "Philippines", "Úc", "Đức", "Tây Ban Nha", "Ý",
-    "Thổ Nhĩ Kỳ", "Indonesia", "Malaysia", "Brazil", "Hà Lan",
+    { value: "trung-quoc", label: "Trung Quốc" },
+    { value: "han-quoc", label: "Hàn Quốc" },
+    { value: "nhat-ban", label: "Nhật Bản" },
+    { value: "thai-lan", label: "Thái Lan" },
+    { value: "au-my", label: "Âu Mỹ" },
+    { value: "dai-loan", label: "Đài Loan" },
+    { value: "hong-kong", label: "Hồng Kông" },
+    { value: "an-do", label: "Ấn Độ" },
+    { value: "anh", label: "Anh" },
+    { value: "phap", label: "Pháp" },
+    { value: "canada", label: "Canada" },
+    { value: "viet-nam", label: "Việt Nam" },
+    { value: "nga", label: "Nga" },
+    { value: "philippines", label: "Philippines" },
+    { value: "uc", label: "Úc" },
+    { value: "duc", label: "Đức" },
+    { value: "tay-ban-nha", label: "Tây Ban Nha" },
+    { value: "y", label: "Ý" },
+    { value: "tho-nhi-ky", label: "Thổ Nhĩ Kỳ" },
+    { value: "indonesia", label: "Indonesia" },
+    { value: "malaysia", label: "Malaysia" },
+    { value: "brazil", label: "Brazil" },
+    { value: "ha-lan", label: "Hà Lan" },
   ],
-  types: ["Phim lẻ", "Phim bộ"],
+  types: [
+    { value: "phim lẻ", label: "Phim lẻ" },
+    { value: "phim bộ", label: "Phim bộ" },
+  ],
   genres: [
-    "Hành Động", "Tình Cảm", "Hài Hước", "Cổ Trang", "Tâm Lý", "Hình Sự", "Chiến Tranh", "Thể Thao",
-    "Võ Thuật", "Viễn Tưởng", "Phiêu Lưu", "Khoa Học", "Tài Liệu", "Kinh Dị", "Chính Kịch", "Bí Ẩn",
-    "Hoạt Hình", "Gia Đình", "Âm Nhạc", "Học Đường", "Lãng Mạn",
+    { value: "hanh-dong", label: "Hành Động" },
+    { value: "tinh-cam", label: "Tình Cảm" },
+    { value: "hai-huoc", label: "Hài Hước" },
+    { value: "co-trang", label: "Cổ Trang" },
+    { value: "tam-ly", label: "Tâm Lý" },
+    { value: "hinh-su", label: "Hình Sự" },
+    { value: "chien-tranh", label: "Chiến Tranh" },
+    { value: "the-thao", label: "Thể Thao" },
+    { value: "vo-thuat", label: "Võ Thuật" },
+    { value: "vien-tuong", label: "Viễn Tưởng" },
+    { value: "phieu-luu", label: "Phiêu Lưu" },
+    { value: "khoa-hoc", label: "Khoa Học" },
+    { value: "tai-lieu", label: "Tài Liệu" },
+    { value: "kinh-di", label: "Kinh Dị" },
+    { value: "chinh-kich", label: "Chính Kịch" },
+    { value: "bi-an", label: "Bí Ẩn" },
+    { value: "hoat-hinh", label: "Hoạt Hình" },
+    { value: "gia-dinh", label: "Gia Đình" },
+    { value: "am-nhac", label: "Âm Nhạc" },
+    { value: "hoc-duong", label: "Học Đường" },
+    { value: "lang-man", label: "Lãng Mạn" },
   ],
-  langs: ["Phụ đề", "Thuyết minh", "Lồng tiếng"],
+  langs: [
+    { value: "PD", label: "Phụ đề" },
+    { value: "TM", label: "Thuyết minh" },
+    { value: "LT", label: "Lồng tiếng" },
+  ],
   years: ["2026", "2025", "2024", "2023", "2022", "2021", "2020"],
   sorts: [
     { value: "new", label: "Mới nhất" },
@@ -163,25 +284,40 @@ function matchesLang(lang: string, filter: string): boolean {
 
 export function applyFilters<T extends CardMovie>(movies: T[], f: MovieFilters): T[] {
   const names = nameMaps(movies);
+  const countryLabel = f.country ? countryNameFromSlug(f.country) : "";
+  const genreFilters = f.genres.map((genre) => ({
+    raw: genre,
+    slug: resolveGenreSlug(genre),
+    label: genreNameFromSlug(genre),
+  }));
+  const langFilter =
+    f.lang && LANGUAGE_OPTIONS.some((o) => o.value === f.lang) ? languageLabel(f.lang) : f.lang;
+
   const result = movies.filter((m) => {
     if (f.country) {
-      const byName = (m.countries ?? []).includes(f.country);
-      const bySlug = names.countries.get(m.countrySlug ?? "") === f.country;
+      const byName =
+        (m.countries ?? []).includes(countryLabel) || (m.countries ?? []).includes(f.country);
+      const bySlug =
+        m.countrySlug === f.country || names.countries.get(m.countrySlug ?? "") === countryLabel;
       if (!byName && !bySlug) return false;
     }
     if (f.type) {
       const label = m.type === "movie" ? "Phim lẻ" : "Phim bộ";
-      if (label !== f.type) return false;
+      const normalized = f.type === "movie" ? "Phim lẻ" : f.type === "series" ? "Phim bộ" : f.type;
+      if (label !== normalized) return false;
     }
-    if (f.genres.length > 0) {
-      const matchesGenre = f.genres.some((genre) => {
-        const byName = (m.genres ?? []).includes(genre);
-        const bySlug = (m.genreSlugs ?? []).some((slug) => names.genres.get(slug) === genre);
-        return byName || bySlug;
-      });
+    if (genreFilters.length > 0) {
+      const matchesGenre = genreFilters.some(({ raw, slug, label }) =>
+        (m.genreSlugs ?? []).includes(slug) ||
+        (m.genreSlugs ?? []).includes(raw) ||
+        (m.genres ?? []).includes(label) ||
+        (m.genres ?? []).includes(raw) ||
+        (m.genreSlugs ?? []).some((s) => names.genres.get(s) === label) ||
+        (m.genreSlugs ?? []).some((s) => names.genres.get(s) === raw)
+      );
       if (!matchesGenre) return false;
     }
-    if (f.lang && !matchesLang(m.lang, f.lang)) return false;
+    if (f.lang && !matchesLang(m.lang, langFilter)) return false;
     if (f.year && String(m.year ?? "") !== f.year) return false;
     return true;
   });

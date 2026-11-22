@@ -3,7 +3,6 @@
 import { withBasePath } from "@/lib/base-path";
 import { getList, toggleList } from "@/lib/user-library";
 import { useEffect, useState } from "react";
-import { useMotionPaused } from "@/lib/use-motion-paused";
 import { home, fillStyle } from "./types";
 import { IconPlay, IconHeartSolid, IconInfo, IconChevronRight } from "./icons";
 
@@ -239,13 +238,8 @@ export function AnimeSection() {
     setFavoriteSlugs((prev) => (next ? [...prev, s.slug] : prev.filter((x) => x !== s.slug)));
   };
 
-  const motionPaused = useMotionPaused();
-  useEffect(() => {
-    if (motionPaused || slides.length <= 1) return;
-    const t = setInterval(() => setActive((a) => (a + 1) % slides.length), 5000);
-    return () => clearInterval(t);
-  }, [slides.length, motionPaused]);
-
+  // source-8b30b385ec3796ef.js: Swiper anime chỉ có EffectFade + grabCursor,
+  // không truyền autoplay. Slide đổi khi bấm thumbnail/dot hoặc kéo.
   return (
     <section>
       <div className="w-full mt-6 mb-12">
@@ -306,8 +300,23 @@ export function AnimeSection() {
             </div>
           </div>
 
-          {/* dải thumbnail chọn phim */}
-          <div className="flex relative z-30 -mt-8 lg:-mt-10 px-10 justify-center overflow-x-auto scrollbar-hide snap-x items-end anime-mask-fade py-2">
+          {/* mobile: chấm tròn như source (!desktop) */}
+          <div className="flex items-center justify-center gap-1.5 pt-3 pb-2 relative z-20 md:hidden">
+            {slides.map((s, i) => (
+              <button
+                key={s.slug}
+                type="button"
+                onClick={() => setActive(i)}
+                aria-label={`Go to slide ${i + 1}`}
+                className={`rounded-full transition-all duration-300 ${
+                  i === active ? "w-3 h-3 bg-[#FECF59]" : "w-2.5 h-2.5 bg-white/30"
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* desktop: dải thumbnail chọn phim */}
+          <div className="hidden md:flex relative z-30 -mt-8 lg:-mt-10 px-10 justify-center overflow-x-auto scrollbar-hide snap-x items-end anime-mask-fade py-2">
             <div className="flex gap-1.5 md:gap-2">
               {slides.map((s, i) => (
                 <button

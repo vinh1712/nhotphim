@@ -1,12 +1,17 @@
-import { withBasePath } from "@/lib/base-path";
-import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { withBasePath } from "@/lib/base-path";
 import { Header } from "@/components/sites/chophim/Header";
 import { Footer } from "@/components/sites/chophim/Footer";
-import { CategoryGrid } from "@/components/sites/chophim/CategoryPage";
+import { CategoryPage } from "@/components/sites/chophim/CategoryPage";
 import { allMovies } from "@/components/sites/chophim/category-route";
-import { newestFirst, toCard, resolveGenreSlug } from "@/components/sites/chophim/movie-filter";
+import {
+  newestFirst,
+  sourceGenreSlug,
+  toCard,
+  resolveGenreSlug,
+  type MovieFilters,
+} from "@/components/sites/chophim/movie-filter";
 import type { MovieDetail } from "@/components/sites/chophim/detail-types";
 import { homeData } from "@/data";
 
@@ -45,7 +50,19 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   };
 }
 
-/** Lọc theo baseFilters của chủ đề */
+/** Bộ lọc cố định của chủ đề — truyền vào CategoryPage giống prop lockedFilters của source. */
+const TOPIC_LOCKED: Record<string, Partial<MovieFilters>> = Object.fromEntries(
+  topics.map((t) => [
+    t.slug,
+    {
+      ...(t.baseFilters.country ? { country: t.baseFilters.country } : {}),
+      ...(t.baseFilters.type ? { type: t.baseFilters.type } : {}),
+      ...(t.baseFilters.genre ? { genres: [sourceGenreSlug(t.baseFilters.genre)] } : {}),
+    },
+  ])
+);
+
+/** Lọc theo baseFilters của chủ đề (kể cả listSlug không có trong panel lọc). */
 function matchFilters(m: MovieDetail, f: Record<string, string>): boolean {
   if (f.country && m.countrySlug !== f.country) return false;
   if (f.type === "phim bộ" && m.type !== "series") return false;
@@ -63,14 +80,13 @@ export default async function ChuDeSlugPage({ params }: { params: Promise<Params
   const topic = findTopic(slug);
   if (!topic) notFound();
 
-  // Ưu tiên danh sách curated (giữ thứ tự), bỏ slug không có trong DB
+  // Ưu tiên danh sách curated (giữ thứ tự), bỏ slug không có trong DB.
   let list: MovieDetail[];
   if (topic.curatedSlugs && topic.curatedSlugs.length > 0) {
     const bySlug = new Map(allMovies.map((m) => [m.slug, m]));
     list = topic.curatedSlugs
       .map((s) => bySlug.get(s))
       .filter((m): m is MovieDetail => Boolean(m));
-    // curated không khớp DB nào → fallback bộ lọc cơ sở
     if (list.length === 0) {
       list = allMovies.filter((m) => matchFilters(m, topic.baseFilters));
     }
@@ -82,52 +98,38 @@ export default async function ChuDeSlugPage({ params }: { params: Promise<Params
 
   const cards = newestFirst(list).map(toCard);
 
+  const banner = (
+    <div className="relative overflow-hidden" style={{ backgroundColor: topic.accentColor }}>
+      <div
+        className="absolute -left-[6%] -top-[40%] h-[160%] w-[60%] rounded-[22px_50px_62px_22px] opacity-80"
+        style={{ backgroundColor: topic.surfaceColor }}
+      />
+      <div className="absolute -bottom-[30%] -right-[8%] h-[90%] w-[40%] rounded-[54px_18px_18px_60px] bg-black/[0.07]" />
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.055),rgba(255,255,255,0)_58%)]" />
+      <div className="relative mx-auto max-w-[1400px] px-4 py-7 sm:py-9">
+        <h1 className="max-w-3xl text-xl font-extrabold leading-tight text-white sm:text-2xl lg:text-[28px]">
+          {topic.title}
+        </h1>
+        <p className="mt-2 max-w-3xl text-[13px] leading-relaxed text-white/85 sm:text-[14px]">
+          {topic.description}
+        </p>
+      </div>
+    </div>
+  );
+
   return (
     <>
       <Header />
-      <main className="flex-1 pt-16">
-        {/* banner chủ đề */}
-        <div className="relative overflow-hidden" style={{ backgroundColor: topic.accentColor }}>
-          <div
-            className="absolute -left-[6%] -top-[40%] h-[160%] w-[60%] rounded-[22px_50px_62px_22px] opacity-80"
-            style={{ backgroundColor: topic.surfaceColor }}
-          />
-          <div className="absolute -bottom-[30%] -right-[8%] h-[90%] w-[40%] rounded-[54px_18px_18px_60px] bg-black/[0.07]" />
-          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.055),rgba(255,255,255,0)_58%)]" />
-          <div className="relative max-w-[1400px] mx-auto px-4 py-7 sm:py-9">
-            <h1 className="text-white text-xl sm:text-2xl lg:text-[28px] font-extrabold leading-tight max-w-3xl">
-              {topic.title}
-            </h1>
-            <p className="text-white/85 text-[13px] sm:text-[14px] mt-2 max-w-3xl leading-relaxed">
-              {topic.description}
-            </p>
-          </div>
-        </div>
-
-        <div className="max-w-[1400px] mx-auto px-4 py-8">
-          <div className="mb-8 font-sans">
-            <button className="flex items-center gap-2 text-[15px] font-semibold text-text-primary hover:text-white transition-colors mb-4">
-              <svg className="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-                />
-              </svg>
-              <span>Bộ lọc</span>
-            </button>
-          </div>
-
-          <Suspense fallback={null}>
-            <CategoryGrid
-              movies={cards}
-              basePath={withBasePath(`/chu-de/${slug}`)}
-              emptyText={`Chưa có phim trong chủ đề ${topic.title}.`}
-            />
-          </Suspense>
-        </div>
-      </main>
+      <CategoryPage
+        title={topic.title}
+        movies={cards}
+        basePath={withBasePath(`/chu-de/${slug}`)}
+        emptyText={`Chưa có phim trong chủ đề ${topic.title}.`}
+        lockedFilters={TOPIC_LOCKED[slug] ?? {}}
+        hideTitle
+        mainClassName="flex-1"
+        banner={banner}
+      />
       <Footer />
     </>
   );
