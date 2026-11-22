@@ -1,7 +1,8 @@
+import { withBasePath } from "@/lib/base-path";
 import { home } from "./types";
 
-const LOGO_384 = "/sites/chophim/0ec7eba077af57ab.png";
-const LOGO_640 = "/sites/chophim/56983f90e6a3c741.png";
+const LOGO_384 = withBasePath("/sites/chophim/0ec7eba077af57ab.png");
+const LOGO_640 = withBasePath("/sites/chophim/56983f90e6a3c741.png");
 
 const DROPDOWN_W = ["w-[480px]", "w-[400px]", "w-[200px]"];
 
@@ -19,7 +20,7 @@ export function Header() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <a className="flex items-center shrink-0" href="/">
+          <a className="flex items-center shrink-0" href={withBasePath("/")}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img alt="ChoPhim" width={160} height={45} decoding="async" className="h-10 w-auto object-contain" src={LOGO_384} />
           </a>
@@ -27,7 +28,7 @@ export function Header() {
 
         {/* --- mobile: search --- */}
         <div className="flex items-center gap-3 lg:hidden shrink-0">
-          <a className="p-2 text-text-secondary hover:text-text-primary" aria-label="Search" href="/tim-kiem">
+          <a className="p-2 text-text-secondary hover:text-text-primary" aria-label="Search" href={withBasePath("/tim-kiem")}>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
@@ -37,7 +38,7 @@ export function Header() {
         {/* --- desktop --- */}
         <div className="hidden lg:flex items-center w-full justify-between h-full">
           <div className="flex items-center h-full flex-1 min-w-0">
-            <a className="flex items-center gap-2 shrink-0 pr-1 xl:pr-3" href="/">
+            <a className="flex items-center gap-2 shrink-0 pr-1 xl:pr-3" href={withBasePath("/")}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img alt="ChoPhim" loading="lazy" width={200} height={60} decoding="async" className="h-10 xl:h-14 w-auto object-contain" src={LOGO_640} />
             </a>
@@ -46,7 +47,7 @@ export function Header() {
                 <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/60 pointer-events-none z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-                <form action="/tim-kiem" method="get" className="w-full">
+                <form action={withBasePath("/tim-kiem")} method="get" className="w-full">
                   <input
                     placeholder="Tìm kiếm phim, diễn viên"
                     type="text"
@@ -95,7 +96,7 @@ export function Header() {
           </div>
 
           <div className="ml-2 xl:ml-auto flex items-center gap-2 xl:gap-4 shrink-0">
-            <a className="hidden xl:flex items-center gap-2.5 py-1 px-2 hover:opacity-80 transition-opacity cursor-pointer" href="/tai-ung-dung">
+            <a className="hidden xl:flex items-center gap-2.5 py-1 px-2 hover:opacity-80 transition-opacity cursor-pointer" href={withBasePath("/tai-ung-dung")}>
               <div className="relative w-8 h-8 flex items-center justify-center text-[#FFD166] shrink-0">
                 <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path fillRule="evenodd" clipRule="evenodd" d="M10.9998 16.8992C11.1655 16.8992 11.2998 16.7649 11.2998 16.5992V11.5982C11.2998 9.28322 13.1838 7.39922 15.4998 7.39922H18.7998C18.9238 7.39922 19.0446 7.41106 19.1616 7.43327C19.3745 7.47368 19.5998 7.32682 19.5998 7.11012V6.69922C19.5998 6.67022 19.5968 6.64022 19.5918 6.61222C19.2488 4.66722 17.4468 3.19922 15.4008 3.19922H6.79982C4.42882 3.19922 2.49982 5.12822 2.49982 7.49922V12.5982C2.49982 14.9692 4.42882 16.8992 6.79982 16.8992H8.24282L7.86182 19.2492H5.85982C5.44582 19.2492 5.10982 19.5852 5.10982 19.9992C5.10982 20.4132 5.44582 20.7492 5.85982 20.7492H10.7598C11.1738 20.7492 11.5098 20.4132 11.5098 19.9992C11.5098 19.5852 11.1738 19.2492 10.7598 19.2492H9.38082L9.76182 16.8992H10.9998Z" fill="currentColor" />
@@ -109,7 +110,7 @@ export function Header() {
             </a>
             <a
               className="flex justify-center items-center gap-1.5 h-9 xl:h-10 px-3 xl:px-4 bg-[#F2F4F7] hover:bg-white text-[#1c1c1c] rounded-full font-medium transition-colors text-[13px] xl:text-sm shadow-sm hover:shadow shrink-0"
-              href="/dang-nhap"
+              href={withBasePath("/dang-nhap")}
             >
               <svg className="w-4 h-4 xl:w-5 xl:h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />

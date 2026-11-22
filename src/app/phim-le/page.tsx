@@ -1,3 +1,4 @@
+import { withBasePath } from "@/lib/base-path";
 import type { Metadata } from "next";
 import { renderCategory } from "@/components/sites/chophim/category-route";
 
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 export default function PhimLePage() {
   return renderCategory({
     title: "Phim Lẻ",
-    basePath: "/phim-le",
+    basePath: withBasePath("/phim-le"),
     filter: (m) => m.type === "movie",
   });
 }

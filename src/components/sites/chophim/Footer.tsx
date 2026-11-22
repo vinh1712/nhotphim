@@ -1,23 +1,24 @@
-const LOGO_640 = "/sites/chophim/56983f90e6a3c741.png";
-const VN_FLAG = "/sites/chophim/46d51573b642dc37.svg";
+import { withBasePath } from "@/lib/base-path";
+const LOGO_640 = withBasePath("/sites/chophim/56983f90e6a3c741.png");
+const VN_FLAG = withBasePath("/sites/chophim/46d51573b642dc37.svg");
 
 const SOCIALS: { href: string; label: string; icon: string; size: number }[] = [
-  { href: "https://telegram.dog/chophim", label: "Telegram", icon: "/sites/chophim/659a62f126eec1fb.svg", size: 18 },
-  { href: "#", label: "Discord", icon: "/sites/chophim/a74ef964b69f0a52.svg", size: 18 },
-  { href: "#", label: "X", icon: "/sites/chophim/fca626aae2487b85.svg", size: 16 },
-  { href: "https://www.facebook.com/chophim.fun", label: "Facebook", icon: "/sites/chophim/c8ba75c44abe5e61.svg", size: 18 },
-  { href: "#", label: "TikTok", icon: "/sites/chophim/87ac6d8ce867ad36.svg", size: 18 },
-  { href: "#", label: "YouTube", icon: "/sites/chophim/b87cd8184d357ebb.svg", size: 18 },
-  { href: "https://www.threads.com/@chophim_fun", label: "Threads", icon: "/sites/chophim/9add8d6a49399db9.svg", size: 18 },
-  { href: "https://www.instagram.com/chophim_fun/", label: "Instagram", icon: "/sites/chophim/d1853b0887772a2e.svg", size: 18 },
+  { href: "https://telegram.dog/chophim", label: "Telegram", icon: withBasePath("/sites/chophim/659a62f126eec1fb.svg"), size: 18 },
+  { href: "#", label: "Discord", icon: withBasePath("/sites/chophim/a74ef964b69f0a52.svg"), size: 18 },
+  { href: "#", label: "X", icon: withBasePath("/sites/chophim/fca626aae2487b85.svg"), size: 16 },
+  { href: "https://www.facebook.com/chophim.fun", label: "Facebook", icon: withBasePath("/sites/chophim/c8ba75c44abe5e61.svg"), size: 18 },
+  { href: "#", label: "TikTok", icon: withBasePath("/sites/chophim/87ac6d8ce867ad36.svg"), size: 18 },
+  { href: "#", label: "YouTube", icon: withBasePath("/sites/chophim/b87cd8184d357ebb.svg"), size: 18 },
+  { href: "https://www.threads.com/@chophim_fun", label: "Threads", icon: withBasePath("/sites/chophim/9add8d6a49399db9.svg"), size: 18 },
+  { href: "https://www.instagram.com/chophim_fun/", label: "Instagram", icon: withBasePath("/sites/chophim/d1853b0887772a2e.svg"), size: 18 },
 ];
 
 const MENU = [
-  { label: "Hỏi-Đáp", href: "/hoi-dap" },
-  { label: "Chính sách bảo mật", href: "/chinh-sach-bao-mat" },
-  { label: "Điều khoản sử dụng", href: "/dieu-khoan-su-dung" },
-  { label: "Giới thiệu", href: "/gioi-thieu" },
-  { label: "Liên hệ", href: "/lien-he" },
+  { label: "Hỏi-Đáp", href: withBasePath("/hoi-dap") },
+  { label: "Chính sách bảo mật", href: withBasePath("/chinh-sach-bao-mat") },
+  { label: "Điều khoản sử dụng", href: withBasePath("/dieu-khoan-su-dung") },
+  { label: "Giới thiệu", href: withBasePath("/gioi-thieu") },
+  { label: "Liên hệ", href: withBasePath("/lien-he") },
 ];
 
 const FRIENDS = ["MotChill", "RoPhim", "PhimMoi", "GhienPhim", "MotChillTv"];
@@ -46,7 +47,7 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col md:flex-row md:items-center pt-2 pb-6 gap-8 md:gap-8">
-          <a className="inline-block shrink-0 mx-auto md:mx-0" href="/">
+          <a className="inline-block shrink-0 mx-auto md:mx-0" href={withBasePath("/")}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               alt="Chợ Phim"
@@ -100,7 +101,7 @@ export function Footer() {
             <a
               key={f}
               className="text-[14px] text-white/70 hover:text-yellow-400 transition-colors"
-              href="/"
+              href={withBasePath("/")}
             >
               {f}
             </a>

@@ -1,3 +1,4 @@
+import { withBasePath } from "@/lib/base-path";
 import type { Metadata } from "next";
 import { renderCategory } from "@/components/sites/chophim/category-route";
 
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 export default function PhimSongNguPage() {
   return renderCategory({
     title: "Phim Song Ngữ",
-    basePath: "/phim-song-ngu",
+    basePath: withBasePath("/phim-song-ngu"),
     filter: (m) => m.lang !== "Vietsub",
     emptyText: "Chưa có phim song ngữ.",
   });

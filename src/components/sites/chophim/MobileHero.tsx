@@ -1,5 +1,6 @@
 "use client";
 
+import { withBasePath } from "@/lib/base-path";
 // Hero bản điện thoại — dựng lại theo giao diện mobile của chophim.wtf (đo ở 390×844):
 // section nền tối + backdrop blur, hàng pill Đề xuất/Phim Bộ/Phim Lẻ, coverflow poster,
 // tiêu đề chữ, 2 nút, badges, mô tả, dots và vuốt ngang để đổi phim.
@@ -21,9 +22,9 @@ function norm(v: number, n: number) {
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 
 const PILLS = [
-  { key: "de-xuat", label: "Đề xuất", href: "/" },
-  { key: "phim-bo", label: "Phim Bộ", href: "/phim-bo" },
-  { key: "phim-le", label: "Phim Lẻ", href: "/phim-le" },
+  { key: "de-xuat", label: "Đề xuất", href: withBasePath("/") },
+  { key: "phim-bo", label: "Phim Bộ", href: withBasePath("/phim-bo") },
+  { key: "phim-le", label: "Phim Lẻ", href: withBasePath("/phim-le") },
 ];
 
 export function MobileHero() {

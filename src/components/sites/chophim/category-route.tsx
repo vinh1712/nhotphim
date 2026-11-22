@@ -4,9 +4,9 @@ import { Footer } from "./Footer";
 import { CategoryPage } from "./CategoryPage";
 import { newestFirst, toCard } from "./movie-filter";
 import type { MovieDetail } from "./detail-types";
-import moviesJson from "@/data/movies.json";
+import { moviesData } from "@/data";
 
-export const allMovies: MovieDetail[] = Object.values(moviesJson as unknown as Record<string, MovieDetail>);
+export const allMovies: MovieDetail[] = Object.values(moviesData as unknown as Record<string, MovieDetail>);
 
 /** Danh sách đã sắp xếp mới nhất trước, thu gọn về dữ liệu card */
 export function cardList(filter: (m: MovieDetail) => boolean) {

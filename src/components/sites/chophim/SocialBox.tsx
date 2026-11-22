@@ -1,3 +1,4 @@
+import { withBasePath } from "@/lib/base-path";
 import { home, fillStyle, type CommentItem, type RankRow } from "./types";
 import {
   FlameCustom,
@@ -66,7 +67,7 @@ function GenderIcon({ gender }: { gender: string | null }) {
 function CommentCard({ c }: { c: CommentItem }) {
   const premium = c.user.subscriptionTier === "premium";
   const admin = c.user.role === "admin";
-  const href = `/phim/${c.movieSlug}#comment-${c.id}`;
+  const href = withBasePath(`/phim/${c.movieSlug}#comment-${c.id}`);
 
   return (
     <div className="shrink-0 !w-[260px] sm:!w-[280px] lg:!w-[290px] snap-start">
@@ -187,7 +188,7 @@ const GENRE_CLS = [
 ];
 
 function RankRowLink({ r, i, genres = false }: { r: RankRow; i: number; genres?: boolean }) {
-  const href = genres ? `/the-loai/${r.slug}` : `/phim/${r.slug}`;
+  const href = genres ? withBasePath(`/the-loai/${r.slug}`) : withBasePath(`/phim/${r.slug}`);
   return (
     <a
       className="flex items-center gap-2.5 px-1 h-[52px] rounded-lg hover:bg-white/[0.04] transition-colors group"

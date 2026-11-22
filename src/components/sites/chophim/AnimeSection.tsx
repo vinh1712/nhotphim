@@ -1,5 +1,6 @@
 "use client";
 
+import { withBasePath } from "@/lib/base-path";
 import { useEffect, useState } from "react";
 import { home, fillStyle } from "./types";
 import { IconPlay, IconHeartSolid, IconInfo, IconChevronRight } from "./icons";
@@ -90,7 +91,7 @@ function DeskSlide({ s, active }: { s: ASlide; active: boolean }) {
                 <a
                   className="anime-play-btn w-16 h-16 text-[#0f1115] rounded-full flex items-center justify-center transition-transform hover:scale-105 shadow-[0_0_15px_rgba(254,207,89,0.5)] shrink-0"
                   title="Xem Ngay"
-                  href={`/xem/${s.slug}`}
+                  href={withBasePath(`/xem/${s.slug}`)}
                 >
                   <IconPlay className="relative w-12 h-12 text-[#0f1115]" />
                 </a>
@@ -105,7 +106,7 @@ function DeskSlide({ s, active }: { s: ASlide; active: boolean }) {
                   <a
                     className="group/link w-20 h-full flex items-center justify-center transition-colors text-white"
                     title="Chi tiết phim"
-                    href={`/phim/${s.slug}`}
+                    href={withBasePath(`/phim/${s.slug}`)}
                   >
                     <IconInfo className="w-7 h-7 text-[#0f1115] fill-white group-hover/link:fill-[#FECF59] [&>circle]:stroke-white group-hover/link:[&>circle]:stroke-[#FECF59] transition-all" />
                   </a>
@@ -184,7 +185,7 @@ function MobSlide({ s, active }: { s: ASlide; active: boolean }) {
           <a
             className="absolute inset-0 z-50 pointer-events-none"
             title="Chi tiết phim"
-            href={`/phim/${s.slug}`}
+            href={withBasePath(`/phim/${s.slug}`)}
           />
         </div>
       </div>
@@ -207,7 +208,7 @@ export function AnimeSection() {
   return (
     <section>
       <div className="w-full mt-6 mb-12">
-        <a className="inline-flex items-center gap-2 mb-6 group cursor-pointer" href="/hoat-hinh">
+        <a className="inline-flex items-center gap-2 mb-6 group cursor-pointer" href={withBasePath("/hoat-hinh")}>
           <h2 className="text-2xl md:text-3xl font-bold text-white group-hover:text-accent transition-colors">
             Thế giới Anime
           </h2>

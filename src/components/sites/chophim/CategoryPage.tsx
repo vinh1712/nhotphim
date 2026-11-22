@@ -1,5 +1,6 @@
 "use client";
 
+import { withBasePath } from "@/lib/base-path";
 // Trang danh mục / tìm kiếm: tiêu đề + nút Bộ lọc + lưới poster + phân trang.
 // Số trang đọc từ ?page= ở client để page vẫn build được thành HTML tĩnh (output: "export").
 import { Suspense } from "react";
@@ -13,7 +14,7 @@ const CARD_BOTTOM_CLS =
 
 function toItem(m: CardMovie): MovieItem {
   return {
-    href: `/phim/${m.slug}`,
+    href: withBasePath(`/phim/${m.slug}`),
     img: m.poster || m.backdrop,
     alt: m.title,
     title: m.title,
@@ -31,7 +32,7 @@ export function MovieCard({ m }: { m: CardMovie }) {
   const item = toItem(m);
   return (
     <div className="relative movie-card-wrapper">
-      <a className="movie-card block group" href={`/phim/${m.slug}`}>
+      <a className="movie-card block group" href={withBasePath(`/phim/${m.slug}`)}>
         <div className="relative rounded-lg overflow-hidden bg-bg-card aspect-[2/3] ring-1 ring-white/5 shadow-md flex items-center justify-center">
           <svg className="absolute w-12 h-12 text-white/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path

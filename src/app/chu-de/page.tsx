@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Header } from "@/components/sites/chophim/Header";
 import { Footer } from "@/components/sites/chophim/Footer";
 import { IconChevronRight } from "@/components/sites/chophim/icons";
-import homeJson from "@/data/home.json";
+import { homeData } from "@/data";
 
 type TopicFull = {
   slug: string;
@@ -13,7 +13,7 @@ type TopicFull = {
   surfaceColor: string;
 };
 
-const topics = (homeJson as unknown as { topicsFull: TopicFull[] }).topicsFull;
+const topics = (homeData as unknown as { topicsFull: TopicFull[] }).topicsFull;
 
 export const metadata: Metadata = {
   title: "Chủ đề | Chợ Phim",

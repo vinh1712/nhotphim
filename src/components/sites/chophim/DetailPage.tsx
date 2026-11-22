@@ -1,5 +1,6 @@
 "use client";
 
+import { withBasePath } from "@/lib/base-path";
 import { useState } from "react";
 import { fillStyle } from "./types";
 import {
@@ -377,7 +378,7 @@ export function DetailPage({
             <div className="flex flex-col md:flex-row justify-center md:justify-start items-center gap-3 mb-8 w-full">
               <a
                 className="inline-flex justify-center items-center gap-2 md:gap-2.5 px-6 md:px-8 py-3.5 md:py-3 text-[#0f1115] text-[15px] md:text-base font-bold rounded-full transition-all hover:scale-105 shadow-lg shadow-[rgba(254,207,89,0.3)] w-[85%] max-w-[340px] md:max-w-none md:w-auto min-w-[140px]"
-                href={`/xem/${movie.slug}`}
+                href={withBasePath(`/xem/${movie.slug}`)}
                 style={{ background: "linear-gradient(39deg, rgb(254, 207, 89), rgb(255, 241, 204)) rgb(254, 207, 89)" }}
               >
                 <IconPlay className="w-5 h-5 md:w-6 md:h-6 shrink-0" />
@@ -498,7 +499,7 @@ export function DetailPage({
                             <a
                               key={`${server.name}-${i}`}
                               className="group flex items-center justify-center gap-1.5 rounded-lg border-2 border-transparent bg-[#191b24] px-2 py-2 text-[13px] text-white/90 shadow-sm transition-colors hover:border-[#FFD166] hover:text-[#FFD166]"
-                              href={`/xem/${movie.slug}#tap=tap-${i + 1}&sv=${enc(server.name)}&channel=0&server_id=${serverIdx}`}
+                              href={withBasePath(`/xem/${movie.slug}#tap=tap-${i + 1}&sv=${enc(server.name)}&channel=0&server_id=${serverIdx}`)}
                             >
                               <IconPlaySmall className="h-3 w-3 shrink-0 fill-white/80 group-hover:fill-[#FFD166]" />
                               {ep.label}
@@ -537,7 +538,7 @@ export function DetailPage({
                         ) : (
                           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
                             {suggestions.map((s) => (
-                              <a key={s.slug} href={`/phim/${s.slug}`} className="group block">
+                              <a key={s.slug} href={withBasePath(`/phim/${s.slug}`)} className="group block">
                                 <div className="relative aspect-[2/3] rounded-lg overflow-hidden bg-bg-card ring-1 ring-white/5 flex items-center justify-center">
                                   <svg className="absolute w-10 h-10 text-white/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />

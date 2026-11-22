@@ -1,3 +1,4 @@
+import { withBasePath } from "@/lib/base-path";
 import type { Metadata } from "next";
 import { renderCategory } from "@/components/sites/chophim/category-route";
 
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 export default function PhimSapChieuPage() {
   return renderCategory({
     title: "Phim Sắp Chiếu",
-    basePath: "/phim-sap-chieu",
+    basePath: withBasePath("/phim-sap-chieu"),
     filter: (m) => m.epstatus === "Sắp chiếu",
     emptyText: "Hiện chưa có phim sắp chiếu.",
   });

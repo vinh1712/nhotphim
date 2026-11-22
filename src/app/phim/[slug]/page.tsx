@@ -1,14 +1,14 @@
+import { withBasePath } from "@/lib/base-path";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/sites/chophim/Header";
 import { Footer } from "@/components/sites/chophim/Footer";
 import { DetailPage } from "@/components/sites/chophim/DetailPage";
 import type { MovieDetail, Suggestion } from "@/components/sites/chophim/detail-types";
-import moviesJson from "@/data/movies.json";
-import commentsJson from "@/data/comments.json";
+import { commentsData, moviesData } from "@/data";
 
-const movies = moviesJson as unknown as Record<string, MovieDetail>;
-const comments = commentsJson as unknown as Record<string, import("@/components/sites/chophim/detail-types").DetailComment[]>;
+const movies = moviesData as unknown as Record<string, MovieDetail>;
+const comments = commentsData as unknown as Record<string, import("@/components/sites/chophim/detail-types").DetailComment[]>;
 
 type Params = { slug: string };
 
@@ -60,8 +60,8 @@ function jsonLd(movie: MovieDetail) {
   return {
     "@context": "https://schema.org",
     "@type": movie.type === "movie" ? "Movie" : "TVSeries",
-    "@id": `/phim/${movie.slug}#title`,
-    url: `/phim/${movie.slug}`,
+    "@id": withBasePath(`/phim/${movie.slug}#title`),
+    url: withBasePath(`/phim/${movie.slug}`),
     name: movie.title,
     ...(movie.origin ? { alternateName: movie.origin } : {}),
     description: descBits.join(""),
@@ -70,7 +70,7 @@ function jsonLd(movie: MovieDetail) {
     ...(movie.year ? { copyrightYear: movie.year } : {}),
     ...(movie.genres.length ? { genre: movie.genres } : {}),
     ...(movie.countries.length ? { countryOfOrigin: movie.countries.map((c) => ({ "@type": "Country", name: c })) } : {}),
-    mainEntityOfPage: { "@type": "WebPage", "@id": `/phim/${movie.slug}` },
+    mainEntityOfPage: { "@type": "WebPage", "@id": withBasePath(`/phim/${movie.slug}`) },
   };
 }
 

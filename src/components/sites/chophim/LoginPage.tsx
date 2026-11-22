@@ -1,5 +1,6 @@
 "use client";
 
+import { withBasePath } from "@/lib/base-path";
 import { useState } from "react";
 
 type Mode = "login" | "register";
@@ -145,11 +146,11 @@ export function LoginPage() {
 
           <p className="text-center text-[13px] text-text-muted mt-5">
             Bằng việc tiếp tục, bạn đồng ý với{" "}
-            <a href="/dieu-khoan-su-dung" className="text-[#FFD166] hover:underline">
+            <a href={withBasePath("/dieu-khoan-su-dung")} className="text-[#FFD166] hover:underline">
               Điều khoản sử dụng
             </a>{" "}
             và{" "}
-            <a href="/chinh-sach-bao-mat" className="text-[#FFD166] hover:underline">
+            <a href={withBasePath("/chinh-sach-bao-mat")} className="text-[#FFD166] hover:underline">
               Chính sách bảo mật
             </a>
             .

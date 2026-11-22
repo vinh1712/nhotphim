@@ -1,11 +1,12 @@
+import { withBasePath } from "@/lib/base-path";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { renderCategory } from "@/components/sites/chophim/category-route";
 import { resolveGenreSlug } from "@/components/sites/chophim/movie-filter";
-import taxonomiesJson from "@/data/taxonomies.json";
+import { taxonomiesData } from "@/data";
 
 type Taxonomy = { type: string; slug: string; name: string };
-const taxonomies = taxonomiesJson as unknown as Taxonomy[];
+const taxonomies = taxonomiesData as unknown as Taxonomy[];
 const categories = taxonomies.filter((t) => t.type === "category");
 
 /** Slug thể loại cũ từ trang chủ → taxonomy hiện tại */
@@ -46,7 +47,7 @@ export default async function TheLoaiPage({ params }: { params: Promise<Params> 
 
   return renderCategory({
     title: cat.name,
-    basePath: `/the-loai/${slug}`,
+    basePath: withBasePath(`/the-loai/${slug}`),
     filter: (m) => (m.genreSlugs ?? []).includes(resolved),
     emptyText: `Chưa có phim thể loại ${cat.name}.`,
   });

@@ -1,3 +1,4 @@
+import { withBasePath } from "@/lib/base-path";
 // Trang danh sách rỗng với trạng thái "chưa có dữ liệu" + gợi ý liên quan
 import { Header } from "./Header";
 import { Footer } from "./Footer";
@@ -57,13 +58,13 @@ export function EmptyListPage({
             )}
             <div className="flex items-center justify-center gap-3 mt-6">
               <a
-                href="/"
+                href={withBasePath("/")}
                 className="px-5 py-2.5 rounded-full bg-[#FFD166] text-[#14161f] text-[14px] font-bold hover:bg-[#ffe09a] transition-colors"
               >
                 Về trang chủ
               </a>
               <a
-                href="/tim-kiem"
+                href={withBasePath("/tim-kiem")}
                 className="px-5 py-2.5 rounded-full bg-white/10 text-white text-[14px] font-medium hover:bg-white/20 transition-colors"
               >
                 Tìm kiếm phim

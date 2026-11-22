@@ -1,6 +1,7 @@
+import { withBasePath } from "@/lib/base-path";
 import { IconLogIn, IconHistory, IconMonitor, IconHeart, IconListPlus } from "./icons";
 
-const XEM_TIEP = "/sites/chophim/d35ffca76367b37b.webp";
+const XEM_TIEP = withBasePath("/sites/chophim/d35ffca76367b37b.webp");
 
 const FEATURES = [
   { icon: <IconHistory className="w-3.5 h-3.5 text-[#FFD166]" />, label: "Lưu tiến trình xem" },

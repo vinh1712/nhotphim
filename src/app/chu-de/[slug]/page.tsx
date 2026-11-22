@@ -1,3 +1,4 @@
+import { withBasePath } from "@/lib/base-path";
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -7,7 +8,7 @@ import { CategoryGrid } from "@/components/sites/chophim/CategoryPage";
 import { allMovies } from "@/components/sites/chophim/category-route";
 import { newestFirst, toCard, resolveGenreSlug } from "@/components/sites/chophim/movie-filter";
 import type { MovieDetail } from "@/components/sites/chophim/detail-types";
-import homeJson from "@/data/home.json";
+import { homeData } from "@/data";
 
 type TopicFull = {
   slug: string;
@@ -20,7 +21,7 @@ type TopicFull = {
   curatedSlugs?: string[];
 };
 
-const topics = (homeJson as unknown as { topicsFull: TopicFull[] }).topicsFull;
+const topics = (homeData as unknown as { topicsFull: TopicFull[] }).topicsFull;
 
 type Params = { slug: string };
 
@@ -121,7 +122,7 @@ export default async function ChuDeSlugPage({ params }: { params: Promise<Params
           <Suspense fallback={null}>
             <CategoryGrid
               movies={cards}
-              basePath={`/chu-de/${slug}`}
+              basePath={withBasePath(`/chu-de/${slug}`)}
               emptyText={`Chưa có phim trong chủ đề ${topic.title}.`}
             />
           </Suspense>

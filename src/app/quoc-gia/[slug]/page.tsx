@@ -1,10 +1,11 @@
+import { withBasePath } from "@/lib/base-path";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { renderCategory } from "@/components/sites/chophim/category-route";
-import taxonomiesJson from "@/data/taxonomies.json";
+import { taxonomiesData } from "@/data";
 
 type Taxonomy = { type: string; slug: string; name: string };
-const taxonomies = taxonomiesJson as unknown as Taxonomy[];
+const taxonomies = taxonomiesData as unknown as Taxonomy[];
 const countries = taxonomies.filter((t) => t.type === "country");
 
 /** Tên quốc gia cho các link cũ không có trong taxonomy */
@@ -56,7 +57,7 @@ export default async function QuocGiaPage({ params }: { params: Promise<Params> 
 
   return renderCategory({
     title: `Phim ${name}`,
-    basePath: `/quoc-gia/${slug}`,
+    basePath: withBasePath(`/quoc-gia/${slug}`),
     filter: (m) => m.countrySlug === slug,
     emptyText: `Chưa có phim ${name}.`,
   });

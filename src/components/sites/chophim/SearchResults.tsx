@@ -1,5 +1,6 @@
 "use client";
 
+import { withBasePath } from "@/lib/base-path";
 // Kết quả tìm kiếm: đọc ?keyword= ở client để trang vẫn build tĩnh được.
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
@@ -16,7 +17,7 @@ function Results({ movies }: { movies: CardMovie[] }) {
     <CategoryPage
       title={title}
       movies={results}
-      basePath="/tim-kiem"
+      basePath={withBasePath("/tim-kiem")}
       emptyText={
         keyword
           ? `Không tìm thấy phim nào khớp với "${keyword}". Thử từ khóa khác nhé.`

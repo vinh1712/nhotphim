@@ -1,4 +1,4 @@
-import homeJson from "@/data/home.json";
+import { homeData } from "@/data";
 
 export type Badge = { pos: "top" | "bottom"; text: string; cls: string };
 
@@ -90,7 +90,7 @@ export type RankRow = {
   count?: number;
 };
 
-type Raw = typeof homeJson;
+type Raw = typeof homeData;
 
 export type HomeData = {
   header: Raw["header"];
@@ -119,7 +119,7 @@ export type HomeData = {
   topicsFull: Raw["topicsFull"];
 };
 
-export const home = homeJson as unknown as HomeData;
+export const home = homeData as unknown as HomeData;
 
 /** style cho <img> phủ kín phần tử cha (giống data-nimg="fill" của Next) */
 export const fillStyle: React.CSSProperties = {

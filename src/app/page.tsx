@@ -1,3 +1,4 @@
+import { withBasePath } from "@/lib/base-path";
 import { home } from "@/components/sites/chophim/types";
 import { Header } from "@/components/sites/chophim/Header";
 import { Hero } from "@/components/sites/chophim/Hero";
@@ -39,13 +40,13 @@ export default function HomePage() {
 
           <PosterRow section={byId("S:8")} />
           <Top10Row section={byId("S:9")} />
-          <FeaturedRow section={byId("S:a")} href="/the-loai/kinh-di" />
-          <PosterRow section={byId("S:b")} viewAll={{ label: "Xem tất cả", href: "/phim-bo" }} />
+          <FeaturedRow section={byId("S:a")} href={withBasePath("/the-loai/kinh-di")} />
+          <PosterRow section={byId("S:b")} viewAll={{ label: "Xem tất cả", href: withBasePath("/phim-bo") }} />
           <PosterRow
             section={byId("S:c")}
-            viewAll={{ label: "Xem tất cả", href: "/phim-sap-chieu" }}
+            viewAll={{ label: "Xem tất cả", href: withBasePath("/phim-sap-chieu") }}
           />
-          <FeaturedRow section={byId("S:d")} href="/phim-chieu-rap" />
+          <FeaturedRow section={byId("S:d")} href={withBasePath("/phim-chieu-rap")} />
           <Top10Row section={byId("S:e")} />
           <AnimeSection />
         </div>

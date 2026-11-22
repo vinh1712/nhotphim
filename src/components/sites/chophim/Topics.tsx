@@ -1,3 +1,4 @@
+import { withBasePath } from "@/lib/base-path";
 import { home } from "./types";
 import { IconChevronRight } from "./icons";
 
@@ -23,7 +24,7 @@ export function Topics() {
                   {t.title}
                 </h3>
                 <span className="mt-1 hidden items-center gap-0.5 text-[10px] font-bold text-white/90 sm:mt-3 sm:inline-flex sm:gap-1.5 sm:text-[14px]">
-                  {t.href === "/chu-de" ? "Khám phá" : "Xem chủ đề"}
+                  {t.href === withBasePath("/chu-de") ? "Khám phá" : "Xem chủ đề"}
                   <IconChevronRight
                     className="h-2.5 w-2.5 transition-transform duration-300 group-hover:translate-x-0.5 sm:h-4 sm:w-4"
                     stroke={3}
