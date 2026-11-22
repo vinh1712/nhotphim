@@ -6,16 +6,16 @@ type Props = {
   pos: string;
   z: string;
   group: "slider" | "section";
-  /** Hiện mũi tên ngay trên mobile (desktop vẫn hiện khi hover như source). */
+  /** Luôn hiện mũi tên (kể cả mobile / bản ngang), không cần hover. */
   mobileVisible?: boolean;
 };
 
-/** Nút mũi tên trượt (hiện khi hover nhóm) — bấm để cuộn container có id tương ứng */
+/** Nút mũi tên trượt (mặc định hiện khi hover nhóm) — bấm để cuộn container có id tương ứng */
 export function SliderArrows({ id, pos, z, group, mobileVisible = false }: Props) {
   const hover = group === "section" ? "group-hover/section:opacity-100" : "group-hover/slider:opacity-100";
-  // max-md: giữ mũi tên luôn hiện trên điện thoại; từ md trở lên vẫn ẩn cho đến khi hover.
+  // Theo feedback: 2 carousel Bình Luận Mới / Song Ngữ phải thấy <> ngay cả khi xem ngang trên điện thoại.
   const visibility = mobileVisible
-    ? `flex opacity-0 ${hover} max-md:opacity-100`
+    ? `flex opacity-100`
     : `opacity-0 ${hover} hidden md:flex`;
 
   const scroll = (dir: 1 | -1) => {

@@ -2,7 +2,7 @@
 
 import { withBasePath } from "@/lib/base-path";
 import { getList, toggleList } from "@/lib/user-library";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { home, fillStyle } from "./types";
 import { IconPlay, IconHeartSolid, IconInfo, IconChevronRight } from "./icons";
 
@@ -211,9 +211,18 @@ function MobSlide({ s, active }: { s: ASlide; active: boolean }) {
 /* Section Thế giới Anime                                              */
 /* ------------------------------------------------------------------ */
 export function AnimeSection() {
-  const slides = home.anime.slides;
+  // Sắp theo thời gian ra mắt phim (mới nhất trước), giữ thứ tự gốc khi cùng năm.
+  const slides = [...home.anime.slides].sort((a, b) => (b.year || 0) - (a.year || 0));
+  const n = slides.length;
   const [active, setActive] = useState(0);
   const [favoriteSlugs, setFavoriteSlugs] = useState<string[]>([]);
+  const [hovered, setHovered] = useState(false);
+  const [autoStopped, setAutoStopped] = useState(false);
+  const [pageHidden, setPageHidden] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<{ x0: number; y0: number; dx: number; id: number; moved: boolean } | null>(null);
+  const swipedAt = useRef(0);
 
   useEffect(() => {
     const load = () => setFavoriteSlugs(getList("favorites").map((item) => item.slug));
@@ -221,6 +230,146 @@ export function AnimeSection() {
     window.addEventListener("storage", load);
     return () => window.removeEventListener("storage", load);
   }, []);
+
+  useEffect(() => {
+    const update = () => setPageHidden(document.visibilityState === "hidden");
+    update();
+    document.addEventListener("visibilitychange", update);
+    return () => document.removeEventListener("visibilitychange", update);
+  }, []);
+
+  // Tự chạy 5s như hero đầu trang: dừng khi hover / ẩn tab / người dùng đã tương tác.
+  useEffect(() => {
+    if (pageHidden || hovered || autoStopped || n <= 1) return;
+    const timer = window.setInterval(() => setActive((a) => (a + 1) % n), 5000);
+    return () => window.clearInterval(timer);
+  }, [n, pageHidden, hovered, autoStopped]);
+
+  const markInteracted = useCallback(() => setAutoStopped(true), []);
+
+  const go = useCallback(
+    (delta: number) => {
+      markInteracted();
+      swipedAt.current = Date.now();
+      setActive((a) => (a + delta + n) % n);
+    },
+    [markInteracted, n]
+  );
+
+  const selectSlide = useCallback(
+    (i: number) => {
+      markInteracted();
+      setActive(i);
+    },
+    [markInteracted]
+  );
+
+  // Vuốt ngang trên mobile: khoá hướng, ngang đổi phim, dọc để trang cuộn.
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    let x0 = 0;
+    let y0 = 0;
+    let lock: "h" | "v" | null = null;
+    let touching = false;
+    const start = (e: TouchEvent) => {
+      if (e.touches.length !== 1 || (e.target as HTMLElement | null)?.closest(".anime-thumbs")) {
+        lock = null;
+        touching = false;
+        return;
+      }
+      x0 = e.touches[0].clientX;
+      y0 = e.touches[0].clientY;
+      lock = null;
+      touching = true;
+    };
+    const move = (e: TouchEvent) => {
+      if (!touching || lock === "v") return;
+      const dx = e.touches[0].clientX - x0;
+      const dy = e.touches[0].clientY - y0;
+      if (lock === null) {
+        if (Math.abs(dx) < 4 && Math.abs(dy) < 4) return;
+        lock = Math.abs(dx) >= Math.abs(dy) ? "h" : "v";
+      }
+      if (lock === "h" && e.cancelable) e.preventDefault();
+    };
+    const end = (e: TouchEvent) => {
+      if (!touching) return;
+      touching = false;
+      const was = lock;
+      lock = null;
+      if (was !== "h") return;
+      const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) >= 40) go(dx < 0 ? 1 : -1);
+    };
+    el.addEventListener("touchstart", start, { passive: true });
+    el.addEventListener("touchmove", move, { passive: false });
+    el.addEventListener("touchend", end, { passive: true });
+    el.addEventListener("touchcancel", end, { passive: true });
+    return () => {
+      el.removeEventListener("touchstart", start);
+      el.removeEventListener("touchmove", move);
+      el.removeEventListener("touchend", end);
+      el.removeEventListener("touchcancel", end);
+    };
+  }, [go]);
+
+  // Kéo chuột trên desktop để đổi slide như hero đầu trang.
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const reset = () => {
+      dragRef.current = null;
+      setDragging(false);
+    };
+    const up = () => {
+      const d = dragRef.current;
+      if (!d) return reset();
+      const moved = d.moved;
+      const dx = d.dx;
+      reset();
+      if (moved && Math.abs(dx) >= 60) go(dx < 0 ? 1 : -1);
+    };
+    el.addEventListener("pointerup", up);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("blur", reset);
+    return () => {
+      el.removeEventListener("pointerup", up);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("blur", reset);
+    };
+  }, [go]);
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    markInteracted();
+    const t = e.target as HTMLElement;
+    if (t.closest("button, a, input, textarea, select, .anime-thumbs")) return;
+    dragRef.current = { x0: e.clientX, y0: e.clientY, dx: 0, id: e.pointerId, moved: false };
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    const d = dragRef.current;
+    if (!d || e.pointerId !== d.id) return;
+    const dx = e.clientX - d.x0;
+    const dy = e.clientY - d.y0;
+    if (!d.moved) {
+      if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(dy)) return;
+      d.moved = true;
+      setDragging(true);
+      try {
+        (e.currentTarget as HTMLElement).setPointerCapture(d.id);
+      } catch {
+        /* noop */
+      }
+    }
+    d.dx = dx;
+  };
+  const onClickCapture = (e: React.MouseEvent) => {
+    if (Date.now() - swipedAt.current < 350) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
 
   const toggleFavorite = (s: ASlide) => {
     const next = toggleList("favorites", {
@@ -232,8 +381,7 @@ export function AnimeSection() {
     setFavoriteSlugs((prev) => (next ? [...prev, s.slug] : prev.filter((x) => x !== s.slug)));
   };
 
-  // source-8b30b385ec3796ef.js: Swiper anime chỉ có EffectFade + grabCursor,
-  // không truyền autoplay. Slide đổi khi bấm thumbnail/dot hoặc kéo.
+  // Giờ anime tự chạy và vuốt được như hero đầu trang theo yêu cầu.
   return (
     <section>
       <div className="w-full mt-6 mb-12">
@@ -246,7 +394,20 @@ export function AnimeSection() {
           </span>
         </a>
 
-        <div className="relative w-full">
+        <div
+          ref={rootRef}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerCancel={() => {
+            dragRef.current = null;
+            setDragging(false);
+          }}
+          onClickCapture={onClickCapture}
+          onPointerEnter={() => setHovered(true)}
+          onPointerLeave={() => setHovered(false)}
+          className={`relative w-full cursor-grab active:cursor-grabbing ${dragging ? "select-none" : ""}`}
+          style={{ touchAction: "pan-y" }}
+        >
           {/* desktop */}
           <div className="hidden md:block w-full rounded-[20px] md:rounded-[24px] overflow-hidden anime-banner-wrap-desktop">
             <div className="swiper swiper-fade w-full">
@@ -299,12 +460,12 @@ export function AnimeSection() {
           </div>
 
           {/* mobile: chấm tròn như source (!desktop) */}
-          <div className="flex items-center justify-center gap-1.5 pt-3 pb-2 relative z-20 md:hidden">
+          <div className="anime-thumbs flex items-center justify-center gap-1.5 pt-3 pb-2 relative z-20 md:hidden">
             {slides.map((s, i) => (
               <button
                 key={s.slug}
                 type="button"
-                onClick={() => setActive(i)}
+                onClick={() => selectSlide(i)}
                 aria-label={`Go to slide ${i + 1}`}
                 className={`rounded-full transition-all duration-300 ${
                   i === active ? "w-3 h-3 bg-[#FECF59]" : "w-2.5 h-2.5 bg-white/30"
@@ -314,12 +475,12 @@ export function AnimeSection() {
           </div>
 
           {/* desktop: dải thumbnail chọn phim */}
-          <div className="hidden md:flex relative z-30 -mt-8 lg:-mt-10 px-10 justify-center overflow-x-auto scrollbar-hide snap-x items-end anime-mask-fade py-2">
+          <div className="anime-thumbs hidden md:flex relative z-30 -mt-8 lg:-mt-10 px-10 justify-center overflow-x-auto scrollbar-hide snap-x items-end anime-mask-fade py-2">
             <div className="flex gap-1.5 md:gap-2">
               {slides.map((s, i) => (
                 <button
                   key={s.slug}
-                  onClick={() => setActive(i)}
+                  onClick={() => selectSlide(i)}
                   aria-label={`Go to anime ${s.title}`}
                   className={`relative shrink-0 w-[46px] h-[69px] lg:w-[62px] lg:h-[93px] rounded-lg overflow-hidden snap-center cursor-pointer transition-all duration-300 ${
                     i === active
