@@ -511,6 +511,17 @@ export function WatchPage({
                       allowFullScreen
                     />
                   )}
+                  {/* Nguồn embed không có thanh điều khiển riêng: nút chuyển tập luôn ở dưới player */}
+                  {url && !hls && hasNext && (
+                    <button
+                      type="button"
+                      onClick={nextEpisode}
+                      className="absolute bottom-3 right-3 z-30 flex items-center gap-1.5 rounded-full bg-black/65 px-3 py-2 text-[12px] font-semibold text-white shadow-lg backdrop-blur-sm transition-colors hover:bg-black/85 hover:text-[#FFD166] sm:bottom-4 sm:right-4 sm:px-4 sm:py-2.5 sm:text-[13px]"
+                    >
+                      <IcSkipFwd className="h-4 w-4 sm:h-5 sm:w-5" />
+                      Tập kế tiếp
+                    </button>
+                  )}
                   {!url && (
                     <div className="flex h-full w-full flex-col items-center justify-center gap-3 px-4 text-center text-white/70">
                       <IcPlay className="w-10 h-10 text-white/30" />
@@ -779,6 +790,16 @@ export function WatchPage({
               <span className="text-xs font-semibold leading-none">Kiểm tra máy chủ</span>
               <IcSignalZero className="pointer-events-none absolute -right-3 -top-1.5 h-4 w-4 rounded-sm bg-black/60 p-0.5 shadow-sm text-white/45" />
             </button>
+            {url && !hls && hasNext && (
+              <button
+                type="button"
+                onClick={nextEpisode}
+                className="inline-flex shrink-0 items-center gap-1 text-[13px] font-semibold text-white/85 transition-colors hover:text-[#FFD166]"
+              >
+                <IcSkipFwd className="h-4 w-4" />
+                Tập kế tiếp
+              </button>
+            )}
             <button
               type="button"
               onClick={() => setNotice(`Ngôn ngữ phim: ${movie.lang}.`)}
