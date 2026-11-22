@@ -2,7 +2,7 @@
 
 import { withBasePath } from "@/lib/base-path";
 import { getProgress, isInList, removeProgress, saveProgress, toggleList } from "@/lib/user-library";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Hls, {
   type LoaderCallbacks,
   type LoaderConfiguration,
@@ -10,7 +10,7 @@ import Hls, {
   type LoaderResponse,
   type LoaderStats,
 } from "hls.js";
-import { detectKkAdRanges, loadKkAdRanges, type AdRange } from "./kk-ads";
+import { buildAdFreePlaylistUrl, stripKkAds } from "./kk-ads";
 import { fillStyle } from "./types";
 import { CommentItem } from "./DetailPage";
 import { IconLanguages, IconLogIn } from "./icons";
@@ -209,95 +209,7 @@ const isHlsUrl = (u: string | null) => {
   }
 };
 
-function SkipTimeRow({
-  label,
-  value,
-  current,
-  onChange,
-  onSeek,
-}: {
-  label: string;
-  value: number | null;
-  current: number;
-  onChange: (value: number | null) => void;
-  onSeek: (value: number) => void;
-}) {
-  const [draft, setDraft] = useState(value === null ? "" : String(Math.round(value * 10) / 10));
-
-  useEffect(() => {
-    setDraft(value === null ? "" : String(Math.round(value * 10) / 10));
-  }, [value]);
-
-  const parsed = Number(draft);
-  const valid = draft.trim() !== "" && Number.isFinite(parsed) && parsed >= 0;
-
-  const commit = () => onChange(valid ? Math.round(parsed * 10) / 10 : null);
-
-  return (
-    <div className="rounded-lg border border-white/10 bg-black/25 p-2.5">
-      <div className="mb-1.5 flex items-center justify-between gap-2">
-        <span className="text-[11px] font-semibold text-white/80">{label}</span>
-        <button
-          type="button"
-          onClick={() => onChange(Math.round(current * 10) / 10)}
-          title="Dùng thời điểm video đang đứng"
-          className="text-[10px] font-semibold text-[#FFD166] transition-colors hover:text-white"
-        >
-          Lấy {fmt(current)}
-        </button>
-      </div>
-      <div className="flex items-center gap-1.5">
-        <input
-          aria-label={`${label} (giây)`}
-          inputMode="decimal"
-          type="number"
-          min="0"
-          step="0.1"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onBlur={commit}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") commit();
-          }}
-          className="min-w-0 flex-1 rounded-md border border-white/15 bg-white/[0.06] px-2 py-1 text-[12px] tabular-nums text-white outline-none focus:border-[#FFD166]/60"
-        />
-        <button
-          type="button"
-          onClick={() => valid && onSeek(parsed)}
-          disabled={!valid}
-          title="Tua thử tới mốc này"
-          className="rounded-md bg-white/10 px-2 py-1 text-[10px] font-semibold text-white/80 transition-colors hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          Tua thử
-        </button>
-      </div>
-    </div>
-  );
-}
-
 const DEFAULT_INTRO_END = 90;
-const SKIP_KEY = "nhotphim:skip:v1:";
-
-type SkipSettings = {
-  introEnd: number | null;
-  adStart: number | null;
-  adEnd: number | null;
-};
-
-const emptySkipSettings: SkipSettings = { introEnd: null, adStart: null, adEnd: null };
-
-function readSkipSettings(key: string): SkipSettings {
-  if (typeof window === "undefined") return emptySkipSettings;
-  try {
-    const raw = window.localStorage.getItem(SKIP_KEY + key);
-    if (!raw) return emptySkipSettings;
-    const v = JSON.parse(raw) as Partial<SkipSettings>;
-    const num = (x: unknown) => (typeof x === "number" && Number.isFinite(x) ? x : null);
-    return { introEnd: num(v.introEnd), adStart: num(v.adStart), adEnd: num(v.adEnd) };
-  } catch {
-    return emptySkipSettings;
-  }
-}
 
 type HlsLoaderCtor = new (config: unknown) => {
   load(ctx: LoaderContext, cfg: LoaderConfiguration, cb: LoaderCallbacks<LoaderContext>): void;
@@ -307,11 +219,11 @@ type HlsLoaderCtor = new (config: unknown) => {
   stats: LoaderStats;
 };
 
-// Đọc playlist để lấy khoảng QC nhưng giữ nguyên timeline, giống nhánh
-// mobile/native của chophim.wtf — mốc tua vì thế khớp với thời điểm hiển thị.
-function makeAdDetectLoader(onRanges: (ranges: AdRange[]) => void): HlsLoaderCtor {
+// Cắt hẳn các dòng quảng cáo khỏi playlist trước khi hls.js đọc — giống
+// chế độ desktop của chophim.wtf, QC không bao giờ được tải về.
+function makeAdFreeLoader(): HlsLoaderCtor {
   const Base = Hls.DefaultConfig.loader as unknown as HlsLoaderCtor;
-  return class AdDetectLoader extends Base {
+  return class AdFreeLoader extends Base {
     load(ctx: LoaderContext, cfg: LoaderConfiguration, cb: LoaderCallbacks<LoaderContext>) {
       const success = cb.onSuccess;
       cb.onSuccess = (
@@ -324,8 +236,8 @@ function makeAdDetectLoader(onRanges: (ranges: AdRange[]) => void): HlsLoaderCto
           ((ctx.type as string) === "manifest" || (ctx.type as string) === "level") &&
           typeof response.data === "string"
         ) {
-          const ranges = detectKkAdRanges(response.data);
-          if (ranges.length) onRanges(ranges);
+          const clean = stripKkAds(response.data);
+          if (clean) response.data = clean;
         }
         success(response, stats, context, networkDetails);
       };
@@ -372,36 +284,23 @@ export function WatchPage({
   const [cur, setCur] = useState(0);
   const [dur, setDur] = useState(0);
   const [vol, setVol] = useState(1);
-  const [adRanges, setAdRanges] = useState<AdRange[]>([]);
-  const [skipSettings, setSkipSettings] = useState<SkipSettings>(() =>
-    readSkipSettings(`${movie.slug}:${serverIdx}:${epIdx}`)
-  );
-  const [tunerOpen, setTunerOpen] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const pendingTimeRef = useRef(0);
   const lastSavedRef = useRef(0);
-  const adSeekTargetRef = useRef<number | null>(null);
 
   const sIdx = Math.min(serverIdx, Math.max(movie.servers.length - 1, 0));
   const server = movie.servers[sIdx];
   const eIdx = server ? Math.min(epIdx, Math.max(server.episodes.length - 1, 0)) : 0;
   const episode = server?.episodes[eIdx] ?? null;
   const url = episode?.url ?? null;
-  const skipStorageKey = `${movie.slug}:${sIdx}:${eIdx}`;
   const hls = isHlsUrl(url);
   const isEmbed = !!url && !hls;
   const firstPlayable = server?.episodes.findIndex((e) => !!e.url) ?? -1;
 
-  // intro_end lấy từ /api/skip-times của chophim; QC lấy từ playlist (hoặc chỉnh tay).
-  const introEnd = skipSettings.introEnd ?? movie.introEnd ?? DEFAULT_INTRO_END;
-  const effectiveAdRanges = useMemo<AdRange[]>(() => {
-    const { adStart, adEnd } = skipSettings;
-    if (adStart !== null && adEnd !== null && adEnd > adStart) return [{ start: adStart, end: adEnd }];
-    return adRanges;
-  }, [adRanges, skipSettings.adStart, skipSettings.adEnd]);
-  const inAd = effectiveAdRanges.some((r) => cur >= r.start - 1.5 && cur < r.end);
+  // intro_end lấy từ /api/skip-times của chophim; QC bị cắt khỏi playlist.
+  const introEnd = movie.introEnd ?? DEFAULT_INTRO_END;
 
   /* ── khôi phục tiến trình + đọc hash (#tap=tap-N&sv=...&server_id=N&t=giây) ── */
   useEffect(() => {
@@ -480,33 +379,8 @@ export function WatchPage({
   }, [movie.slug]);
 
   useEffect(() => {
-    setSkipSettings(readSkipSettings(skipStorageKey));
-  }, [skipStorageKey]);
-
-  useEffect(() => {
     lastSavedRef.current = 0;
-    adSeekTargetRef.current = null;
-    setAdRanges([]);
   }, [sIdx, eIdx]);
-
-  const updateSkipSettings = useCallback(
-    (patch: Partial<SkipSettings>) => {
-      setSkipSettings((prev) => {
-        const next = { ...prev, ...patch };
-        try {
-          if (next.introEnd === null && next.adStart === null && next.adEnd === null) {
-            window.localStorage.removeItem(SKIP_KEY + skipStorageKey);
-          } else {
-            window.localStorage.setItem(SKIP_KEY + skipStorageKey, JSON.stringify(next));
-          }
-        } catch {
-          /* localStorage có thể bị chặn */
-        }
-        return next;
-      });
-    },
-    [skipStorageKey]
-  );
 
   useEffect(() => {
     if (!notice) return;
@@ -545,42 +419,34 @@ export function WatchPage({
     [dur, eIdx, movie, sIdx, server?.name]
   );
 
-  /* ── HLS cho link .m3u8: nhận diện QC rồi tua qua trong player ── */
+  /* ── HLS cho link .m3u8: cắt sạch quảng cáo khỏi playlist ── */
   useEffect(() => {
     const v = videoRef.current;
     if (!v || !url || !hls) {
-      setAdRanges([]);
+      v?.removeAttribute("src");
       return;
     }
-    const resetAdSeek = () => {
-      adSeekTargetRef.current = null;
-      setAdRanges([]);
-    };
     if (Hls.isSupported()) {
-      const inst = new Hls({
-        loader: makeAdDetectLoader((ranges) => {
-          adSeekTargetRef.current = null;
-          setAdRanges(ranges);
-        }),
-      });
+      const inst = new Hls({ loader: makeAdFreeLoader() });
       inst.loadSource(url);
       inst.attachMedia(v);
-      return () => {
-        inst.destroy();
-        resetAdSeek();
-      };
+      return () => inst.destroy();
     }
-    // Safari phát HLS gốc: vẫn đọc playlist để biết khoảng QC.
+    // Safari phát HLS gốc: thay bằng blob playlist đã cắt QC.
     const controller = new AbortController();
-    void loadKkAdRanges(url, controller.signal).then((ranges) => {
-      adSeekTargetRef.current = null;
-      setAdRanges(ranges);
+    let objectUrl: string | null = null;
+    void buildAdFreePlaylistUrl(url, controller.signal).then((cleanUrl) => {
+      if (controller.signal.aborted) {
+        if (cleanUrl) URL.revokeObjectURL(cleanUrl);
+        return;
+      }
+      objectUrl = cleanUrl;
+      v.src = cleanUrl || url;
     });
-    v.src = url;
     return () => {
       controller.abort();
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
       v.removeAttribute("src");
-      resetAdSeek();
     };
   }, [url, hls]);
 
@@ -596,13 +462,6 @@ export function WatchPage({
     if (!v) return;
     v.currentTime = Math.max(0, Math.min(v.duration || 0, v.currentTime + delta));
   };
-  const seekTo = useCallback((time: number) => {
-    const v = videoRef.current;
-    if (!v || !Number.isFinite(time) || time < 0) return;
-    const max = Number.isFinite(v.duration) && v.duration > 0 ? v.duration - 0.1 : time;
-    v.currentTime = Math.min(time, Math.max(0, max));
-    setCur(v.currentTime);
-  }, []);
   const nextEpisode = useCallback(() => {
     if (server && eIdx < server.episodes.length - 1) selectEp(sIdx, eIdx + 1);
   }, [eIdx, selectEp, server, sIdx]);
@@ -613,25 +472,6 @@ export function WatchPage({
     v.currentTime = Math.min(introEnd + 0.05, Math.max(0, v.duration - 1));
     setNotice("Đã bỏ qua phần giới thiệu");
   }, [introEnd]);
-
-  const skipAd = useCallback(() => {
-    const v = videoRef.current;
-    if (!v || !Number.isFinite(v.duration)) return;
-    const range = effectiveAdRanges.find(
-      (r) => v.currentTime >= r.start - 1.5 && v.currentTime < r.end
-    );
-    if (!range) {
-      adSeekTargetRef.current = null;
-      return;
-    }
-    // Tua trước 1.5s để đoạn QC hầu như không kịp hiện; chặn gán lại mãi
-    // một mốc khi video chưa kịp cập nhật currentTime.
-    const target = Math.min(range.end + 0.05, Math.max(0, v.duration - 0.5));
-    if (adSeekTargetRef.current === target && Math.abs(v.currentTime - target) < 0.5) return;
-    adSeekTargetRef.current = target;
-    v.currentTime = target;
-    setNotice("Đã bỏ qua đoạn quảng cáo");
-  }, [effectiveAdRanges]);
 
   const onEnded = () => {
     setPlaying(false);
@@ -704,7 +544,6 @@ export function WatchPage({
                       onTimeUpdate={(e) => {
                         const v = e.currentTarget;
                         const t = v.currentTime;
-                        if (hls) skipAd();
                         setCur(t);
                         if (t - lastSavedRef.current >= 5) {
                           lastSavedRef.current = t;
@@ -719,7 +558,6 @@ export function WatchPage({
                           v.currentTime = Math.min(pendingTimeRef.current, Math.max(0, d - 5));
                           pendingTimeRef.current = 0;
                         }
-                        if (hls) skipAd();
                       }}
                       onEnded={() => {
                         persist(dur || 0, dur || 0);
@@ -929,16 +767,6 @@ export function WatchPage({
                               Bỏ qua intro
                             </button>
                           )}
-                          {hls && inAd && (
-                            <button
-                              type="button"
-                              title="Bỏ qua quảng cáo"
-                              onClick={skipAd}
-                              className="flex items-center gap-1 whitespace-nowrap text-[11px] font-semibold text-[#FFD166] transition-colors hover:text-white sm:text-[13px]"
-                            >
-                              Bỏ qua quảng cáo
-                            </button>
-                          )}
                           <div className="flex items-center border-r border-white/20 pr-1.5 sm:pr-6 mr-0.5 sm:mr-2">
                             <button
                               type="button"
@@ -1084,22 +912,6 @@ export function WatchPage({
                   {isEmbed ? "—" : autoSkip ? "ON" : "OFF"}
                 </span>
               </button>
-              {hls && (
-                <button
-                  type="button"
-                  title="Chỉnh mốc bỏ qua intro / quảng cáo"
-                  aria-pressed={tunerOpen}
-                  onClick={() => setTunerOpen((v) => !v)}
-                  className={`flex items-center gap-2 rounded-lg px-3 py-1.5 outline-none transition-colors hover:bg-white/10 group ${
-                    tunerOpen ? "text-[#FFD166]" : "text-white/70"
-                  }`}
-                >
-                  <IcSettings className={`w-5 h-5 ${tunerOpen ? "text-[#FFD166]" : "group-hover:text-white"}`} />
-                  <span className="hidden md:inline-block text-[13px] font-medium transition-colors group-hover:text-white">
-                    Chỉnh mốc
-                  </span>
-                </button>
-              )}
               <button
                 type="button"
                 title="Bật/tắt ánh sáng môi trường"
@@ -1132,53 +944,6 @@ export function WatchPage({
               </button>
             </div>
 
-            {tunerOpen && hls && (
-              <div className="relative z-20 border-t border-white/10 bg-white/[0.03] px-4 py-3 md:px-6">
-                <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-[12px] font-medium text-white/75">
-                    Phát video, tua tới đoạn cần kiểm tra rồi bấm{" "}
-                    <span className="text-[#FFD166]">Lấy thời điểm hiện tại</span>. Mốc chỉnh tay chỉ áp dụng cho tập này.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      updateSkipSettings({ introEnd: null, adStart: null, adEnd: null });
-                      setNotice("Đã dùng lại mốc tự nhận diện");
-                    }}
-                    className="rounded-md border border-white/15 px-2.5 py-1 text-[11px] font-semibold text-white/70 transition-colors hover:border-[#FFD166]/40 hover:text-[#FFD166]"
-                  >
-                    Dùng mốc tự nhận diện
-                  </button>
-                </div>
-                <div className="grid gap-2 sm:grid-cols-3">
-                  <SkipTimeRow
-                    label="Intro kết thúc"
-                    value={introEnd}
-                    current={cur}
-                    onChange={(v) => updateSkipSettings({ introEnd: v })}
-                    onSeek={seekTo}
-                  />
-                  <SkipTimeRow
-                    label="Quảng cáo bắt đầu"
-                    value={effectiveAdRanges[0]?.start ?? null}
-                    current={cur}
-                    onChange={(v) => updateSkipSettings({ adStart: v })}
-                    onSeek={seekTo}
-                  />
-                  <SkipTimeRow
-                    label="Quảng cáo kết thúc"
-                    value={effectiveAdRanges[0]?.end ?? null}
-                    current={cur}
-                    onChange={(v) => updateSkipSettings({ adEnd: v })}
-                    onSeek={seekTo}
-                  />
-                </div>
-                <p className="mt-2 text-[10px] leading-relaxed text-white/40">
-                  Intro lấy từ dữ liệu chophim{movie.introEnd ? ` (${fmt(movie.introEnd)})` : " (chưa có, dùng 01:30)"}.
-                  Quảng cáo tự đọc từ playlist KK; muốn chỉnh thì nhập cả thời điểm bắt đầu và kết thúc.
-                </p>
-              </div>
-            )}
           </div>
         </div>
 

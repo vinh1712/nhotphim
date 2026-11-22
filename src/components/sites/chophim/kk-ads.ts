@@ -1,13 +1,10 @@
-// Nhận diện đoạn quảng cáo KK từ playlist M3U8.
-// Chuyển nguyên cơ chế của chophim.wtf: cặp #EXT-X-DISCONTINUITY bao quanh
-// một khối có #EXT-X-KEY:METHOD=NONE và các segment /vN/... là đoạn quảng cáo.
-
-export type AdRange = { start: number; end: number };
+// Cắt sạch đoạn quảng cáo KK ngay trong playlist M3U8.
+// Theo đúng dấu hiệu chophim.wtf: cặp #EXT-X-DISCONTINUITY bao quanh một khối
+// có #EXT-X-KEY:METHOD=NONE và các segment /vN/... chính là đoạn quảng cáo.
 
 const DISC = "#EXT-X-DISCONTINUITY";
 const NONE_KEY = /^#EXT-X-KEY:(?:[^,]*,)*METHOD=NONE(?:,|$)/i;
 const V_SEGMENT = /^\/v\d+\//i;
-const EXTINF = /^#EXTINF:([\d.]+)/i;
 
 const isSegment = (line: string) => {
   const t = line.trim();
@@ -38,80 +35,81 @@ function adBlocks(lines: string[]): Array<{ start: number; end: number }> {
   return blocks;
 }
 
-/** Tính các khoảng thời gian quảng cáo tính từ đầu video. */
-export function detectKkAdRanges(text: string): AdRange[] {
-  if (!text.includes("#EXTINF") || !text.includes(DISC)) return [];
+/** Trả về nội dung playlist đã bỏ hẳn các dòng quảng cáo, hoặc null nếu không có QC. */
+export function stripKkAds(text: string): string | null {
+  if (!text.includes("#EXTINF") || !text.includes(DISC)) return null;
   const lines = text.split(/\r?\n/);
   const blocks = adBlocks(lines);
-  if (!blocks.length) return [];
-
-  const marked = new Set<number>();
-  for (const b of blocks) for (let i = b.start; i <= b.end; i++) marked.add(i);
-
-  const found: AdRange[] = [];
-  let time = 0;
-  let duration = 0;
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    const match = line.match(EXTINF);
-    if (match) {
-      duration = Number(match[1]);
-      continue;
-    }
-    if (isSegment(line)) {
-      if (marked.has(i) && duration > 0) found.push({ start: time, end: time + duration });
-      time += duration;
-      duration = 0;
-    }
-  }
-
-  const sorted = found.filter((r) => r.end > r.start).sort((a, b) => a.start - b.start);
-  const merged: AdRange[] = [];
-  for (const r of sorted) {
-    const last = merged[merged.length - 1];
-    if (last && r.start <= last.end + 0.05) last.end = Math.max(last.end, r.end);
-    else merged.push({ ...r });
-  }
-  return merged;
-}
-
-/** Bỏ hẳn các dòng quảng cáo khỏi playlist trước khi hls.js đọc. */
-export function stripKkAds(text: string): { text: string; ranges: AdRange[] } | null {
-  const ranges = detectKkAdRanges(text);
-  if (!ranges.length) return null;
-  const lines = text.split(/\r?\n/);
+  if (!blocks.length) return null;
   const remove = new Set<number>();
-  for (const b of adBlocks(lines)) for (let i = b.start; i < b.end; i++) remove.add(i);
-  return { text: lines.filter((_, i) => !remove.has(i)).join("\n"), ranges };
+  for (const b of blocks) for (let i = b.start; i < b.end; i++) remove.add(i);
+  return lines.filter((_, i) => !remove.has(i)).join("\n");
 }
 
-/** Đọc master playlist rồi mới đọc variant để lấy khoảng quảng cáo. */
-export async function loadKkAdRanges(url: string, signal?: AbortSignal): Promise<AdRange[]> {
+function toAbsoluteUrls(text: string, base: string): string {
+  const rewriteUri = (match: string, uri: string) => {
+    try {
+      return match.replace(uri, new URL(uri, base).toString());
+    } catch {
+      return match;
+    }
+  };
+  return text
+    .split(/\r?\n/)
+    .map((line) => {
+      const t = line.trim();
+      if (!t) return line;
+      if (t.startsWith("#")) return line.replace(/URI="([^"]+)"/g, rewriteUri);
+      try {
+        return new URL(t, base).toString();
+      } catch {
+        return line;
+      }
+    })
+    .join("\n");
+}
+
+/**
+ * Dành cho Safari phát HLS gốc (không đi qua hls.js): tải playlist, cắt QC,
+ * đổi URL tương đối thành tuyệt đối rồi trả về blob URL để video phát bản sạch.
+ */
+export async function buildAdFreePlaylistUrl(
+  url: string,
+  signal?: AbortSignal
+): Promise<string | null> {
   try {
     const res = await fetch(url, { cache: "no-store", signal });
-    if (!res.ok) return [];
-    const text = await res.text();
-    const direct = detectKkAdRanges(text);
-    if (direct.length) return direct;
+    if (!res.ok) return null;
+    let text = await res.text();
+    let base = url;
 
-    const lines = text.split(/\r?\n/);
-    let variant: string | null = null;
-    for (let i = 0; i < lines.length; i++) {
-      if (!lines[i].trim().startsWith("#EXT-X-STREAM-INF")) continue;
-      for (let j = i + 1; j < lines.length; j++) {
-        const t = lines[j].trim();
-        if (t && !t.startsWith("#")) {
-          variant = new URL(t, url).toString();
-          break;
+    if (!text.includes("#EXTINF")) {
+      const lines = text.split(/\r?\n/);
+      let variant: string | null = null;
+      for (let i = 0; i < lines.length; i++) {
+        if (!lines[i].trim().startsWith("#EXT-X-STREAM-INF")) continue;
+        for (let j = i + 1; j < lines.length; j++) {
+          const t = lines[j].trim();
+          if (t && !t.startsWith("#")) {
+            variant = new URL(t, url).toString();
+            break;
+          }
         }
+        if (variant) break;
       }
-      if (variant) break;
+      if (!variant) return null;
+      const variantRes = await fetch(variant, { cache: "no-store", signal });
+      if (!variantRes.ok) return null;
+      text = await variantRes.text();
+      base = variant;
     }
-    if (!variant) return [];
-    const variantRes = await fetch(variant, { cache: "no-store", signal });
-    if (!variantRes.ok) return [];
-    return detectKkAdRanges(await variantRes.text());
+
+    const clean = stripKkAds(text);
+    if (!clean) return null;
+    return URL.createObjectURL(new Blob([toAbsoluteUrls(clean, base)], {
+      type: "application/vnd.apple.mpegurl",
+    }));
   } catch {
-    return [];
+    return null;
   }
 }
