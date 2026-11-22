@@ -255,7 +255,7 @@ function RankColumn({
           </h3>
         </div>
         <div className="flex flex-col gap-0.5 flex-1">
-          {rows.map((r, i) => (
+          {rows.slice(0, 5).map((r, i) => (
             <RankRowLink key={r.slug + i} r={r} i={i} genres={genres} />
           ))}
         </div>

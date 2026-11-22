@@ -212,7 +212,10 @@ function MobSlide({ s, active }: { s: ASlide; active: boolean }) {
 /* ------------------------------------------------------------------ */
 export function AnimeSection() {
   // Sắp theo thời gian ra mắt phim (mới nhất trước), giữ thứ tự gốc khi cùng năm.
-  const slides = [...home.anime.slides].sort((a, b) => (b.year || 0) - (a.year || 0));
+  const slides = home.anime.slides
+    .map((slide, index) => ({ slide, index }))
+    .sort((a, b) => (b.slide.year || 0) - (a.slide.year || 0) || a.index - b.index)
+    .map(({ slide }) => slide);
   const n = slides.length;
   const [active, setActive] = useState(0);
   const [favoriteSlugs, setFavoriteSlugs] = useState<string[]>([]);
@@ -412,12 +415,14 @@ export function AnimeSection() {
           <div className="hidden md:block w-full rounded-[20px] md:rounded-[24px] overflow-hidden anime-banner-wrap-desktop">
             <div className="swiper swiper-fade w-full">
               {/* source dùng Swiper: slide nằm trong wrapper có chiều cao thật (không absolute).
-                  Xếp chồng bằng gridArea 1/1 để wrapper không bị collapse như bản trước. */}
+                  Xếp chồng bằng gridArea 1/1 để wrapper không bị collapse như bản trước.
+                  Không dùng transition-opacity: transition bị kẹt ở opacity cũ khi cuộn tới
+                  section cuối trang, làm slide desktop không đổi dù đã vuốt/chạm. */}
               <div className="swiper-wrapper relative grid w-full" style={{ cursor: "grab" }}>
                 {slides.map((s, i) => (
                   <div
                     key={s.slug}
-                    className="swiper-slide relative w-full transition-opacity duration-300"
+                    className="swiper-slide relative w-full"
                     style={{
                       gridArea: "1 / 1",
                       opacity: i === active ? 1 : 0,
@@ -444,7 +449,7 @@ export function AnimeSection() {
                 {slides.map((s, i) => (
                   <div
                     key={s.slug}
-                    className="swiper-slide relative w-full transition-opacity duration-300"
+                    className="swiper-slide relative w-full"
                     style={{
                       gridArea: "1 / 1",
                       opacity: i === active ? 1 : 0,
