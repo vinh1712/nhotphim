@@ -202,10 +202,12 @@ const isHlsUrl = (u: string | null) => {
   }
 };
 
-// Nguồn KK có đoạn quảng cáo cố định ở 15:00 - 15:35.
-// Không sửa được manifest từ xa nên tua qua đoạn này ngay trên player.
+// Nguồn KK có đoạn quảng cáo ở 15:00 - 15:35.
+// Không sửa được manifest từ xa nên tua tới 15:35.30 ngay trên player.
 const AD_START = 15 * 60;
 const AD_END = AD_START + 35;
+const AD_SKIP_TO = AD_END + 0.3;
+const AD_DETECT_END = AD_SKIP_TO + 0.3;
 
 function preferredServer(movie: MovieDetail): number {
   // Nguồn mặc định của chophim.wtf là kênh chính (link m3u8 trực tiếp).
@@ -418,8 +420,8 @@ export function WatchPage({
   const skipAd = useCallback(() => {
     const v = videoRef.current;
     if (!v || !Number.isFinite(v.duration)) return;
-    if (v.currentTime < AD_START || v.currentTime >= AD_END) return;
-    v.currentTime = Math.min(AD_END + 0.5, Math.max(0, v.duration - 1));
+    if (v.currentTime < AD_START || v.currentTime >= AD_DETECT_END) return;
+    v.currentTime = Math.min(AD_SKIP_TO, Math.max(0, v.duration - 1));
     const key = `${sIdx}-${eIdx}`;
     if (adNoticeRef.current !== key) {
       adNoticeRef.current = key;
@@ -499,7 +501,7 @@ export function WatchPage({
                       onTimeUpdate={(e) => {
                         const v = e.currentTarget;
                         const t = v.currentTime;
-                        if (hls && t >= AD_START && t < AD_END) skipAd();
+                        if (hls && t >= AD_START && t < AD_DETECT_END) skipAd();
                         setCur(t);
                         if (t - lastSavedRef.current >= 5) {
                           lastSavedRef.current = t;
@@ -514,7 +516,7 @@ export function WatchPage({
                           v.currentTime = Math.min(pendingTimeRef.current, Math.max(0, d - 5));
                           pendingTimeRef.current = 0;
                         }
-                        if (hls && v.currentTime >= AD_START && v.currentTime < AD_END) skipAd();
+                        if (hls && v.currentTime >= AD_START && v.currentTime < AD_DETECT_END) skipAd();
                       }}
                       onEnded={() => {
                         persist(dur || 0, dur || 0);
@@ -724,7 +726,7 @@ export function WatchPage({
                               Bỏ qua intro
                             </button>
                           )}
-                          {hls && cur >= AD_START && cur < AD_END && (
+                          {hls && cur >= AD_START && cur < AD_DETECT_END && (
                             <button
                               type="button"
                               title="Bỏ qua quảng cáo"
