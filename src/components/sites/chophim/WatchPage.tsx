@@ -202,7 +202,7 @@ const isHlsUrl = (u: string | null) => {
   }
 };
 
-// Nguồn M3U8 có đoạn quảng cáo cố định ở 15:00 - 15:35.
+// Nguồn KK có đoạn quảng cáo cố định ở 15:00 - 15:35.
 // Không sửa được manifest từ xa nên tua qua đoạn này ngay trên player.
 const AD_START = 15 * 60;
 const AD_END = AD_START + 35;
@@ -864,7 +864,7 @@ export function WatchPage({
                 aria-pressed={autoSkip && !isEmbed}
                 onClick={() => {
                   if (isEmbed) {
-                    setNotice("Nguồn embed không hỗ trợ bỏ qua intro. Chọn nguồn M3U8 để dùng tính năng này.");
+                    setNotice("Nguồn embed không hỗ trợ bỏ qua intro. Chọn nguồn KK để dùng tính năng này.");
                     return;
                   }
                   const next = !autoSkip;

@@ -61,7 +61,7 @@ function primarySlug(r) {
 
 // ── episode servers ────────────────────────────────────────────────────────
 // KK (link2) thực chất là manifest .m3u8, có khi bọc trong /player/?url=...
-// Nên gộp vào nguồn M3U8 và bỏ hẳn dạng embed của KK.
+// Nên gộp vào nguồn KK dạng phát trực tiếp và bỏ hẳn dạng embed.
 const directM3u8 = (u) => {
   const s = str(u);
   if (!s) return null;
@@ -94,7 +94,7 @@ function buildServers(r, sub) {
     const m3 = episodes.map((ep) => directM3u8(ep?.link2) || directM3u8(ep?.m3u8_2));
     if (m3.some(Boolean)) {
       servers.push({
-        name: `${sub} (M3U8)`,
+        name: `${sub} (KK)`,
         episodes: episodes.map((ep, i) => ({ label: labelOf(ep), url: m3[i] })),
       });
     }
@@ -103,7 +103,7 @@ function buildServers(r, sub) {
     const single = [
       { url: isKkEmbed(r.embedurl) ? null : str(r.embedurl), name: `${sub} (NC)` },
       { url: isKkEmbed(r.embedurl3) ? null : str(r.embedurl3), name: `${sub} (VP)` },
-      { url: directM3u8(r.embedurl2) || directM3u8(r.m3u8url), name: `${sub} (M3U8)` },
+      { url: directM3u8(r.embedurl2) || directM3u8(r.m3u8url), name: `${sub} (KK)` },
     ].filter((x) => x.url);
     if (single.length) {
       const label = r.type === "movie" ? "Full" : r.currentep ? `Tập ${pad2(r.currentep)}` : "Full";
