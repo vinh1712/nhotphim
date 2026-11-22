@@ -1,5 +1,5 @@
 import { withBasePath } from "@/lib/base-path";
-const LOGO = withBasePath("/brand/nhotphim-logo.png");
+const LOGO = withBasePath("/brand/nhotphim-logo-sharp.png");
 const VN_FLAG = withBasePath("/sites/chophim/46d51573b642dc37.svg");
 
 const SOCIALS: { href: string; label: string; icon: string; size: number }[] = [
@@ -114,7 +114,7 @@ export function Footer() {
 
         <div className="mt-6 pt-2">
           <p className="text-[14px] text-white/80">
-            © 2026 NhótPhim
+            © 2026 <span className="brand-font">NhótPhim</span>
             <span className="mx-2 text-white/30">•</span>
             <span>
               <a

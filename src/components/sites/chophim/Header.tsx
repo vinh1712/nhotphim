@@ -9,7 +9,7 @@ import { toCard } from "./movie-filter";
 import { home } from "./types";
 import { MobileHeaderBar, SearchAutocomplete } from "./SearchAutocomplete";
 
-const LOGO = withBasePath("/brand/nhotphim-logo.png");
+const LOGO = withBasePath("/brand/nhotphim-logo-sharp.png");
 
 const DROPDOWN_W = ["w-[480px]", "w-[400px]", "w-[200px]"];
 
@@ -127,7 +127,7 @@ export function Header() {
               </div>
               <div className="text-left flex-1">
                 <p className="text-[11px] text-white/70 mb-0.5" style={{ lineHeight: "11px" }}>Tải ứng dụng</p>
-                <p className="text-[14px] font-bold text-white leading-none">NhótPhim</p>
+                <p className="brand-font text-[14px] font-bold text-white leading-none">NhótPhim</p>
               </div>
             </a>
             <a
