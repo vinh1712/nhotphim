@@ -1,8 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useAuthSession } from "@/lib/auth";
+import { useEffect, useRef, useState } from "react";
+import { signOut, useAuthSession } from "@/lib/auth";
 import { stripBasePath, withBasePath } from "@/lib/base-path";
 import { moviesData } from "@/data";
 import type { MovieDetail } from "./detail-types";
@@ -17,6 +17,11 @@ const DROPDOWN_W = ["w-[480px]", "w-[400px]", "w-[200px]"];
 export function Header() {
   const { user } = useAuthSession();
   const accountLabel = user?.email ? user.email.split("@")[0] : "Thành viên";
+  const accountName = String(
+    user?.user_metadata?.display_name ?? user?.user_metadata?.full_name ?? accountLabel
+  );
+  const [accountOpen, setAccountOpen] = useState(false);
+  const accountRef = useRef<HTMLDivElement>(null);
 
   // Source dùng đúng 2 link đầu cho lưới menu mobile (Phim Lẻ / Phim Bộ).
   const topLinks = home.header.nav.slice(0, 2);
@@ -48,6 +53,21 @@ export function Header() {
     };
   }, [pathname]);
 
+  useEffect(() => {
+    setAccountOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!accountOpen) return;
+    const onClick = (event: MouseEvent) => {
+      if (accountRef.current && !accountRef.current.contains(event.target as Node)) {
+        setAccountOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [accountOpen]);
+
   const transparent =
     !scrolled &&
     (pathname === "/" ||
@@ -69,7 +89,7 @@ export function Header() {
           logoSrc={LOGO}
           nav={topLinks}
           groups={dropdowns}
-          accountHref={withBasePath("/dang-nhap")}
+          accountHref={withBasePath(user ? "/users/yeu-thich" : "/dang-nhap")}
           appHref={withBasePath("/tai-ung-dung")}
         />
 
@@ -134,16 +154,74 @@ export function Header() {
                 <p className="text-[14px] font-bold text-white leading-none">NhótPhim</p>
               </div>
             </a>
-            <a
-              className="flex justify-center items-center gap-1.5 h-9 xl:h-10 px-3 xl:px-4 bg-[#F2F4F7] hover:bg-white text-[#1c1c1c] rounded-full font-medium transition-colors text-[13px] xl:text-sm shadow-sm hover:shadow shrink-0"
-              href={withBasePath("/dang-nhap")}
-              title={user?.email ?? "Đăng nhập tài khoản"}
-            >
-              <svg className="w-4 h-4 xl:w-5 xl:h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-              </svg>
-              <span className="max-w-[110px] truncate">{accountLabel}</span>
-            </a>
+            {user ? (
+              <div className="relative shrink-0" ref={accountRef}>
+                <button
+                  type="button"
+                  onClick={() => setAccountOpen((open) => !open)}
+                  aria-expanded={accountOpen}
+                  aria-label="Quản lý tài khoản"
+                  className="flex justify-center items-center gap-1.5 h-9 xl:h-10 px-3 xl:px-4 bg-[#F2F4F7] hover:bg-white text-[#1c1c1c] rounded-full font-medium transition-colors text-[13px] xl:text-sm shadow-sm hover:shadow"
+                >
+                  <svg className="w-4 h-4 xl:w-5 xl:h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                  </svg>
+                  <span className="max-w-[110px] truncate">{accountLabel}</span>
+                </button>
+                {accountOpen ? (
+                  <div className="absolute right-0 top-full z-50 mt-3 w-[280px] overflow-hidden rounded-2xl border border-white/10 bg-[#191b24] py-2 shadow-2xl">
+                    <div className="border-b border-white/5 px-4 pb-3 pt-2">
+                      <p className="truncate text-[14px] font-bold text-white">{accountName}</p>
+                      <p className="mt-0.5 truncate text-[12px] text-white/50">{user.email}</p>
+                    </div>
+                    <div className="py-1">
+                      {[
+                        ["/users/goi-dang-ky", "Gói đăng ký"],
+                        ["/users/yeu-thich", "Yêu thích"],
+                        ["/users/danh-sach", "Danh sách"],
+                        ["/users/xem-tiep", "Xem tiếp"],
+                        ["/users/dang-nhap-tv", "Đăng Nhập TV"],
+                        ["/users/thong-bao", "Thông báo"],
+                        ["/users/tai-khoan", "Tài khoản"],
+                      ].map(([href, label]) => (
+                        <a
+                          key={href}
+                          href={withBasePath(href)}
+                          onClick={() => setAccountOpen(false)}
+                          className="flex items-center justify-between px-4 py-2.5 text-[13px] text-white/70 transition-colors hover:bg-white/5 hover:text-[#FFD166]"
+                        >
+                          {label}
+                          <span className="text-white/20">›</span>
+                        </a>
+                      ))}
+                    </div>
+                    <div className="border-t border-white/5 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAccountOpen(false);
+                          void signOut();
+                        }}
+                        className="w-full px-4 py-2.5 text-left text-[13px] text-white/60 transition-colors hover:bg-white/5 hover:text-[#ff6b6b]"
+                      >
+                        Thoát
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              <a
+                className="flex justify-center items-center gap-1.5 h-9 xl:h-10 px-3 xl:px-4 bg-[#F2F4F7] hover:bg-white text-[#1c1c1c] rounded-full font-medium transition-colors text-[13px] xl:text-sm shadow-sm hover:shadow shrink-0"
+                href={withBasePath("/dang-nhap")}
+                title="Đăng nhập tài khoản"
+              >
+                <svg className="w-4 h-4 xl:w-5 xl:h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                </svg>
+                <span className="max-w-[110px] truncate">Đăng nhập</span>
+              </a>
+            )}
           </div>
         </div>
       </div>

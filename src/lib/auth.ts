@@ -263,6 +263,29 @@ export async function recoverPassword(email: string): Promise<AuthResult> {
   }
 }
 
+/** Cập nhật user_metadata trên Supabase (tên hiển thị, giới tính, emoji...). */
+export async function updateProfile(
+  patch: Record<string, string>
+): Promise<AuthResult> {
+  const stored = readStored();
+  if (!stored) return { ok: false, message: "Vui lòng đăng nhập lại." };
+  try {
+    const res = await authFetch("/auth/v1/user", {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${stored.session.access_token}` },
+      body: JSON.stringify({ data: patch }),
+    });
+    const data = await parseData(res);
+    if (!res.ok) return { ok: false, message: errorText(data, "Không thể cập nhật tài khoản.") };
+    const user = toUser(data.user);
+    if (!user) return { ok: false, message: "Không đọc được thông tin tài khoản." };
+    writeStored({ ...stored.session, user }, stored.remember);
+    return { ok: true, message: "Cập nhật tài khoản thành công!" };
+  } catch {
+    return { ok: false, message: "Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại." };
+  }
+}
+
 export async function signOut(): Promise<void> {
   const stored = readStored();
   if (stored) {
