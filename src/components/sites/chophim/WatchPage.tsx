@@ -202,6 +202,11 @@ const isHlsUrl = (u: string | null) => {
   }
 };
 
+// Nguồn M3U8 có đoạn quảng cáo cố định ở 15:00 - 15:35.
+// Không sửa được manifest từ xa nên tua qua đoạn này ngay trên player.
+const AD_START = 15 * 60;
+const AD_END = AD_START + 35;
+
 function preferredServer(movie: MovieDetail): number {
   // Nguồn mặc định của chophim.wtf là kênh chính (link m3u8 trực tiếp).
   const hls = movie.servers.findIndex((s) => s.episodes.some((e) => isHlsUrl(e.url)));
@@ -245,6 +250,7 @@ export function WatchPage({
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const pendingTimeRef = useRef(0);
   const lastSavedRef = useRef(0);
+  const adNoticeRef = useRef("");
 
   const sIdx = Math.min(serverIdx, Math.max(movie.servers.length - 1, 0));
   const server = movie.servers[sIdx];
@@ -333,6 +339,7 @@ export function WatchPage({
 
   useEffect(() => {
     lastSavedRef.current = 0;
+    adNoticeRef.current = "";
   }, [sIdx, eIdx]);
 
   useEffect(() => {
@@ -408,6 +415,18 @@ export function WatchPage({
     setNotice("Đã bỏ qua intro");
   }, []);
 
+  const skipAd = useCallback(() => {
+    const v = videoRef.current;
+    if (!v || !Number.isFinite(v.duration)) return;
+    if (v.currentTime < AD_START || v.currentTime >= AD_END) return;
+    v.currentTime = Math.min(AD_END + 0.5, Math.max(0, v.duration - 1));
+    const key = `${sIdx}-${eIdx}`;
+    if (adNoticeRef.current !== key) {
+      adNoticeRef.current = key;
+      setNotice("Đã bỏ qua đoạn quảng cáo");
+    }
+  }, [eIdx, sIdx]);
+
   const onEnded = () => {
     setPlaying(false);
     if (autoNext) nextEpisode();
@@ -478,11 +497,13 @@ export function WatchPage({
                         persist(e.currentTarget.currentTime, e.currentTarget.duration || dur);
                       }}
                       onTimeUpdate={(e) => {
-                        const t = e.currentTarget.currentTime;
+                        const v = e.currentTarget;
+                        const t = v.currentTime;
+                        if (hls && t >= AD_START && t < AD_END) skipAd();
                         setCur(t);
                         if (t - lastSavedRef.current >= 5) {
                           lastSavedRef.current = t;
-                          persist(t, e.currentTarget.duration || dur);
+                          persist(t, v.duration || dur);
                         }
                       }}
                       onLoadedMetadata={(e) => {
@@ -493,6 +514,7 @@ export function WatchPage({
                           v.currentTime = Math.min(pendingTimeRef.current, Math.max(0, d - 5));
                           pendingTimeRef.current = 0;
                         }
+                        if (hls && v.currentTime >= AD_START && v.currentTime < AD_END) skipAd();
                       }}
                       onEnded={() => {
                         persist(dur || 0, dur || 0);
@@ -700,6 +722,16 @@ export function WatchPage({
                               className="flex items-center gap-1 whitespace-nowrap text-[11px] font-medium text-white/80 transition-colors hover:text-[#FFD166] sm:text-[13px]"
                             >
                               Bỏ qua intro
+                            </button>
+                          )}
+                          {hls && cur >= AD_START && cur < AD_END && (
+                            <button
+                              type="button"
+                              title="Bỏ qua quảng cáo"
+                              onClick={skipAd}
+                              className="flex items-center gap-1 whitespace-nowrap text-[11px] font-semibold text-[#FFD166] transition-colors hover:text-white sm:text-[13px]"
+                            >
+                              Bỏ qua quảng cáo
                             </button>
                           )}
                           <div className="flex items-center border-r border-white/20 pr-1.5 sm:pr-6 mr-0.5 sm:mr-2">
