@@ -49,13 +49,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   };
 }
 
-export default async function QuocGiaPage({
-  params,
-  searchParams,
-}: {
-  params: Promise<Params>;
-  searchParams: Promise<{ page?: string }>;
-}) {
+export default async function QuocGiaPage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
   const name = countryName(slug);
   if (!name) notFound();
@@ -64,7 +58,6 @@ export default async function QuocGiaPage({
     title: `Phim ${name}`,
     basePath: `/quoc-gia/${slug}`,
     filter: (m) => m.countrySlug === slug,
-    searchParams,
     emptyText: `Chưa có phim ${name}.`,
   });
 }

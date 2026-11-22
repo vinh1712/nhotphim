@@ -6,11 +6,10 @@ export const metadata: Metadata = {
   description: "Xem phim bộ online miễn phí Vietsub, thuyết minh full HD tại Chợ Phim.",
 };
 
-export default async function PhimBoPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+export default function PhimBoPage() {
   return renderCategory({
     title: "Phim Bộ",
     basePath: "/phim-bo",
     filter: (m) => m.type === "series",
-    searchParams,
   });
 }

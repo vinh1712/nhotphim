@@ -1,14 +1,11 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/sites/chophim/Header";
 import { Footer } from "@/components/sites/chophim/Footer";
-import { MovieCard, Pagination } from "@/components/sites/chophim/CategoryPage";
+import { CategoryGrid } from "@/components/sites/chophim/CategoryPage";
 import { allMovies } from "@/components/sites/chophim/category-route";
-import {
-  newestFirst,
-  paginate,
-  resolveGenreSlug,
-} from "@/components/sites/chophim/movie-filter";
+import { newestFirst, toCard, resolveGenreSlug } from "@/components/sites/chophim/movie-filter";
 import type { MovieDetail } from "@/components/sites/chophim/detail-types";
 import homeJson from "@/data/home.json";
 
@@ -60,13 +57,7 @@ function matchFilters(m: MovieDetail, f: Record<string, string>): boolean {
   return true;
 }
 
-export default async function ChuDeSlugPage({
-  params,
-  searchParams,
-}: {
-  params: Promise<Params>;
-  searchParams: Promise<{ page?: string }>;
-}) {
+export default async function ChuDeSlugPage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
   const topic = findTopic(slug);
   if (!topic) notFound();
@@ -88,9 +79,7 @@ export default async function ChuDeSlugPage({
     list = allMovies.filter((m) => matchFilters(m, topic.baseFilters));
   }
 
-  const sorted = newestFirst(list);
-  const sp = await searchParams;
-  const { items, totalPages, page } = paginate(sorted, Number(sp?.page) || 1);
+  const cards = newestFirst(list).map(toCard);
 
   return (
     <>
@@ -129,21 +118,13 @@ export default async function ChuDeSlugPage({
             </button>
           </div>
 
-          {items.length === 0 ? (
-            <div className="py-20 text-center">
-              <p className="text-text-muted text-[15px]">
-                Chưa có phim trong chủ đề {topic.title}.
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-x-3 gap-y-6">
-              {items.map((m) => (
-                <MovieCard key={m.slug} m={m} />
-              ))}
-            </div>
-          )}
-
-          <Pagination page={page} totalPages={totalPages} basePath={`/chu-de/${slug}`} />
+          <Suspense fallback={null}>
+            <CategoryGrid
+              movies={cards}
+              basePath={`/chu-de/${slug}`}
+              emptyText={`Chưa có phim trong chủ đề ${topic.title}.`}
+            />
+          </Suspense>
         </div>
       </main>
       <Footer />

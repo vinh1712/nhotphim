@@ -6,11 +6,10 @@ export const metadata: Metadata = {
   description: "Xem phim lẻ, phim điện ảnh online miễn phí Vietsub full HD tại Chợ Phim.",
 };
 
-export default async function PhimLePage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+export default function PhimLePage() {
   return renderCategory({
     title: "Phim Lẻ",
     basePath: "/phim-le",
     filter: (m) => m.type === "movie",
-    searchParams,
   });
 }

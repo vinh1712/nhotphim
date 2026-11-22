@@ -6,12 +6,11 @@ export const metadata: Metadata = {
   description: "Xem TV Shows online miễn phí Vietsub full HD tại Chợ Phim.",
 };
 
-export default async function TvShowsPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+export default function TvShowsPage() {
   return renderCategory({
     title: "TV Shows",
     basePath: "/tv-shows",
     filter: (m) => (m.genreSlugs ?? []).includes("tv-shows"),
-    searchParams,
     emptyText: "Chưa có TV Shows nào.",
   });
 }

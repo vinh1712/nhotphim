@@ -38,13 +38,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   };
 }
 
-export default async function TheLoaiPage({
-  params,
-  searchParams,
-}: {
-  params: Promise<Params>;
-  searchParams: Promise<{ page?: string }>;
-}) {
+export default async function TheLoaiPage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
   const cat = findCategory(slug);
   if (!cat) notFound();
@@ -54,7 +48,6 @@ export default async function TheLoaiPage({
     title: cat.name,
     basePath: `/the-loai/${slug}`,
     filter: (m) => (m.genreSlugs ?? []).includes(resolved),
-    searchParams,
     emptyText: `Chưa có phim thể loại ${cat.name}.`,
   });
 }

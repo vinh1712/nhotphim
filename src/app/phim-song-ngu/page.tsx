@@ -6,12 +6,11 @@ export const metadata: Metadata = {
   description: "Xem phim song ngữ, thuyết minh online miễn phí tại Chợ Phim.",
 };
 
-export default async function PhimSongNguPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+export default function PhimSongNguPage() {
   return renderCategory({
     title: "Phim Song Ngữ",
     basePath: "/phim-song-ngu",
     filter: (m) => m.lang !== "Vietsub",
-    searchParams,
     emptyText: "Chưa có phim song ngữ.",
   });
 }

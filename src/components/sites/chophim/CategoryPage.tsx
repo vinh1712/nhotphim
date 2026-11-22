@@ -1,13 +1,17 @@
+"use client";
+
 // Trang danh mục / tìm kiếm: tiêu đề + nút Bộ lọc + lưới poster + phân trang.
-import type { MovieDetail } from "./detail-types";
+// Số trang đọc từ ?page= ở client để page vẫn build được thành HTML tĩnh (output: "export").
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { BottomBadges } from "./Badges";
 import { fillStyle, type MovieItem } from "./types";
-import { bottomBadgeText } from "./movie-filter";
+import { bottomBadgeText, paginate, type CardMovie } from "./movie-filter";
 
 const CARD_BOTTOM_CLS =
   "absolute inset-x-0 bottom-0 flex items-end pb-1.5 md:pb-0 pointer-events-none justify-center";
 
-function toItem(m: MovieDetail): MovieItem {
+function toItem(m: CardMovie): MovieItem {
   return {
     href: `/phim/${m.slug}`,
     img: m.poster || m.backdrop,
@@ -23,7 +27,7 @@ function toItem(m: MovieDetail): MovieItem {
   };
 }
 
-export function MovieCard({ m }: { m: MovieDetail }) {
+export function MovieCard({ m }: { m: CardMovie }) {
   const item = toItem(m);
   return (
     <div className="relative movie-card-wrapper">
@@ -110,18 +114,49 @@ export function Pagination({ page, totalPages, basePath }: { page: number; total
   );
 }
 
+const GRID_CLS = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-x-3 gap-y-6";
+
+/** Lưới poster + phân trang, tự đọc ?page= từ URL */
+export function CategoryGrid({
+  movies,
+  basePath,
+  emptyText = "Không tìm thấy phim nào.",
+}: {
+  movies: CardMovie[];
+  basePath: string;
+  emptyText?: string;
+}) {
+  const searchParams = useSearchParams();
+  const requested = Number(searchParams?.get("page") ?? "") || 1;
+  const { items, totalPages, page } = paginate(movies, requested);
+
+  return (
+    <>
+      {items.length === 0 ? (
+        <div className="py-20 text-center">
+          <p className="text-text-muted text-[15px]">{emptyText}</p>
+        </div>
+      ) : (
+        <div className={GRID_CLS}>
+          {items.map((m) => (
+            <MovieCard key={m.slug} m={m} />
+          ))}
+        </div>
+      )}
+
+      <Pagination page={page} totalPages={totalPages} basePath={basePath} />
+    </>
+  );
+}
+
 export function CategoryPage({
   title,
   movies,
-  page = 1,
-  totalPages = 1,
   basePath,
   emptyText = "Không tìm thấy phim nào.",
 }: {
   title: string;
-  movies: MovieDetail[];
-  page?: number;
-  totalPages?: number;
+  movies: CardMovie[];
   basePath: string;
   emptyText?: string;
 }) {
@@ -145,19 +180,9 @@ export function CategoryPage({
           </button>
         </div>
 
-        {movies.length === 0 ? (
-          <div className="py-20 text-center">
-            <p className="text-text-muted text-[15px]">{emptyText}</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-x-3 gap-y-6">
-            {movies.map((m) => (
-              <MovieCard key={m.slug} m={m} />
-            ))}
-          </div>
-        )}
-
-        <Pagination page={page} totalPages={totalPages} basePath={basePath} />
+        <Suspense fallback={<div className="py-20 text-center text-text-muted text-[15px]">{emptyText}</div>}>
+          <CategoryGrid movies={movies} basePath={basePath} emptyText={emptyText} />
+        </Suspense>
       </div>
     </main>
   );
