@@ -193,7 +193,6 @@ const fmt = (s: number) => {
 };
 
 // Chỉ coi là HLS khi đường dẫn (pathname) thật sự kết thúc bằng .m3u8.
-// Link dạng /player/?url=.../index.m3u8 là trang nhúng, không phải manifest.
 const isHlsUrl = (u: string | null) => {
   if (!u) return false;
   try {
@@ -251,7 +250,9 @@ export function WatchPage({
   const server = movie.servers[sIdx];
   const eIdx = server ? Math.min(epIdx, Math.max(server.episodes.length - 1, 0)) : 0;
   const episode = server?.episodes[eIdx] ?? null;
-  const hls = isHlsUrl(episode?.url ?? null);
+  const url = episode?.url ?? null;
+  const hls = isHlsUrl(url);
+  const isEmbed = !!url && !hls;
   const firstPlayable = server?.episodes.findIndex((e) => !!e.url) ?? -1;
 
   /* ── khôi phục tiến trình + đọc hash (#tap=tap-N&sv=...&server_id=N&t=giây) ── */
@@ -372,7 +373,6 @@ export function WatchPage({
   );
 
   /* ── HLS cho link .m3u8 ── */
-  const url = episode?.url ?? null;
   useEffect(() => {
     const v = videoRef.current;
     if (!v || !url || !hls) return;
@@ -397,7 +397,6 @@ export function WatchPage({
     if (!v) return;
     v.currentTime = Math.max(0, Math.min(v.duration || 0, v.currentTime + delta));
   };
-  const hasNext = !!server && eIdx < server.episodes.length - 1;
   const nextEpisode = useCallback(() => {
     if (server && eIdx < server.episodes.length - 1) selectEp(sIdx, eIdx + 1);
   }, [eIdx, selectEp, server, sIdx]);
@@ -511,17 +510,6 @@ export function WatchPage({
                       allowFullScreen
                     />
                   )}
-                  {/* Nguồn embed không có thanh điều khiển riêng: nút chuyển tập luôn ở dưới player */}
-                  {url && !hls && hasNext && (
-                    <button
-                      type="button"
-                      onClick={nextEpisode}
-                      className="absolute bottom-3 right-3 z-30 flex items-center gap-1.5 rounded-full bg-black/65 px-3 py-2 text-[12px] font-semibold text-white shadow-lg backdrop-blur-sm transition-colors hover:bg-black/85 hover:text-[#FFD166] sm:bottom-4 sm:right-4 sm:px-4 sm:py-2.5 sm:text-[13px]"
-                    >
-                      <IcSkipFwd className="h-4 w-4 sm:h-5 sm:w-5" />
-                      Tập kế tiếp
-                    </button>
-                  )}
                   {!url && (
                     <div className="flex h-full w-full flex-col items-center justify-center gap-3 px-4 text-center text-white/70">
                       <IcPlay className="w-10 h-10 text-white/30" />
@@ -552,16 +540,6 @@ export function WatchPage({
                     {server && server.episodes.length > 1 ? ` - ${episode?.label}` : ""}
                   </h2>
                   <div className="pointer-events-auto flex shrink-0 flex-col items-end gap-2">
-                    {hasNext && !hls && (
-                      <button
-                        type="button"
-                        onClick={nextEpisode}
-                        className="flex flex-row items-center gap-1.5 p-1 text-xs font-medium text-white/90 transition-colors hover:text-[#eab308] sm:text-[15px]"
-                      >
-                        <IcSkipFwd className="w-4 h-4 sm:w-5 sm:h-5" />
-                        <span className="hidden sm:inline">Tập kế tiếp</span>
-                      </button>
-                    )}
                     <button
                       type="button"
                       onClick={() => setDrawer(true)}
@@ -790,16 +768,6 @@ export function WatchPage({
               <span className="text-xs font-semibold leading-none">Kiểm tra máy chủ</span>
               <IcSignalZero className="pointer-events-none absolute -right-3 -top-1.5 h-4 w-4 rounded-sm bg-black/60 p-0.5 shadow-sm text-white/45" />
             </button>
-            {url && !hls && hasNext && (
-              <button
-                type="button"
-                onClick={nextEpisode}
-                className="inline-flex shrink-0 items-center gap-1 text-[13px] font-semibold text-white/85 transition-colors hover:text-[#FFD166]"
-              >
-                <IcSkipFwd className="h-4 w-4" />
-                Tập kế tiếp
-              </button>
-            )}
             <button
               type="button"
               onClick={() => setNotice(`Ngôn ngữ phim: ${movie.lang}.`)}
@@ -860,19 +828,23 @@ export function WatchPage({
               </button>
               <button
                 type="button"
-                title="Tự động bỏ qua intro"
-                aria-pressed={autoSkip}
+                title={isEmbed ? "Nguồn embed không hỗ trợ tua intro" : "Tự động bỏ qua intro"}
+                aria-pressed={autoSkip && !isEmbed}
                 onClick={() => {
+                  if (isEmbed) {
+                    setNotice("Nguồn embed không hỗ trợ bỏ qua intro. Chọn nguồn M3U8 để dùng tính năng này.");
+                    return;
+                  }
                   const next = !autoSkip;
                   setAutoSkip(next);
                   setNotice(next ? "Đã bật tự động bỏ qua intro" : "Đã tắt tự động bỏ qua intro");
                 }}
-                className="hidden items-center gap-2 rounded-lg px-3 py-1.5 outline-none transition-colors hover:bg-white/10 md:flex group"
+                className={`hidden items-center gap-2 rounded-lg px-3 py-1.5 outline-none transition-colors hover:bg-white/10 md:flex group ${isEmbed ? "opacity-50" : ""}`}
               >
-                <IcSkipFwd className={`w-5 h-5 ${autoSkip ? "text-[#FFD166]" : "text-white/70 group-hover:text-white"}`} />
-                <span className={`hidden md:inline-block text-[13px] font-medium group-hover:text-white ${autoSkip ? "text-[#FFD166]" : "text-white/90"}`}>Auto skip intro</span>
-                <span className={`hidden md:inline-block text-[10px] font-bold px-1.5 py-[3px] rounded transition-colors ${autoSkip ? "text-[#FECF59] bg-[#FECF59]/10" : "text-white/40"}`}>
-                  {autoSkip ? "ON" : "OFF"}
+                <IcSkipFwd className={`w-5 h-5 ${autoSkip && !isEmbed ? "text-[#FFD166]" : "text-white/70 group-hover:text-white"}`} />
+                <span className={`hidden md:inline-block text-[13px] font-medium group-hover:text-white ${autoSkip && !isEmbed ? "text-[#FFD166]" : "text-white/90"}`}>Auto skip intro</span>
+                <span className={`hidden md:inline-block text-[10px] font-bold px-1.5 py-[3px] rounded transition-colors ${autoSkip && !isEmbed ? "text-[#FECF59] bg-[#FECF59]/10" : "text-white/40"}`}>
+                  {isEmbed ? "—" : autoSkip ? "ON" : "OFF"}
                 </span>
               </button>
               <button

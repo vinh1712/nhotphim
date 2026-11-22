@@ -60,30 +60,50 @@ function primarySlug(r) {
 }
 
 // ── episode servers ────────────────────────────────────────────────────────
+// KK (link2) thực chất là manifest .m3u8, có khi bọc trong /player/?url=...
+// Nên gộp vào nguồn M3U8 và bỏ hẳn dạng embed của KK.
+const directM3u8 = (u) => {
+  const s = str(u);
+  if (!s) return null;
+  try {
+    const parsed = new URL(s);
+    const inner = parsed.searchParams.get("url");
+    if (inner && new URL(inner).pathname.toLowerCase().endsWith(".m3u8")) return inner;
+    if (parsed.pathname.toLowerCase().endsWith(".m3u8")) return s;
+  } catch {}
+  return null;
+};
+const isKkEmbed = (u) => str(u).includes("player.phimapi.com");
+
 function buildServers(r, sub) {
   const episodes = parseJson(r.episodes);
   const fields = [
     { key: "link", name: `${sub} (NC)` },
-    { key: "link2", name: `${sub} (KK)` },
     { key: "link3", name: `${sub} (VP)` },
-    { key: "m3u8_2", name: `${sub} (M3U8)` },
   ];
+  const labelOf = (ep) => (r.type === "movie" ? "Full" : `Tập ${pad2(ep.name)}`);
   const servers = [];
   if (Array.isArray(episodes) && episodes.length) {
     for (const f of fields) {
-      const eps = episodes.map((ep) => ({
-        label: r.type === "movie" ? "Full" : `Tập ${pad2(ep.name)}`,
-        url: str(ep?.[f.key]) || null,
-      }));
+      const eps = episodes.map((ep) => {
+        const raw = str(ep?.[f.key]);
+        return { label: labelOf(ep), url: isKkEmbed(raw) ? null : raw || null };
+      });
       if (eps.some((e) => e.url)) servers.push({ name: f.name, episodes: eps });
+    }
+    const m3 = episodes.map((ep) => directM3u8(ep?.link2) || directM3u8(ep?.m3u8_2));
+    if (m3.some(Boolean)) {
+      servers.push({
+        name: `${sub} (M3U8)`,
+        episodes: episodes.map((ep, i) => ({ label: labelOf(ep), url: m3[i] })),
+      });
     }
   }
   if (servers.length === 0) {
     const single = [
-      { url: str(r.embedurl), name: `${sub} (NC)` },
-      { url: str(r.embedurl2), name: `${sub} (KK)` },
-      { url: str(r.embedurl3), name: `${sub} (VP)` },
-      { url: str(r.m3u8url), name: `${sub} (M3U8)` },
+      { url: isKkEmbed(r.embedurl) ? null : str(r.embedurl), name: `${sub} (NC)` },
+      { url: isKkEmbed(r.embedurl3) ? null : str(r.embedurl3), name: `${sub} (VP)` },
+      { url: directM3u8(r.embedurl2) || directM3u8(r.m3u8url), name: `${sub} (M3U8)` },
     ].filter((x) => x.url);
     if (single.length) {
       const label = r.type === "movie" ? "Full" : r.currentep ? `Tập ${pad2(r.currentep)}` : "Full";
