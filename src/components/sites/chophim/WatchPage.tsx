@@ -803,7 +803,7 @@ export function WatchPage({
               </button>
               <button
                 type="button"
-                onClick={() => setNotice("Gặp lỗi phát? Đổi máy chủ ở danh sách tập hoặc báo qua Telegram ở footer.")}
+                onClick={() => setNotice("Gặp lỗi phát? Đổi máy chủ ở danh sách tập hoặc báo qua Telegram @nhot2008.")}
                 className="flex items-center gap-2 hover:bg-white/10 transition-colors group outline-none py-1.5 px-2 md:px-3 rounded-lg"
               >
                 <IcBug className="w-5 h-5 text-white/70 group-hover:text-[#eab308] transition-colors" />
@@ -855,13 +855,13 @@ export function WatchPage({
             {/* telegram */}
             <div className="mb-4">
               <a
-                href="https://telegram.dog/chophim"
+                href="https://t.me/nhot2008"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[#229ED9]/20 bg-[#229ED9]/10 px-3 py-2.5 text-[12px] font-medium text-[#8bd8ff] transition-colors hover:border-[#229ED9]/35 hover:bg-[#229ED9]/15 hover:text-white sm:w-auto"
               >
                 <IcTelegram className="h-4 w-4 shrink-0" />
-                Tham gia nhóm Telegram để tâm sự với Ad nhoa
+                Liên hệ Telegram @nhot2008 để được hỗ trợ
               </a>
             </div>
 

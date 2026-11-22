@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Chợ Phim - Trăm phim một chợ",
+  title: "NhótPhim - Phim hay, xem mọi lúc",
   description:
-    "Chợ Phim - Trang xem phim online chất lượng cao miễn phí Vietsub, thuyết minh, lồng tiếng full HD.",
+    "NhótPhim - Trang xem phim online chất lượng cao miễn phí Vietsub, thuyết minh, lồng tiếng full HD.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { renderCategory } from "@/components/sites/chophim/category-route";
 
 export const metadata: Metadata = {
-  title: "Hoạt Hình | Chợ Phim",
-  description: "Xem phim hoạt hình, anime online miễn phí Vietsub full HD tại Chợ Phim.",
+  title: "Hoạt Hình | NhótPhim",
+  description: "Xem phim hoạt hình, anime online miễn phí Vietsub full HD tại NhótPhim.",
 };
 
 export default function HoatHinhPage() {

@@ -34,8 +34,8 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const cat = findCategory(slug);
   if (!cat) return {};
   return {
-    title: `${cat.name} | Chợ Phim`,
-    description: `Xem phim ${cat.name} online miễn phí Vietsub full HD tại Chợ Phim.`,
+    title: `${cat.name} | NhótPhim`,
+    description: `Xem phim ${cat.name} online miễn phí Vietsub full HD tại NhótPhim.`,
   };
 }
 

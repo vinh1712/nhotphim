@@ -9,8 +9,7 @@ import { toCard } from "./movie-filter";
 import { home } from "./types";
 import { MobileHeaderBar, SearchAutocomplete } from "./SearchAutocomplete";
 
-const LOGO_384 = withBasePath("/sites/chophim/0ec7eba077af57ab.png");
-const LOGO_640 = withBasePath("/sites/chophim/56983f90e6a3c741.png");
+const LOGO = withBasePath("/brand/nhotphim-logo.png");
 
 const DROPDOWN_W = ["w-[480px]", "w-[400px]", "w-[200px]"];
 
@@ -63,7 +62,7 @@ export function Header() {
         {/* --- mobile: menu + logo + Search overlay (giống chophim.wtf) --- */}
         <MobileHeaderBar
           movies={cards}
-          logoSrc={LOGO_384}
+          logoSrc={LOGO}
           nav={topLinks}
           groups={dropdowns}
           accountHref={withBasePath("/dang-nhap")}
@@ -75,7 +74,7 @@ export function Header() {
           <div className="flex items-center h-full flex-1 min-w-0">
             <a className="flex items-center gap-2 shrink-0 pr-1 xl:pr-3" href={withBasePath("/")}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img alt="ChoPhim" loading="lazy" width={200} height={60} decoding="async" className="h-10 xl:h-14 w-auto object-contain" src={LOGO_640} />
+              <img alt="NhótPhim" loading="lazy" width={200} height={60} decoding="async" className="h-10 xl:h-14 w-auto object-contain" src={LOGO} />
             </a>
             <div className="ml-1 xl:ml-2 w-[240px] xl:w-[340px] 2xl:w-[400px] shrink-0 transition-all duration-300">
               <SearchAutocomplete movies={cards} />
@@ -128,7 +127,7 @@ export function Header() {
               </div>
               <div className="text-left flex-1">
                 <p className="text-[11px] text-white/70 mb-0.5" style={{ lineHeight: "11px" }}>Tải ứng dụng</p>
-                <p className="text-[14px] font-bold text-white leading-none">ChoPhim</p>
+                <p className="text-[14px] font-bold text-white leading-none">NhótPhim</p>
               </div>
             </a>
             <a

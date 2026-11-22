@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const topic = findTopic(slug);
   if (!topic) return {};
   return {
-    title: `${topic.title} | Chợ Phim`,
+    title: `${topic.title} | NhótPhim`,
     description: topic.description,
   };
 }

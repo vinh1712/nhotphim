@@ -45,8 +45,8 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const name = countryName(slug);
   if (!name) return {};
   return {
-    title: `Phim ${name} | Chợ Phim`,
-    description: `Xem phim ${name} online miễn phí Vietsub full HD tại Chợ Phim.`,
+    title: `Phim ${name} | NhótPhim`,
+    description: `Xem phim ${name} online miễn phí Vietsub full HD tại NhótPhim.`,
   };
 }
 

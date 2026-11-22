@@ -4,9 +4,9 @@ import { Footer } from "@/components/sites/chophim/Footer";
 import { StaticPage } from "@/components/sites/chophim/StaticPage";
 
 export const metadata: Metadata = {
-  title: "Giới Thiệu | Chợ Phim",
+  title: "Giới Thiệu | NhótPhim",
   description:
-    "Giới thiệu Chợ Phim — Trăm phim một chợ: kho phim online miễn phí chất lượng HD, Vietsub và thuyết minh.",
+    "Giới thiệu NhótPhim — Phim hay, xem mọi lúc: kho phim online miễn phí chất lượng HD, Vietsub và thuyết minh.",
 };
 
 export default function GioiThieuPage() {
@@ -15,7 +15,7 @@ export default function GioiThieuPage() {
       <Header />
       <StaticPage
         title="Giới Thiệu"
-        intro="Chợ Phim (Chợ Phim) là trang xem phim online miễn phí với phương châm “Trăm phim một chợ” — mọi thể loại phim đều quy tụ tại đây, từ phim lẻ, phim bộ, hoạt hình, TV Shows đến phim chiếu rạp."
+        intro="NhótPhim là trang xem phim online miễn phí với phương châm “Phim hay, xem mọi lúc” — mọi thể loại phim đều quy tụ tại đây, từ phim lẻ, phim bộ, hoạt hình, TV Shows đến phim chiếu rạp."
         sections={[
           {
             heading: "Chúng tôi mang đến gì?",
@@ -29,14 +29,14 @@ export default function GioiThieuPage() {
           {
             heading: "Tôn chỉ hoạt động",
             paragraphs: [
-              "Chợ Phim không lưu trữ, không tải lên bất kỳ nội dung phim nào. Toàn bộ nội dung được lấy từ các nguồn chia sẻ công khai trên Internet, chỉ phục vụ mục đích giải trí và tham khảo.",
+              "NhótPhim không lưu trữ, không tải lên bất kỳ nội dung phim nào. Toàn bộ nội dung được lấy từ các nguồn chia sẻ công khai trên Internet, chỉ phục vụ mục đích giải trí và tham khảo.",
               "Chúng tôi tôn trọng quyền sở hữu trí tuệ của các nhà sản xuất. Nếu bạn là chủ sở hữu bản quyền và muốn nội dung được gỡ bỏ, vui lòng liên hệ với chúng tôi qua trang Liên hệ.",
             ],
           },
           {
             heading: "Miễn phí 100%",
             paragraphs: [
-              "Mọi nội dung trên Chợ Phim đều miễn phí. Bạn không cần đăng ký, không cần nạp tiền — chỉ cần chọn phim và thưởng thức. Tài khoản thành viên (nếu có) chỉ dùng để bình luận, đánh giá và lưu danh sách yêu thích.",
+              "Mọi nội dung trên NhótPhim đều miễn phí. Bạn không cần đăng ký, không cần nạp tiền — chỉ cần chọn phim và thưởng thức. Tài khoản thành viên (nếu có) chỉ dùng để bình luận, đánh giá và lưu danh sách yêu thích.",
             ],
           },
         ]}

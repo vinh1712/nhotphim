@@ -46,7 +46,7 @@ export function LoginPage() {
                 </svg>
               </div>
               <h1 className="text-xl font-bold text-white">{mode === "login" ? "Đăng nhập tài khoản" : "Tạo tài khoản mới"}</h1>
-              <p className="text-[13px] text-text-muted mt-1">Tham gia Chợ Phim — Trăm phim một chợ</p>
+              <p className="text-[13px] text-text-muted mt-1">Tham gia NhótPhim — Phim hay, xem mọi lúc</p>
             </div>
 
             {/* tabs */}

@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { renderCategory } from "@/components/sites/chophim/category-route";
 
 export const metadata: Metadata = {
-  title: "TV Shows | Chợ Phim",
-  description: "Xem TV Shows online miễn phí Vietsub full HD tại Chợ Phim.",
+  title: "TV Shows | NhótPhim",
+  description: "Xem TV Shows online miễn phí Vietsub full HD tại NhótPhim.",
 };
 
 export default function TvShowsPage() {

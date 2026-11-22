@@ -4,8 +4,8 @@ import { Footer } from "@/components/sites/chophim/Footer";
 import { StaticPage } from "@/components/sites/chophim/StaticPage";
 
 export const metadata: Metadata = {
-  title: "Chính Sách Bảo Mật | Chợ Phim",
-  description: "Chính sách bảo mật của Chợ Phim — cách chúng tôi thu thập và sử dụng thông tin.",
+  title: "Chính Sách Bảo Mật | NhótPhim",
+  description: "Chính sách bảo mật của NhótPhim — cách chúng tôi thu thập và sử dụng thông tin.",
 };
 
 export default function ChinhSachBaoMatPage() {
@@ -14,7 +14,7 @@ export default function ChinhSachBaoMatPage() {
       <Header />
       <StaticPage
         title="Chính Sách Bảo Mật"
-        intro="Chợ Phim tôn trọng quyền riêng tư của bạn. Tài liệu này giải thích chúng tôi thu thập, sử dụng và bảo vệ thông tin như thế nào khi bạn truy cập website."
+        intro="NhótPhim tôn trọng quyền riêng tư của bạn. Tài liệu này giải thích chúng tôi thu thập, sử dụng và bảo vệ thông tin như thế nào khi bạn truy cập website."
         sections={[
           {
             heading: "1. Thông tin thu thập",
@@ -33,7 +33,7 @@ export default function ChinhSachBaoMatPage() {
           {
             heading: "3. Cookie",
             paragraphs: [
-              "Chợ Phim sử dụng cookie cần thiết để ghi nhớ trạng thái phiên làm việc. Bạn có thể tắt cookie trong trình duyệt, tuy nhiên một số chức năng (nhớ tập đang xem, đăng nhập) có thể không hoạt động.",
+              "NhótPhim sử dụng cookie cần thiết để ghi nhớ trạng thái phiên làm việc. Bạn có thể tắt cookie trong trình duyệt, tuy nhiên một số chức năng (nhớ tập đang xem, đăng nhập) có thể không hoạt động.",
             ],
           },
           {

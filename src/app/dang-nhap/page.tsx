@@ -4,8 +4,8 @@ import { Footer } from "@/components/sites/chophim/Footer";
 import { LoginPage } from "@/components/sites/chophim/LoginPage";
 
 export const metadata: Metadata = {
-  title: "Đăng nhập | Chợ Phim",
-  description: "Đăng nhập hoặc tạo tài khoản Chợ Phim.",
+  title: "Đăng nhập | NhótPhim",
+  description: "Đăng nhập hoặc tạo tài khoản NhótPhim.",
 };
 
 export default function DangNhapPage() {

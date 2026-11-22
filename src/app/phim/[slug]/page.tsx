@@ -24,8 +24,8 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   if (!movie) return {};
   const parts = [movie.title, movie.origin ? `(${movie.origin})` : null, movie.year ? `- ${movie.year}` : null].filter(Boolean);
   return {
-    title: `${parts.join(" ")} | Chợ Phim`,
-    description: movie.description || `Xem phim ${movie.title} online miễn phí tại Chợ Phim.`,
+    title: `${parts.join(" ")} | NhótPhim`,
+    description: movie.description || `Xem phim ${movie.title} online miễn phí tại NhótPhim.`,
   };
 }
 

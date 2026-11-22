@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { renderCategory } from "@/components/sites/chophim/category-route";
 
 export const metadata: Metadata = {
-  title: "Phim Bộ | Chợ Phim",
-  description: "Xem phim bộ online miễn phí Vietsub, thuyết minh full HD tại Chợ Phim.",
+  title: "Phim Bộ | NhótPhim",
+  description: "Xem phim bộ online miễn phí Vietsub, thuyết minh full HD tại NhótPhim.",
 };
 
 export default function PhimBoPage() {

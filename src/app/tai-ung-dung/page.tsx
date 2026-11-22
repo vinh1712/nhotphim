@@ -4,8 +4,8 @@ import { Footer } from "@/components/sites/chophim/Footer";
 import { StaticPage } from "@/components/sites/chophim/StaticPage";
 
 export const metadata: Metadata = {
-  title: "Tải Ứng Dụng | Chợ Phim",
-  description: "Tải ứng dụng Chợ Phim cho Android và iOS — xem phim mọi lúc mọi nơi.",
+  title: "Tải Ứng Dụng | NhótPhim",
+  description: "Tải ứng dụng NhótPhim cho Android và iOS — xem phim mọi lúc mọi nơi.",
 };
 
 export default function TaiUngDungPage() {
@@ -14,7 +14,7 @@ export default function TaiUngDungPage() {
       <Header />
       <StaticPage
         title="Tải Ứng Dụng"
-        intro="Xem phim thoải mái hơn với ứng dụng Chợ Phim — nhẹ, mượt, hỗ trợ thông báo phim mới và trải nghiệm tối ưu cho điện thoại."
+        intro="Xem phim thoải mái hơn với ứng dụng NhótPhim — nhẹ, mượt, hỗ trợ thông báo phim mới và trải nghiệm tối ưu cho điện thoại."
         sections={[
           {
             heading: "Android",
@@ -30,7 +30,7 @@ export default function TaiUngDungPage() {
           {
             heading: "iOS (iPhone / iPad)",
             paragraphs: [
-              "Ứng dụng iOS đang chờ phát hành trên App Store. Trong lúc đó, bạn có thể thêm Chợ Phim vào Màn hình chính: mở Safari → Chia sẻ → Thêm vào Màn hình chính để dùng như một app.",
+              "Ứng dụng iOS đang chờ phát hành trên App Store. Trong lúc đó, bạn có thể thêm NhótPhim vào Màn hình chính: mở Safari → Chia sẻ → Thêm vào Màn hình chính để dùng như một app.",
             ],
           },
           {

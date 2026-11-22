@@ -1,16 +1,16 @@
 import { withBasePath } from "@/lib/base-path";
-const LOGO_640 = withBasePath("/sites/chophim/56983f90e6a3c741.png");
+const LOGO = withBasePath("/brand/nhotphim-logo.png");
 const VN_FLAG = withBasePath("/sites/chophim/46d51573b642dc37.svg");
 
 const SOCIALS: { href: string; label: string; icon: string; size: number }[] = [
-  { href: "https://telegram.dog/chophim", label: "Telegram", icon: withBasePath("/sites/chophim/659a62f126eec1fb.svg"), size: 18 },
+  { href: "https://t.me/nhot2008", label: "Telegram", icon: withBasePath("/sites/chophim/659a62f126eec1fb.svg"), size: 18 },
   { href: "#", label: "Discord", icon: withBasePath("/sites/chophim/a74ef964b69f0a52.svg"), size: 18 },
   { href: "#", label: "X", icon: withBasePath("/sites/chophim/fca626aae2487b85.svg"), size: 16 },
-  { href: "https://www.facebook.com/chophim.fun", label: "Facebook", icon: withBasePath("/sites/chophim/c8ba75c44abe5e61.svg"), size: 18 },
+  { href: "#", label: "Facebook", icon: withBasePath("/sites/chophim/c8ba75c44abe5e61.svg"), size: 18 },
   { href: "#", label: "TikTok", icon: withBasePath("/sites/chophim/87ac6d8ce867ad36.svg"), size: 18 },
   { href: "#", label: "YouTube", icon: withBasePath("/sites/chophim/b87cd8184d357ebb.svg"), size: 18 },
-  { href: "https://www.threads.com/@chophim_fun", label: "Threads", icon: withBasePath("/sites/chophim/9add8d6a49399db9.svg"), size: 18 },
-  { href: "https://www.instagram.com/chophim_fun/", label: "Instagram", icon: withBasePath("/sites/chophim/d1853b0887772a2e.svg"), size: 18 },
+  { href: "#", label: "Threads", icon: withBasePath("/sites/chophim/9add8d6a49399db9.svg"), size: 18 },
+  { href: "#", label: "Instagram", icon: withBasePath("/sites/chophim/d1853b0887772a2e.svg"), size: 18 },
 ];
 
 const MENU = [
@@ -24,7 +24,7 @@ const MENU = [
 const FRIENDS = ["MotChill", "RoPhim", "PhimMoi", "GhienPhim", "MotChillTv"];
 
 const DESC =
-  "Chợ Phim - Trang xem phim online chất lượng cao miễn phí Vietsub, thuyết minh, lồng tiếng full HD. Kho phim mới khổng lồ, phim chiếu rạp, phim bộ, phim lẻ từ nhiều quốc gia như Việt Nam, Hàn Quốc, Trung Quốc, Thái Lan, Nhật Bản, Âu Mỹ… đa dạng thể loại. Khám phá nền tảng phim trực tuyến hay nhất 2026 với chất lượng 4K!";
+  "NhótPhim - Trang xem phim online chất lượng cao miễn phí Vietsub, thuyết minh, lồng tiếng full HD. Kho phim mới khổng lồ, phim chiếu rạp, phim bộ, phim lẻ từ nhiều quốc gia như Việt Nam, Hàn Quốc, Trung Quốc, Thái Lan, Nhật Bản, Âu Mỹ… đa dạng thể loại. Khám phá nền tảng phim trực tuyến hay nhất 2026 với chất lượng 4K!";
 
 export function Footer() {
   return (
@@ -50,13 +50,13 @@ export function Footer() {
           <a className="inline-block shrink-0 mx-auto md:mx-0" href={withBasePath("/")}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              alt="Chợ Phim"
+              alt="NhótPhim"
               loading="lazy"
               width={260}
               height={80}
               decoding="async"
               className="h-[72px] md:h-[80px] w-auto object-contain"
-              src={LOGO_640}
+              src={LOGO}
             />
           </a>
           <div className="hidden md:block w-px h-10 bg-white/10" />
@@ -114,16 +114,16 @@ export function Footer() {
 
         <div className="mt-6 pt-2">
           <p className="text-[14px] text-white/80">
-            © 2026 Chợ Phim
+            © 2026 NhótPhim
             <span className="mx-2 text-white/30">•</span>
             <span>
               <a
-                href="https://telegram.dog/callmestring"
+                href="https://t.me/nhot2008"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[#FFD166] hover:text-yellow-300 transition-colors"
               >
-                @callmestring
+                @nhot2008
               </a>
             </span>
           </p>

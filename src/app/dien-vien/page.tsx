@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { EmptyListPage } from "@/components/sites/chophim/EmptyListPage";
 
 export const metadata: Metadata = {
-  title: "Diễn Viên | Chợ Phim",
-  description: "Danh sách diễn viên tham gia các bộ phim tại Chợ Phim.",
+  title: "Diễn Viên | NhótPhim",
+  description: "Danh sách diễn viên tham gia các bộ phim tại NhótPhim.",
 };
 
 export default function DienVienPage() {

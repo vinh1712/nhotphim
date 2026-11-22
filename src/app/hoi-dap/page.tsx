@@ -4,18 +4,18 @@ import { Footer } from "@/components/sites/chophim/Footer";
 import { StaticPage } from "@/components/sites/chophim/StaticPage";
 
 export const metadata: Metadata = {
-  title: "Hỏi-Đáp | Chợ Phim",
-  description: "Các câu hỏi thường gặp về cách xem phim, lỗi phát sinh và sử dụng Chợ Phim.",
+  title: "Hỏi-Đáp | NhótPhim",
+  description: "Các câu hỏi thường gặp về cách xem phim, lỗi phát sinh và sử dụng NhótPhim.",
 };
 
 const QA: { q: string; a: string }[] = [
   {
-    q: "Chợ Phim có mất phí không?",
-    a: "Không. Chợ Phim hoàn toàn miễn phí — bạn có thể xem toàn bộ phim mà không cần nạp tiền hay mua gói. Chỉ cần chọn phim và bấm Play.",
+    q: "NhótPhim có mất phí không?",
+    a: "Không. NhótPhim hoàn toàn miễn phí — bạn có thể xem toàn bộ phim mà không cần nạp tiền hay mua gói. Chỉ cần chọn phim và bấm Play.",
   },
   {
     q: "Làm sao xem phim chất lượng cao (HD, Full HD)?",
-    a: "Phim trên Chợ Phim mặc định được phát ở chất lượng tốt nhất mà nguồn cung cấp. Nếu phim có nhiều chất lượng, bạn có thể đổi trong nút Cài đặt trên thanh điều khiển của trình phát.",
+    a: "Phim trên NhótPhim mặc định được phát ở chất lượng tốt nhất mà nguồn cung cấp. Nếu phim có nhiều chất lượng, bạn có thể đổi trong nút Cài đặt trên thanh điều khiển của trình phát.",
   },
   {
     q: "Trình phát báo lỗi, không chạy thì làm sao?",
@@ -31,7 +31,7 @@ const QA: { q: string; a: string }[] = [
   },
   {
     q: "Có thể xem trên điện thoại không?",
-    a: "Có. Chợ Phim hỗ trợ trình phát trên điện thoại Android, iOS và máy tính bảng, tối ưu cho cả màn hình nhỏ.",
+    a: "Có. NhótPhim hỗ trợ trình phát trên điện thoại Android, iOS và máy tính bảng, tối ưu cho cả màn hình nhỏ.",
   },
   {
     q: "Phim bị lỗi âm thanh, vietsub lỗi thì báo ở đâu?",
@@ -43,7 +43,7 @@ export default function HoiDapPage() {
   return (
     <>
       <Header />
-      <StaticPage title="Hỏi-Đáp" intro="Những câu hỏi thường gặp nhất khi xem phim tại Chợ Phim.">
+      <StaticPage title="Hỏi-Đáp" intro="Những câu hỏi thường gặp nhất khi xem phim tại NhótPhim.">
         <div className="mt-6 divide-y divide-white/10">
           {QA.map((item, i) => (
             <details key={i} className="group py-4" open={i === 0}>

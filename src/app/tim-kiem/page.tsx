@@ -6,8 +6,8 @@ import { toCard } from "@/components/sites/chophim/movie-filter";
 import { SearchResults } from "@/components/sites/chophim/SearchResults";
 
 export const metadata: Metadata = {
-  title: "Tìm kiếm | Chợ Phim",
-  description: "Tìm kiếm phim trên Chợ Phim.",
+  title: "Tìm kiếm | NhótPhim",
+  description: "Tìm kiếm phim trên NhótPhim.",
 };
 
 // Chỉ truyền dữ liệu card tối thiểu xuống client (tìm kiếm chạy ở trình duyệt).

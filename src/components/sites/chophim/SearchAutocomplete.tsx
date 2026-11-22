@@ -236,7 +236,7 @@ export function MobileHeaderBar({
         />
         <a className="flex items-center shrink-0" href={withBasePath("/")}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt="ChoPhim" width={160} height={45} decoding="async" className="h-10 w-auto object-contain" src={logoSrc} />
+          <img alt="NhótPhim" width={160} height={45} decoding="async" className="h-10 w-auto object-contain" src={logoSrc} />
         </a>
       </div>
       <div className="flex items-center gap-3 lg:hidden shrink-0">

@@ -16,9 +16,9 @@ type TopicFull = {
 const topics = (homeData as unknown as { topicsFull: TopicFull[] }).topicsFull;
 
 export const metadata: Metadata = {
-  title: "Chủ đề phim | Chợ Phim",
+  title: "Chủ đề phim | NhótPhim",
   description:
-    "Khám phá các chủ đề phim tuyển chọn tại Chợ Phim: K-Drama Hàn Quốc, Cổ Trang Trung Quốc, Anime Mới, Tình Cảm Lãng Mạn và nhiều chủ đề hấp dẫn khác.",
+    "Khám phá các chủ đề phim tuyển chọn tại NhótPhim: K-Drama Hàn Quốc, Cổ Trang Trung Quốc, Anime Mới, Tình Cảm Lãng Mạn và nhiều chủ đề hấp dẫn khác.",
 };
 
 export default function ChuDePage() {
