@@ -10,7 +10,7 @@ import Hls, {
   type LoaderResponse,
   type LoaderStats,
 } from "hls.js";
-import { buildAdFreePlaylistUrl, stripKkAds } from "./kk-ads";
+import { loadKkAdRanges, stripKkAds, type AdRange } from "./kk-ads";
 import { fillStyle } from "./types";
 import { CommentItem } from "./DetailPage";
 import { IconLanguages, IconLogIn } from "./icons";
@@ -289,6 +289,8 @@ export function WatchPage({
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const pendingTimeRef = useRef(0);
   const lastSavedRef = useRef(0);
+  const adRangesRef = useRef<AdRange[]>([]);
+  const nativeHlsRef = useRef(false);
 
   const sIdx = Math.min(serverIdx, Math.max(movie.servers.length - 1, 0));
   const server = movie.servers[sIdx];
@@ -299,7 +301,8 @@ export function WatchPage({
   const isEmbed = !!url && !hls;
   const firstPlayable = server?.episodes.findIndex((e) => !!e.url) ?? -1;
 
-  // intro_end lấy từ /api/skip-times của chophim; QC bị cắt khỏi playlist.
+  // intro_end lấy từ /api/skip-times của chophim. Với desktop QC bị cắt khỏi
+  // playlist; với Safari/iOS (native HLS) phát link gốc rồi tự tua qua QC.
   const introEnd = movie.introEnd ?? DEFAULT_INTRO_END;
 
   /* ── khôi phục tiến trình + đọc hash (#tap=tap-N&sv=...&server_id=N&t=giây) ── */
@@ -419,33 +422,41 @@ export function WatchPage({
     [dur, eIdx, movie, sIdx, server?.name]
   );
 
-  /* ── HLS cho link .m3u8: cắt sạch quảng cáo khỏi playlist ── */
+  /* ── HLS cho link .m3u8 ──
+   * Desktop: hls.js cắt hẳn dòng QC khỏi playlist trước khi parse.
+   * Safari/iOS: không có MediaSource nên phát native HLS từ link gốc; QC sẽ
+   * bị tự tua qua ở skipNativeAds() bên dưới. blob: playlist không dùng được
+   * ở đây nên tuyệt đối không gán blob URL cho <video>.
+   */
   useEffect(() => {
     const v = videoRef.current;
     if (!v || !url || !hls) {
+      adRangesRef.current = [];
+      nativeHlsRef.current = false;
       v?.removeAttribute("src");
       return;
     }
+
     if (Hls.isSupported()) {
+      adRangesRef.current = [];
+      nativeHlsRef.current = false;
       const inst = new Hls({ loader: makeAdFreeLoader() });
       inst.loadSource(url);
       inst.attachMedia(v);
       return () => inst.destroy();
     }
-    // Safari phát HLS gốc: thay bằng blob playlist đã cắt QC.
+
     const controller = new AbortController();
-    let objectUrl: string | null = null;
-    void buildAdFreePlaylistUrl(url, controller.signal).then((cleanUrl) => {
-      if (controller.signal.aborted) {
-        if (cleanUrl) URL.revokeObjectURL(cleanUrl);
-        return;
-      }
-      objectUrl = cleanUrl;
-      v.src = cleanUrl || url;
+    adRangesRef.current = [];
+    nativeHlsRef.current = true;
+    v.src = url;
+    void loadKkAdRanges(url, controller.signal).then((ranges) => {
+      if (!controller.signal.aborted) adRangesRef.current = ranges;
     });
     return () => {
       controller.abort();
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
+      adRangesRef.current = [];
+      nativeHlsRef.current = false;
       v.removeAttribute("src");
     };
   }, [url, hls]);
@@ -472,6 +483,30 @@ export function WatchPage({
     v.currentTime = Math.min(introEnd + 0.05, Math.max(0, v.duration - 1));
     setNotice("Đã bỏ qua phần giới thiệu");
   }, [introEnd]);
+
+  // Safari/iOS phát playlist gốc nên timeline vẫn có đoạn QC. Tự tua qua
+  // ngay khi chạm vào khoảng QC — không cần nút bấm, không hiện quảng cáo.
+  const skipNativeAds = useCallback(() => {
+    if (!nativeHlsRef.current) return;
+    const v = videoRef.current;
+    if (!v || !Number.isFinite(v.duration) || v.duration <= 0) return;
+    const t = v.currentTime;
+    const range = adRangesRef.current.find((r) => t >= r.start - 0.12 && t < r.end);
+    if (!range) return;
+    const target = Math.min(range.end + 0.08, Math.max(0, v.duration - 0.2));
+    if (target > t + 0.01) v.currentTime = target;
+  }, []);
+
+  useEffect(() => {
+    if (!playing || !hls || !nativeHlsRef.current) return;
+    let raf = 0;
+    const tick = () => {
+      skipNativeAds();
+      raf = window.requestAnimationFrame(tick);
+    };
+    raf = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(raf);
+  }, [playing, hls, skipNativeAds]);
 
   const onEnded = () => {
     setPlaying(false);
@@ -542,6 +577,7 @@ export function WatchPage({
                         persist(e.currentTarget.currentTime, e.currentTarget.duration || dur);
                       }}
                       onTimeUpdate={(e) => {
+                        skipNativeAds();
                         const v = e.currentTarget;
                         const t = v.currentTime;
                         setCur(t);
@@ -550,6 +586,7 @@ export function WatchPage({
                           persist(t, v.duration || dur);
                         }
                       }}
+                      onSeeking={skipNativeAds}
                       onLoadedMetadata={(e) => {
                         const v = e.currentTarget;
                         const d = v.duration || 0;
@@ -558,6 +595,7 @@ export function WatchPage({
                           v.currentTime = Math.min(pendingTimeRef.current, Math.max(0, d - 5));
                           pendingTimeRef.current = 0;
                         }
+                        skipNativeAds();
                       }}
                       onEnded={() => {
                         persist(dur || 0, dur || 0);
