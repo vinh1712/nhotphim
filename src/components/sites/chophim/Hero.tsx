@@ -72,15 +72,18 @@ function HeroSlide({
               <div className="mb-1 md:mb-4 lg:mb-6">
                 <h2 className="text-lg font-bold text-white drop-shadow-md md:hidden">{slide.title}</h2>
                 {slide.logo ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    alt={slide.title}
-                    className="-ml-2 hidden object-contain object-left-bottom drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] md:block"
-                    style={logoBoxStyle(slide)}
-                    src={slide.logo}
-                    loading={active ? "eager" : "lazy"}
-                    draggable={false}
-                  />
+                  // Source bọc logo trong 1 div có clamp(width,height), còn img là w-full h-full object-contain.
+                  // Giữ đúng cấu trúc đó để logo không bị co giãn lệch giữa các slide.
+                  <div className="hidden md:block" style={logoBoxStyle(slide)}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      alt={slide.title}
+                      className="h-full w-full object-contain object-left-bottom drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]"
+                      src={slide.logo}
+                      loading={active ? "eager" : "lazy"}
+                      draggable={false}
+                    />
+                  </div>
                 ) : (
                   <h2 className="mb-1 text-lg font-bold text-white drop-shadow-md md:mb-3 md:text-2xl lg:mb-4 lg:text-4xl">
                     {slide.title}

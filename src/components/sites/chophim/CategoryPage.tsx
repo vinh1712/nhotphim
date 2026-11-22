@@ -4,7 +4,7 @@ import { stripBasePath, withBasePath } from "@/lib/base-path";
 // Trang danh mục / tìm kiếm: tiêu đề + bộ lọc + lưới poster + phân trang.
 // Số trang mặc định đọc từ ?page= để page vẫn build được thành HTML tĩnh (output: "export").
 import { Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { BottomBadges } from "./Badges";
 import { fillStyle, type MovieItem } from "./types";
 import {
@@ -153,8 +153,10 @@ export function CategoryGrid({
   pageOverride?: number;
   onPageChange?: (page: number) => void;
 }) {
-  const searchParams = useSearchParams();
-  const requested = pageOverride ?? (Number(searchParams?.get("page") ?? "") || 1);
+  // `useSearchParams()` bắt Next phải CSR bailout: trên static export nó khiến
+  // Suspense fallback ("Không tìm thấy phim nào.") dính mãi không hydrate.
+  // Trang luôn truyền pageOverride nên chỉ cần đọc state ở đây.
+  const requested = pageOverride ?? 1;
   const { items, totalPages, page } = paginate(movies, requested);
 
   return (

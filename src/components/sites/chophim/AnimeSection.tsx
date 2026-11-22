@@ -26,10 +26,7 @@ function DeskSlide({
 }) {
   const desc = stripTags(s.content);
   return (
-    <div
-      className={`swiper-slide ${active ? "opacity-100 z-10" : "opacity-0 z-0"}`}
-      style={{ transitionDuration: "700ms" }}
-    >
+    <div className="w-full relative" style={{ transitionDuration: "700ms" }}>
       <div className={`w-full relative ${active ? "" : "pointer-events-none"}`}>
         <div className="relative w-full aspect-video lg:aspect-[2.5/1] bg-[#12121a]">
           <div className="absolute inset-0 w-[30%] bg-[#171a26] pointer-events-none" />
@@ -146,11 +143,8 @@ function DeskSlide({
 function MobSlide({ s, active }: { s: ASlide; active: boolean }) {
   const desc = stripTags(s.content);
   return (
-    <div
-      className={`swiper-slide ${active ? "opacity-100 z-10" : "opacity-0 z-0"}`}
-      style={{ transitionDuration: "700ms" }}
-    >
-      <div className="w-full relative">
+    <div className="w-full relative" style={{ transitionDuration: "700ms" }}>
+      <div className={`w-full relative ${active ? "" : "pointer-events-none"}`}>
         <div className="bg-[#171a26] flex flex-col w-full relative">
           <div className="relative w-full aspect-[16/10] overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -256,12 +250,15 @@ export function AnimeSection() {
           {/* desktop */}
           <div className="hidden md:block w-full rounded-[20px] md:rounded-[24px] overflow-hidden anime-banner-wrap-desktop">
             <div className="swiper swiper-fade w-full">
-              <div className="swiper-wrapper relative w-full" style={{ cursor: "grab" }}>
+              {/* source dùng Swiper: slide nằm trong wrapper có chiều cao thật (không absolute).
+                  Xếp chồng bằng gridArea 1/1 để wrapper không bị collapse như bản trước. */}
+              <div className="swiper-wrapper relative grid w-full" style={{ cursor: "grab" }}>
                 {slides.map((s, i) => (
                   <div
                     key={s.slug}
-                    className="swiper-slide absolute inset-0 w-full h-full transition-opacity"
+                    className="swiper-slide relative w-full transition-opacity duration-300"
                     style={{
+                      gridArea: "1 / 1",
                       opacity: i === active ? 1 : 0,
                       zIndex: i === active ? 10 : 0,
                       pointerEvents: i === active ? "auto" : "none",
@@ -282,12 +279,13 @@ export function AnimeSection() {
           {/* mobile */}
           <div className="md:hidden w-full rounded-[20px] overflow-hidden anime-banner-wrap-mobile">
             <div className="swiper w-full">
-              <div className="swiper-wrapper relative w-full">
+              <div className="swiper-wrapper relative grid w-full">
                 {slides.map((s, i) => (
                   <div
                     key={s.slug}
-                    className="swiper-slide absolute inset-0 w-full h-full transition-opacity"
+                    className="swiper-slide relative w-full transition-opacity duration-300"
                     style={{
+                      gridArea: "1 / 1",
                       opacity: i === active ? 1 : 0,
                       zIndex: i === active ? 10 : 0,
                       pointerEvents: i === active ? "auto" : "none",

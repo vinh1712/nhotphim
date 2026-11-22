@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { stripBasePath, withBasePath } from "@/lib/base-path";
 import { moviesData } from "@/data";
 import type { MovieDetail } from "./detail-types";
@@ -22,12 +23,36 @@ export function Header() {
   // chophim.wtf dùng header trong suốt ở home/detail/watch/topic detail,
   // và nền đen mờ ở các trang danh mục/tìm kiếm/chủ đề.
   const pathname = stripBasePath((usePathname() ?? "/").replace(/\/$/, "") || "/");
+
+  // chophim.wtf: header trong suốt chỉ khi còn ở đầu trang. Cuộn quá 10px
+  // (hoặc quá 20% chiều cao xem phim) thì chuyển sang nền đen mờ — kể cả ở home.
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => {
+      if (pathname.startsWith("/xem/")) {
+        const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        setScrolled(window.scrollY / max > 0.2);
+        return;
+      }
+      setScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    onScroll();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [pathname]);
+
   const transparent =
-    pathname === "/" ||
-    pathname === "/phim-song-ngu" ||
-    /^\/phim\/[^/]+$/.test(pathname) ||
-    /^\/xem\/[^/]+$/.test(pathname) ||
-    /^\/chu-de\/[^/]+$/.test(pathname);
+    !scrolled &&
+    (pathname === "/" ||
+      pathname === "/phim-song-ngu" ||
+      pathname.startsWith("/phim/") ||
+      pathname.startsWith("/xem/") ||
+      pathname.startsWith("/blog/") ||
+      pathname.startsWith("/chu-de/"));
   const headerClass = `fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
     transparent ? "bg-transparent backdrop-blur-none" : "bg-[#0a0a0f]/95 backdrop-blur-md"
   }`;

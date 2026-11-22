@@ -304,7 +304,8 @@ export function applyFilters<T extends CardMovie>(movies: T[], f: MovieFilters):
     if (f.type) {
       const label = m.type === "movie" ? "Phim lẻ" : "Phim bộ";
       const normalized = f.type === "movie" ? "Phim lẻ" : f.type === "series" ? "Phim bộ" : f.type;
-      if (label !== normalized) return false;
+      // Query source dùng "phim lẻ"/"phim bộ" (thường + không dấu), label DB viết hoa.
+      if (stripVn(label) !== stripVn(normalized)) return false;
     }
     if (genreFilters.length > 0) {
       const matchesGenre = genreFilters.some(({ raw, slug, label }) =>
