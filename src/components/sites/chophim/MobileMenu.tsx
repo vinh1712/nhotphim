@@ -153,7 +153,7 @@ export function MobileMenu({
               </svg>
               <span className="text-left">
                 <span className="block text-[11px] text-white/70 leading-tight">Tải ứng dụng</span>
-                <span className="brand-font block text-white font-bold leading-tight text-[15px]">NhótPhim</span>
+                <span className="block text-white font-bold leading-tight text-[15px]">NhótPhim</span>
               </span>
             </a>
 
