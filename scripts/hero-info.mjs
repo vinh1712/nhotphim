@@ -1,0 +1,10 @@
+import { readFileSync } from "node:fs";
+const home = JSON.parse(readFileSync("src/data/home.json", "utf8"));
+console.log("hero slide0 full:", JSON.stringify(home.hero.slides[0], null, 1));
+console.log("hero keys:", Object.keys(home.hero));
+console.log("header.nav first 6:", JSON.stringify(home.header.nav.slice(0, 6)));
+console.log("header all keys:", Object.keys(home.header));
+const s = readFileSync("docs/research/chophim/home.html", "utf8");
+const i = s.indexOf("Đề xuất");
+console.log("--- De xuat ctx ---");
+console.log(s.slice(Math.max(0, i - 400), i + 300).replace(/></g, ">\n<"));

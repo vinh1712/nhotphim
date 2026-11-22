@@ -1,0 +1,146 @@
+@import "tailwindcss";
+@import "./fonts.css";
+
+/* class strings nằm trong dữ liệu cũng phải được sinh ra */
+@source "../data/home.json";
+
+@theme {
+  --color-bg-primary: #0f111a;
+  --color-bg-secondary: #12121a;
+  --color-bg-card: #16161e;
+  --color-bg-hover: #1e1e28;
+  --color-accent: #e50914;
+  --color-text-primary: #f1f1f1;
+  --color-text-secondary: #a0a0b0;
+  --color-text-muted: #6b6b7b;
+  --color-border: #2a2a3a;
+
+  --font-sans: "Be Vietnam Pro", system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --animate-fade-in: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+body {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* --- utilities copied from source --- */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.movie-card .overlay {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.movie-card:hover .overlay {
+  opacity: 1;
+}
+.movie-card-wrapper {
+  z-index: 1;
+}
+.movie-card-wrapper:hover {
+  z-index: 40;
+}
+
+.horizontal-title-gradient {
+  -webkit-text-fill-color: transparent;
+  color: #0000;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.scroll-container {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-snap-type: x mandatory;
+}
+.scroll-container::-webkit-scrollbar {
+  display: none;
+}
+.scroll-container > * {
+  scroll-snap-align: start;
+}
+
+.nav-dropdown {
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s;
+  transform: translateY(8px);
+}
+.nav-item:hover .nav-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.avatar-ring-premium {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24, #ffd166, #ff6b6b) 0 0/300% 300%;
+  border-radius: 9999px;
+  padding: 2px;
+  animation: 3s infinite premiumRingGlow;
+  position: relative;
+}
+@keyframes premiumRingGlow {
+  0%,
+  100% {
+    background-position: 0%;
+  }
+  50% {
+    background-position: 100%;
+  }
+}
+
+.anime-banner-wrap-mobile {
+  transform: translateZ(0);
+}
+.anime-dot-overlay {
+  background-image: radial-gradient(#000c 0.3px, #0000 1px);
+  background-size: 2px 2px;
+}
+.hero-dot-overlay {
+  background-image: radial-gradient(#0006 0.4px, #0000 1px);
+  background-size: 3px 3px;
+}
+.anime-left-gradient {
+  background: linear-gradient(90deg, #171a26 33%, #171a26d9 36%, #171a2666 50%, #0000 65%);
+}
+.anime-mobile-gradient {
+  background: linear-gradient(#171a2600 0%, #171a2699 50%, #171a26 90%);
+}
+.anime-play-btn {
+  background: linear-gradient(39deg, #fecf59, #fff1cc);
+}

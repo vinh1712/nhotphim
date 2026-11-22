@@ -1,0 +1,10 @@
+import { readFile } from "node:fs/promises";
+const flight = JSON.parse(await readFile(new URL("../docs/research/chophim/flight-arrays.json", import.meta.url), "utf8"));
+console.log("comments[0] keys:", Object.keys(flight.comments[0][0]));
+console.log("comment sample:", JSON.stringify(flight.comments[0][0]).slice(0, 500));
+console.log("hotMovies[0] keys:", Object.keys(flight.hotMovies[0][0]));
+console.log("hotMovies sample:", JSON.stringify(flight.hotMovies[0][0]).slice(0, 300));
+console.log("hotGenres sample:", JSON.stringify(flight.hotGenres[0]).slice(0, 300));
+console.log("movies array sizes:", flight.movies.map((a) => a.length).join(","));
+console.log("hero movie[0] sample:", JSON.stringify({ name: flight.movies[0][0].name, logo: flight.movies[0][0].titleLogoUrl, cat: flight.movies[0][0].category, tmdb: flight.movies[0][0].tmdb, ep: flight.movies[0][0].episode_current, q: flight.movies[0][0].quality, y: flight.movies[0][0].year, thumb: String(flight.movies[0][0].thumb_url).slice(0, 80) }));
+console.log("topics[0] sample:", JSON.stringify(flight.topics[0][0]).slice(0, 400));
