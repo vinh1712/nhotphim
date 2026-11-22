@@ -45,7 +45,7 @@ export function BilingualSection({ section }: { section: Section }) {
 
         <div className="relative rounded-[20px] border border-white/[0.08] bg-black/[0.18] px-2 pt-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] sm:rounded-[24px] sm:px-3 sm:pt-4">
           <div className="relative group/slider">
-            <SliderArrows id={id} pos="top-[40%]" z="z-50" group="slider" />
+            <SliderArrows id={id} pos="top-[40%]" z="z-50" group="slider" mobileVisible />
             <div
               id={id}
               className="scroll-container flex gap-2 md:gap-3 overflow-x-auto pb-4 snap-x snap-mandatory md:snap-none scrollbar-hide"

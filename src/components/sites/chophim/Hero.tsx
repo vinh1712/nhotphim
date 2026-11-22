@@ -127,8 +127,12 @@ function HeroSlide({
                 ))}
               </div>
 
-              <div className="mb-4 hidden max-w-sm text-xs font-light leading-relaxed text-white line-clamp-2 md:block lg:mb-8 lg:max-w-lg lg:text-sm lg:line-clamp-3">
-                <p>{slide.content}</p>
+              {/* Source đặt line-clamp ngay trên <p>: nếu đặt trên div có md:block,
+                  display:block ghi đè -webkit-box và nội dung không bị cắt ở ngưỡng md. */}
+              <div className="mb-4 hidden max-w-sm md:block lg:mb-8 lg:max-w-lg">
+                <p className="text-xs font-light leading-relaxed text-white line-clamp-2 lg:line-clamp-3">
+                  {slide.content}
+                </p>
               </div>
 
               <div className="hidden items-center justify-center gap-4 md:flex md:justify-start">

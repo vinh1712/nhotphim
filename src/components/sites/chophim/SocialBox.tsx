@@ -1,5 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import { withBasePath } from "@/lib/base-path";
 import { home, fillStyle, type CommentItem, type RankRow } from "./types";
+import { SliderArrows } from "./SliderArrows";
 import {
   FlameCustom,
   IconFlame,
@@ -232,12 +236,14 @@ function RankColumn({
   rows,
   padCls,
   genres = false,
+  onViewMore,
 }: {
   title: string;
   icon: React.ReactNode;
   rows: RankRow[];
   padCls: string;
   genres?: boolean;
+  onViewMore: () => void;
 }) {
   return (
     <div className="w-[85vw] sm:w-[350px] lg:w-auto shrink-0 snap-start">
@@ -253,9 +259,89 @@ function RankColumn({
             <RankRowLink key={r.slug + i} r={r} i={i} genres={genres} />
           ))}
         </div>
-        <button className="mt-3 text-[12px] text-text-muted hover:text-white transition-colors inline-flex items-center gap-1 w-max">
+        <button
+          type="button"
+          onClick={onViewMore}
+          className="mt-3 text-[12px] text-text-muted hover:text-white transition-colors inline-flex items-center gap-1 w-max"
+        >
           Xem thêm
         </button>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Modal "Xem thêm" — giống chophim.wtf: bấm nền hoặc nút X để đóng   */
+/* ------------------------------------------------------------------ */
+type RankKind = "hot" | "fav" | "genre";
+
+const RANK_TITLES: Record<RankKind, string> = {
+  hot: "Sôi Nổi Nhất",
+  fav: "Yêu Thích Nhất",
+  genre: "Thể Loại Hot",
+};
+
+function RankModal({ kind, onClose }: { kind: RankKind; onClose: () => void }) {
+  const { rankings } = home;
+  const rows = kind === "hot" ? rankings.hot : kind === "fav" ? rankings.favorite : rankings.genres;
+  const icon =
+    kind === "hot" ? (
+      <IconFlame className="w-[18px] h-[18px] text-[#ffd875] fill-[#ffd875]" />
+    ) : kind === "fav" ? (
+      <IconHeart className="w-[18px] h-[18px] text-[#ffd875] fill-[#ffd875]" />
+    ) : (
+      <IconFolder className="w-[18px] h-[18px] text-[#ffd875] fill-[#ffd875]" />
+    );
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="bg-[#121212] border border-white/10 rounded-2xl w-full max-w-md max-h-[80vh] flex flex-col shadow-2xl overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={RANK_TITLES[kind]}
+      >
+        <div className="flex items-center justify-between p-4 border-b border-white/5 bg-white/[0.02]">
+          <div className="flex items-center gap-2.5">
+            {icon}
+            <h3 className="text-[15px] font-bold text-white tracking-wide uppercase">
+              {RANK_TITLES[kind]}
+            </h3>
+          </div>
+          <button
+            type="button"
+            aria-label="Đóng"
+            onClick={onClose}
+            className="p-1.5 hover:bg-white/10 rounded-lg text-text-muted transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-5 h-5"
+              aria-hidden="true"
+            >
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="p-2 sm:p-4 overflow-y-auto flex flex-col gap-1">
+          {rows.map((r, i) => (
+            <RankRowLink key={r.slug + i} r={r} i={i} genres={kind === "genre"} />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -265,7 +351,8 @@ function RankColumn({
 /* Hộp Bình Luận Mới + Bảng Xếp Hạng (S:5 + S:6)                      */
 /* ------------------------------------------------------------------ */
 export function SocialBox() {
-  const { comments, rankings } = home;
+  const { comments } = home;
+  const [modal, setModal] = useState<RankKind | null>(null);
 
   return (
     <section className="rounded-2xl border border-white/[0.09] bg-transparent flex flex-col">
@@ -277,11 +364,17 @@ export function SocialBox() {
             Bình Luận Mới
           </h2>
         </div>
-        <div className="-mx-1 px-1 pb-1 overflow-x-auto scrollbar-hide snap-x">
-          <div className="flex gap-4 w-max">
-            {comments.map((c) => (
-              <CommentCard key={c.id} c={c} />
-            ))}
+        <div className="relative group/section">
+          <SliderArrows id="row-comments" pos="top-1/2" z="z-10" group="section" mobileVisible />
+          <div
+            id="row-comments"
+            className="-mx-1 px-1 pb-1 overflow-x-auto scrollbar-hide snap-x"
+          >
+            <div className="flex gap-4 w-max">
+              {comments.map((c) => (
+                <CommentCard key={c.id} c={c} />
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -292,24 +385,28 @@ export function SocialBox() {
           <RankColumn
             title="Sôi Nổi Nhất"
             icon={<IconFlame className="w-[22px] h-[22px] text-[#ffd875] fill-[#ffd875]" />}
-            rows={rankings.hot}
+            rows={home.rankings.hot}
             padCls="lg:pl-10"
+            onViewMore={() => setModal("hot")}
           />
           <RankColumn
             title="Yêu Thích Nhất"
             icon={<IconHeart className="w-[22px] h-[22px] text-[#ffd875] fill-[#ffd875]" />}
-            rows={rankings.favorite}
+            rows={home.rankings.favorite}
             padCls="lg:px-8"
+            onViewMore={() => setModal("fav")}
           />
           <RankColumn
             title="Thể Loại Hot"
             icon={<IconFolder className="w-[22px] h-[22px] text-[#ffd875] fill-[#ffd875]" />}
-            rows={rankings.genres}
+            rows={home.rankings.genres}
             padCls="lg:pr-10"
             genres
+            onViewMore={() => setModal("genre")}
           />
         </div>
       </div>
+      {modal ? <RankModal kind={modal} onClose={() => setModal(null)} /> : null}
     </section>
   );
 }
