@@ -202,13 +202,12 @@ const isHlsUrl = (u: string | null) => {
   }
 };
 
-// Nguồn KK có đoạn quảng cáo ở 15:00 - 15:35.
-// Không sửa được manifest từ xa nên tua tới 15:35.30 ngay trên player.
-const AD_START = 15 * 60;
-const AD_END = AD_START + 35;
-const AD_SKIP_TO = AD_END + 0.3;
+// Nguồn KK có đoạn quảng cáo khoảng 15:01 - 15:36.
+// Không sửa được manifest từ xa nên tua qua ngay trên player.
+const AD_START = 15 * 60 + 1;
+const AD_SKIP_TO = 15 * 60 + 36;
 // Dừng nhận diện trước mốc tua một nhịp, nếu không mỗi timeupdate sẽ gán lại
-// 935.3 liên tục và video đứng yên tại chính mốc đó.
+// mãi một giá trị và video đứng yên tại chính mốc đó.
 const AD_TRIGGER_END = AD_SKIP_TO - 0.05;
 
 function preferredServer(movie: MovieDetail): number {
