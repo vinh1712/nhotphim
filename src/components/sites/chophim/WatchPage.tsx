@@ -532,8 +532,43 @@ export function WatchPage({
     return () => window.removeEventListener("keydown", onKey);
   }, [nextEpisode]);
   const fullscreen = () => {
-    if (document.fullscreenElement) void document.exitFullscreen();
-    else void wrapRef.current?.requestFullscreen?.();
+    // iPhone Safari không có HTMLElement.requestFullscreen(); nó chỉ mở fullscreen
+    // qua API riêng của <video>. Giữ requestFullscreen cho desktop/iPad, fallback
+    // webkitEnterFullscreen cho iPhone/iOS 15.
+    const doc = document as Document & {
+      webkitFullscreenElement?: Element | null;
+      webkitExitFullscreen?: () => void;
+    };
+    const v = videoRef.current as (HTMLVideoElement & {
+      webkitDisplayingFullscreen?: boolean;
+      webkitEnterFullscreen?: () => void;
+      webkitExitFullscreen?: () => void;
+    }) | null;
+
+    if (v?.webkitDisplayingFullscreen) {
+      v.webkitExitFullscreen?.();
+      return;
+    }
+    if (doc.fullscreenElement) {
+      void doc.exitFullscreen();
+      return;
+    }
+    if (doc.webkitFullscreenElement) {
+      doc.webkitExitFullscreen?.();
+      return;
+    }
+
+    const wrap = wrapRef.current;
+    if (wrap && typeof wrap.requestFullscreen === "function") {
+      const p = wrap.requestFullscreen();
+      if (p && typeof p.catch === "function") {
+        p.catch(() => {
+          if (typeof v?.webkitEnterFullscreen === "function") v.webkitEnterFullscreen();
+        });
+      }
+      return;
+    }
+    if (typeof v?.webkitEnterFullscreen === "function") v.webkitEnterFullscreen();
   };
 
   const showCtl = hover || (started && !playing);
