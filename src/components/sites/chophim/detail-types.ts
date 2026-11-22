@@ -36,6 +36,9 @@ export type MovieDetail = {
   formatSlug?: string | null;
   movietypeSlug?: string;
   theater?: boolean;
+  // Từ /api/skip-times của chophim.wtf — mỗi phim có độ dài intro khác nhau.
+  introEnd?: number;
+  outroStart?: number;
   servers: MovieServer[];
 };
 
