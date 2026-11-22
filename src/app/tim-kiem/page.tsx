@@ -6,7 +6,7 @@ import { toCard } from "@/components/sites/chophim/movie-filter";
 import { SearchResults } from "@/components/sites/chophim/SearchResults";
 
 export const metadata: Metadata = {
-  title: "Tìm kiếm | NhótPhim",
+  title: "Tìm kiếm",
   description: "Tìm kiếm phim trên NhótPhim.",
 };
 

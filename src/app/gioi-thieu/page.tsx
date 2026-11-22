@@ -4,9 +4,9 @@ import { Footer } from "@/components/sites/chophim/Footer";
 import { StaticPage } from "@/components/sites/chophim/StaticPage";
 
 export const metadata: Metadata = {
-  title: "Giới Thiệu | NhótPhim",
+  title: "Giới Thiệu",
   description:
-    "Giới thiệu NhótPhim — Phim hay, xem mọi lúc: kho phim online miễn phí chất lượng HD, Vietsub và thuyết minh.",
+    "Giới thiệu Nhót Phim — Phim hay chín hết cả mùa: kho phim online miễn phí chất lượng HD, Vietsub và thuyết minh.",
 };
 
 export default function GioiThieuPage() {
@@ -15,7 +15,7 @@ export default function GioiThieuPage() {
       <Header />
       <StaticPage
         title="Giới Thiệu"
-        intro="NhótPhim là trang xem phim online miễn phí với phương châm “Phim hay, xem mọi lúc” — mọi thể loại phim đều quy tụ tại đây, từ phim lẻ, phim bộ, hoạt hình, TV Shows đến phim chiếu rạp."
+        intro="Nhót Phim là trang xem phim online miễn phí với phương châm “Phim hay chín hết cả mùa” — mọi thể loại phim đều quy tụ tại đây, từ phim lẻ, phim bộ, hoạt hình, TV Shows đến phim chiếu rạp."
         sections={[
           {
             heading: "Chúng tôi mang đến gì?",

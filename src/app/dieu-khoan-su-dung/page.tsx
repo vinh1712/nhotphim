@@ -4,7 +4,7 @@ import { Footer } from "@/components/sites/chophim/Footer";
 import { StaticPage } from "@/components/sites/chophim/StaticPage";
 
 export const metadata: Metadata = {
-  title: "Điều Khoản Sử Dụng | NhótPhim",
+  title: "Điều Khoản Sử Dụng",
   description: "Điều khoản sử dụng website NhótPhim — quy tắc và trách nhiệm khi sử dụng dịch vụ.",
 };
 

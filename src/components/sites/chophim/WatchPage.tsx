@@ -281,6 +281,7 @@ export function WatchPage({
   const [hover, setHover] = useState(false);
   const [started, setStarted] = useState(false);
   const [playing, setPlaying] = useState(false);
+  const [nativeFullscreen, setNativeFullscreen] = useState(false);
   const [cur, setCur] = useState(0);
   const [dur, setDur] = useState(0);
   const [vol, setVol] = useState(1);
@@ -450,14 +451,41 @@ export function WatchPage({
     adRangesRef.current = [];
     nativeHlsRef.current = true;
     v.src = url;
-    void loadKkAdRanges(url, controller.signal).then((ranges) => {
-      if (!controller.signal.aborted) adRangesRef.current = ranges;
-    });
+    void loadKkAdRanges(url, controller.signal)
+      .then((ranges) => {
+        if (!controller.signal.aborted) adRangesRef.current = ranges;
+      })
+      .catch(() => {
+        // Host chặn CORS thì vẫn phát phim, chỉ là không tua được đoạn QC.
+        adRangesRef.current = [];
+      });
     return () => {
       controller.abort();
       adRangesRef.current = [];
       nativeHlsRef.current = false;
       v.removeAttribute("src");
+    };
+  }, [url, hls]);
+
+  // iPhone mở fullscreen native qua webkitEnterFullscreen(): cần controls=true
+  // và ẩn lớp điều khiển tự vẽ trong lúc native player chiếm màn hình.
+  useEffect(() => {
+    const v = videoRef.current as (HTMLVideoElement & {
+      webkitbeginfullscreen?: unknown;
+      webkitendfullscreen?: unknown;
+    }) | null;
+    if (!v) return;
+    const onBegin = () => setNativeFullscreen(true);
+    const onEnd = () => {
+      setNativeFullscreen(false);
+      v.controls = false;
+    };
+    v.addEventListener("webkitbeginfullscreen", onBegin);
+    v.addEventListener("webkitendfullscreen", onEnd);
+    return () => {
+      v.removeEventListener("webkitbeginfullscreen", onBegin);
+      v.removeEventListener("webkitendfullscreen", onEnd);
+      v.controls = false;
     };
   }, [url, hls]);
 
@@ -545,8 +573,20 @@ export function WatchPage({
       webkitExitFullscreen?: () => void;
     }) | null;
 
+    const enterNativeFullscreen = () => {
+      if (!v || typeof v.webkitEnterFullscreen !== "function") return;
+      // WebKit iOS chỉ cho phép webkitEnterFullscreen khi video có native controls.
+      v.controls = true;
+      try {
+        v.webkitEnterFullscreen();
+      } catch {
+        v.controls = false;
+      }
+    };
+
     if (v?.webkitDisplayingFullscreen) {
       v.webkitExitFullscreen?.();
+      v.controls = false;
       return;
     }
     if (doc.fullscreenElement) {
@@ -562,16 +602,14 @@ export function WatchPage({
     if (wrap && typeof wrap.requestFullscreen === "function") {
       const p = wrap.requestFullscreen();
       if (p && typeof p.catch === "function") {
-        p.catch(() => {
-          if (typeof v?.webkitEnterFullscreen === "function") v.webkitEnterFullscreen();
-        });
+        p.catch(enterNativeFullscreen);
       }
       return;
     }
-    if (typeof v?.webkitEnterFullscreen === "function") v.webkitEnterFullscreen();
+    enterNativeFullscreen();
   };
 
-  const showCtl = hover || (started && !playing);
+  const showCtl = !nativeFullscreen && (hover || (started && !playing));
   const curCount = movie.current ?? server?.episodes.length ?? 0;
   const totalCount = movie.total ?? server?.episodes.length ?? 0;
 

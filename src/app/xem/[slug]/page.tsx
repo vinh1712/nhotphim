@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
     movie.year ? `- ${movie.year}` : null,
   ].filter(Boolean);
   return {
-    title: `${parts.join(" ")} | NhótPhim`,
+    title: `${parts.join(" ")}`,
     description: movie.description || `Xem phim ${movie.title} online miễn phí tại NhótPhim.`,
   };
 }

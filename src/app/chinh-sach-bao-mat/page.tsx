@@ -4,7 +4,7 @@ import { Footer } from "@/components/sites/chophim/Footer";
 import { StaticPage } from "@/components/sites/chophim/StaticPage";
 
 export const metadata: Metadata = {
-  title: "Chính Sách Bảo Mật | NhótPhim",
+  title: "Chính Sách Bảo Mật",
   description: "Chính sách bảo mật của NhótPhim — cách chúng tôi thu thập và sử dụng thông tin.",
 };
 

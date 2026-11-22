@@ -4,7 +4,7 @@ import { Footer } from "@/components/sites/chophim/Footer";
 import { StaticPage } from "@/components/sites/chophim/StaticPage";
 
 export const metadata: Metadata = {
-  title: "Liên Hệ | NhótPhim",
+  title: "Liên Hệ",
   description: "Liên hệ với NhótPhim để góp ý, báo lỗi hoặc yêu cầu gỡ bỏ nội dung.",
 };
 

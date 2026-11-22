@@ -4,7 +4,7 @@ import { Footer } from "@/components/sites/chophim/Footer";
 import { StaticPage } from "@/components/sites/chophim/StaticPage";
 
 export const metadata: Metadata = {
-  title: "Tải Ứng Dụng | NhótPhim",
+  title: "Tải Ứng Dụng",
   description: "Tải ứng dụng NhótPhim cho Android và iOS — xem phim mọi lúc mọi nơi.",
 };
 

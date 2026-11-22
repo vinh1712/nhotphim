@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useAuthSession } from "@/lib/auth";
 import { stripBasePath, withBasePath } from "@/lib/base-path";
 import { moviesData } from "@/data";
 import type { MovieDetail } from "./detail-types";
@@ -14,6 +15,9 @@ const LOGO = withBasePath("/brand/nhotphim-logo.png");
 const DROPDOWN_W = ["w-[480px]", "w-[400px]", "w-[200px]"];
 
 export function Header() {
+  const { user } = useAuthSession();
+  const accountLabel = user?.email ? user.email.split("@")[0] : "Thành viên";
+
   // Source dùng đúng 2 link đầu cho lưới menu mobile (Phim Lẻ / Phim Bộ).
   const topLinks = home.header.nav.slice(0, 2);
   const dropdowns = home.header.dropdowns;
@@ -52,7 +56,7 @@ export function Header() {
       pathname.startsWith("/xem/") ||
       pathname.startsWith("/blog/") ||
       pathname.startsWith("/chu-de/"));
-  const headerClass = `fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+  const headerClass = `fixed top-0 left-0 right-0 z-50 pt-0 pt-[env(safe-area-inset-top)] transition-all duration-300 ${
     transparent ? "bg-transparent backdrop-blur-none" : "bg-[#0a0a0f]/95 backdrop-blur-md"
   }`;
 
@@ -133,11 +137,12 @@ export function Header() {
             <a
               className="flex justify-center items-center gap-1.5 h-9 xl:h-10 px-3 xl:px-4 bg-[#F2F4F7] hover:bg-white text-[#1c1c1c] rounded-full font-medium transition-colors text-[13px] xl:text-sm shadow-sm hover:shadow shrink-0"
               href={withBasePath("/dang-nhap")}
+              title={user?.email ?? "Đăng nhập tài khoản"}
             >
               <svg className="w-4 h-4 xl:w-5 xl:h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
               </svg>
-              <span>Thành viên</span>
+              <span className="max-w-[110px] truncate">{accountLabel}</span>
             </a>
           </div>
         </div>

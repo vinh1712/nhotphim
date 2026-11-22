@@ -4,7 +4,7 @@ import { Footer } from "@/components/sites/chophim/Footer";
 import { StaticPage } from "@/components/sites/chophim/StaticPage";
 
 export const metadata: Metadata = {
-  title: "Hỏi-Đáp | NhótPhim",
+  title: "Hỏi-Đáp",
   description: "Các câu hỏi thường gặp về cách xem phim, lỗi phát sinh và sử dụng NhótPhim.",
 };
 

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { renderCategory } from "@/components/sites/chophim/category-route";
 
 export const metadata: Metadata = {
-  title: "Phim Lẻ | NhótPhim",
+  title: "Phim Lẻ",
   description: "Xem phim lẻ, phim điện ảnh online miễn phí Vietsub full HD tại NhótPhim.",
 };
 

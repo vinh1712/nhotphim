@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const cat = findCategory(slug);
   if (!cat) return {};
   return {
-    title: `${cat.name} | NhótPhim`,
+    title: `${cat.name}`,
     description: `Xem phim ${cat.name} online miễn phí Vietsub full HD tại NhótPhim.`,
   };
 }

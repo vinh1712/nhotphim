@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { EmptyListPage } from "@/components/sites/chophim/EmptyListPage";
 
 export const metadata: Metadata = {
-  title: "Lịch Chiếu | NhótPhim",
+  title: "Lịch Chiếu",
   description: "Lịch chiếu phim mới nhất tại NhótPhim.",
 };
 

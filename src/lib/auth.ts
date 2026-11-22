@@ -1,0 +1,314 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+
+/* Cấu hình lấy từ repo quản lí vinh1712/nhotphim-quanli (index.html).
+ * Đây là SUPABASE_ANON_KEY — thiết kế để dùng public, RLS vẫn do Supabase giữ. */
+const SB_URL = "https://tlbumpjugtltznzuwqwt.supabase.co";
+const SB_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRsYnVtcGp1Z3RsdHpuenV3cXd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjc0NDksImV4cCI6MjA5Mzg0MzQ0OX0.EMgx5_nREnfjZaIaLwU9q_KknbnqdxA2fbic_G_Xfdc";
+
+const SESSION_KEY = "nhotphim:auth:v1";
+const AUTH_EVENT = "nhotphim:auth-change";
+
+export type AuthUser = {
+  id: string;
+  email: string | null;
+  user_metadata: Record<string, unknown>;
+};
+
+export type AuthSession = {
+  access_token: string;
+  refresh_token: string;
+  expires_at: number;
+  user: AuthUser;
+};
+
+export type AuthResult = {
+  ok: boolean;
+  message: string;
+  session?: AuthSession | null;
+};
+
+type Stored = { session: AuthSession; remember: boolean };
+type TokenData = {
+  access_token?: unknown;
+  refresh_token?: unknown;
+  expires_in?: unknown;
+  user?: unknown;
+  msg?: unknown;
+  message?: unknown;
+  error?: unknown;
+  error_code?: unknown;
+};
+
+/* ── storage an toàn cho iOS private mode ───────────────────────────────── */
+
+function store(remember: boolean): Storage | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return remember ? window.localStorage : window.sessionStorage;
+  } catch {
+    return null;
+  }
+}
+
+function readStored(): Stored | null {
+  if (typeof window === "undefined") return null;
+  for (const remember of [true, false]) {
+    try {
+      const raw = store(remember)?.getItem(SESSION_KEY);
+      if (!raw) continue;
+      const parsed = JSON.parse(raw) as Partial<AuthSession>;
+      if (parsed && typeof parsed.access_token === "string" && parsed.user) {
+        return { session: parsed as AuthSession, remember };
+      }
+    } catch {
+      /* bỏ qua session hỏng */
+    }
+  }
+  return null;
+}
+
+function notify() {
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(AUTH_EVENT));
+}
+
+function writeStored(session: AuthSession, remember: boolean) {
+  try {
+    store(remember)?.setItem(SESSION_KEY, JSON.stringify(session));
+  } catch {
+    /* private mode / quota — vẫn giữ session trong state hiện tại */
+  }
+  notify();
+}
+
+function clearStored() {
+  for (const remember of [true, false]) {
+    try {
+      store(remember)?.removeItem(SESSION_KEY);
+    } catch {
+      /* bỏ qua */
+    }
+  }
+  notify();
+}
+
+/* ── helpers ────────────────────────────────────────────────────────────── */
+
+async function authFetch(path: string, init: RequestInit = {}): Promise<Response> {
+  const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+  const timer =
+    controller && typeof window !== "undefined"
+      ? window.setTimeout(() => controller.abort(), 12000)
+      : null;
+  try {
+    return await fetch(`${SB_URL}${path}`, {
+      ...init,
+      signal: controller?.signal,
+      headers: {
+        apikey: SB_KEY,
+        "Content-Type": "application/json",
+        ...(init.headers || {}),
+      },
+    });
+  } finally {
+    if (timer !== null && typeof window !== "undefined") window.clearTimeout(timer);
+  }
+}
+
+function toUser(raw: unknown): AuthUser | null {
+  if (!raw || typeof raw !== "object") return null;
+  const u = raw as Record<string, unknown>;
+  if (typeof u.id !== "string") return null;
+  const meta = u.user_metadata && typeof u.user_metadata === "object" ? u.user_metadata : {};
+  return {
+    id: u.id,
+    email: typeof u.email === "string" ? u.email : null,
+    user_metadata: meta as Record<string, unknown>,
+  };
+}
+
+function toSession(data: TokenData, remember: boolean): AuthSession | null {
+  const user = toUser(data.user);
+  if (!user || typeof data.access_token !== "string") return null;
+  const seconds = Number(data.expires_in);
+  const lifetime = Number.isFinite(seconds) && seconds > 0 ? seconds : 3600;
+  return {
+    access_token: data.access_token,
+    refresh_token: typeof data.refresh_token === "string" ? data.refresh_token : "",
+    expires_at: Date.now() + lifetime * 1000 - 60_000,
+    user,
+  };
+}
+
+function errorText(data: TokenData, fallback: string): string {
+  const code = String(data.error_code ?? "");
+  const msg = String(data.msg ?? data.message ?? data.error ?? "");
+  if (code === "invalid_credentials" || /invalid login credentials/i.test(msg))
+    return "Email hoặc mật khẩu không đúng.";
+  if (/email not confirmed/i.test(msg)) return "Vui lòng xác nhận email trước khi đăng nhập.";
+  if (/already registered|user already exists/i.test(msg)) return "Email này đã được đăng ký.";
+  if (/rate limit|too many requests/i.test(msg)) return "Thử lại sau ít phút nhé.";
+  if (/password.*(weak|short|6)/i.test(msg)) return "Mật khẩu phải có ít nhất 6 ký tự.";
+  if (/valid email|invalid format/i.test(msg)) return "Email không hợp lệ.";
+  return msg || fallback;
+}
+
+async function parseData(res: Response): Promise<TokenData> {
+  try {
+    return (await res.json()) as TokenData;
+  } catch {
+    return {};
+  }
+}
+
+/* ── API chính ──────────────────────────────────────────────────────────── */
+
+let refreshing: Promise<AuthSession | null> | null = null;
+
+/** Đọc session, tự refresh nếu hết hạn. */
+export async function getSession(): Promise<AuthSession | null> {
+  const stored = readStored();
+  if (!stored) return null;
+  if (stored.session.expires_at > Date.now() + 1000) return stored.session;
+  if (refreshing) return refreshing;
+
+  refreshing = (async () => {
+    if (!stored.session.refresh_token) {
+      clearStored();
+      return null;
+    }
+    try {
+      const res = await authFetch("/auth/v1/token?grant_type=refresh_token", {
+        method: "POST",
+        body: JSON.stringify({ refresh_token: stored.session.refresh_token }),
+      });
+      if (!res.ok) {
+        clearStored();
+        return null;
+      }
+      const session = toSession(await parseData(res), stored.remember);
+      if (!session) clearStored();
+      return session;
+    } catch {
+      return stored.session.expires_at > Date.now() ? stored.session : null;
+    }
+  })().finally(() => {
+    refreshing = null;
+  });
+
+  return refreshing;
+}
+
+export async function signIn(email: string, password: string, remember = true): Promise<AuthResult> {
+  try {
+    const res = await authFetch("/auth/v1/token?grant_type=password", {
+      method: "POST",
+      body: JSON.stringify({ email: email.trim(), password }),
+    });
+    const data = await parseData(res);
+    if (!res.ok) return { ok: false, message: errorText(data, "Không thể đăng nhập.") };
+    const session = toSession(data, remember);
+    if (!session) return { ok: false, message: "Phiên đăng nhập không hợp lệ." };
+    writeStored(session, remember);
+    return { ok: true, message: "Đăng nhập thành công!", session };
+  } catch {
+    return { ok: false, message: "Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại." };
+  }
+}
+
+export async function signUp(
+  email: string,
+  password: string,
+  displayName: string,
+  remember = true
+): Promise<AuthResult> {
+  try {
+    const res = await authFetch("/auth/v1/signup", {
+      method: "POST",
+      body: JSON.stringify({
+        email: email.trim(),
+        password,
+        data: { display_name: displayName.trim(), full_name: displayName.trim() },
+      }),
+    });
+    const data = await parseData(res);
+    if (!res.ok && !data.user) return { ok: false, message: errorText(data, "Không thể đăng ký.") };
+    const session = toSession(data, remember);
+    if (session) writeStored(session, remember);
+    return {
+      ok: true,
+      session,
+      message: session
+        ? "Đăng ký thành công! Chào mừng bạn đến Nhót Phim."
+        : "Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản.",
+    };
+  } catch {
+    return { ok: false, message: "Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại." };
+  }
+}
+
+export async function recoverPassword(email: string): Promise<AuthResult> {
+  try {
+    const res = await authFetch("/auth/v1/recover", {
+      method: "POST",
+      body: JSON.stringify({ email: email.trim() }),
+    });
+    const data = await parseData(res);
+    if (!res.ok) return { ok: false, message: errorText(data, "Không thể gửi email đặt lại.") };
+    return { ok: true, message: "Đã gửi liên kết đặt lại mật khẩu. Kiểm tra hộp thư nhé." };
+  } catch {
+    return { ok: false, message: "Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại." };
+  }
+}
+
+export async function signOut(): Promise<void> {
+  const stored = readStored();
+  if (stored) {
+    try {
+      await authFetch("/auth/v1/logout", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${stored.session.access_token}` },
+      });
+    } catch {
+      /* vẫn xóa session local */
+    }
+  }
+  clearStored();
+}
+
+/** Hook dùng chung cho Header và trang đăng nhập. */
+export function useAuthSession() {
+  const [session, setSession] = useState<AuthSession | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const reload = useCallback(() => {
+    let alive = true;
+    void getSession().then((s) => {
+      if (alive) setSession(s);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let alive = true;
+    void getSession().then((s) => {
+      if (!alive) return;
+      setSession(s);
+      setLoading(false);
+    });
+    const onChange = () => void getSession().then(setSession);
+    window.addEventListener(AUTH_EVENT, onChange);
+    window.addEventListener("storage", onChange);
+    return () => {
+      alive = false;
+      window.removeEventListener(AUTH_EVENT, onChange);
+      window.removeEventListener("storage", onChange);
+    };
+  }, []);
+
+  return { session, user: session?.user ?? null, loading, reload };
+}
