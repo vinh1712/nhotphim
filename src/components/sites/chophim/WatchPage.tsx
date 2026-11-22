@@ -192,9 +192,19 @@ const fmt = (s: number) => {
   return h > 0 ? `${p(h)}:${p(m)}:${p(sec)}` : `${p(m)}:${p(sec)}`;
 };
 
-const isHlsUrl = (u: string | null) => !!u && /\.m3u8(\?|#|$)/i.test(u);
+// Chỉ coi là HLS khi đường dẫn (pathname) thật sự kết thúc bằng .m3u8.
+// Link dạng /player/?url=.../index.m3u8 là trang nhúng, không phải manifest.
+const isHlsUrl = (u: string | null) => {
+  if (!u) return false;
+  try {
+    return new URL(u, "https://example.com").pathname.toLowerCase().endsWith(".m3u8");
+  } catch {
+    return false;
+  }
+};
 
 function preferredServer(movie: MovieDetail): number {
+  // Nguồn mặc định của chophim.wtf là kênh chính (link m3u8 trực tiếp).
   const hls = movie.servers.findIndex((s) => s.episodes.some((e) => isHlsUrl(e.url)));
   if (hls >= 0) return hls;
   const playable = movie.servers.findIndex((s) => s.episodes.some((e) => !!e.url));
@@ -387,11 +397,42 @@ export function WatchPage({
     if (!v) return;
     v.currentTime = Math.max(0, Math.min(v.duration || 0, v.currentTime + delta));
   };
+  const hasNext = !!server && eIdx < server.episodes.length - 1;
+  const nextEpisode = useCallback(() => {
+    if (server && eIdx < server.episodes.length - 1) selectEp(sIdx, eIdx + 1);
+  }, [eIdx, selectEp, server, sIdx]);
+
+  const skipIntro = useCallback(() => {
+    const v = videoRef.current;
+    if (!v || !Number.isFinite(v.duration) || v.duration <= 180) return;
+    v.currentTime = Math.min(90, v.duration - 30);
+    setNotice("Đã bỏ qua intro");
+  }, []);
+
   const onEnded = () => {
     setPlaying(false);
-    if (!autoNext || !server) return;
-    if (eIdx < server.episodes.length - 1) selectEp(sIdx, eIdx + 1);
+    if (autoNext) nextEpisode();
   };
+
+  // Auto skip intro cũng chạy khi người dùng bật tính năng lúc video đang phát.
+  useEffect(() => {
+    if (!autoSkip || !hls) return;
+    const v = videoRef.current;
+    if (!v || !Number.isFinite(v.duration) || v.duration <= 180) return;
+    if (v.currentTime < 0 || v.currentTime >= 90) return;
+    skipIntro();
+  }, [autoSkip, cur, hls, skipIntro]);
+
+  // Phím tắt chuyển tập, đúng với nhãn "Tập kế tiếp (N)".
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      if (e.key.toLowerCase() === "n") nextEpisode();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [nextEpisode]);
   const fullscreen = () => {
     if (document.fullscreenElement) void document.exitFullscreen();
     else void wrapRef.current?.requestFullscreen?.();
@@ -429,13 +470,9 @@ export function WatchPage({
                       preload="auto"
                       poster={movie.backdrop || movie.poster}
                       onClick={togglePlay}
-                      onPlay={(e) => {
+                      onPlay={() => {
                         setPlaying(true);
                         setStarted(true);
-                        const v = e.currentTarget;
-                        if (autoSkip && v.duration > 180 && v.currentTime < 8) {
-                          v.currentTime = Math.min(90, v.duration - 30);
-                        }
                       }}
                       onPause={(e) => {
                         setPlaying(false);
@@ -504,6 +541,16 @@ export function WatchPage({
                     {server && server.episodes.length > 1 ? ` - ${episode?.label}` : ""}
                   </h2>
                   <div className="pointer-events-auto flex shrink-0 flex-col items-end gap-2">
+                    {hasNext && !hls && (
+                      <button
+                        type="button"
+                        onClick={nextEpisode}
+                        className="flex flex-row items-center gap-1.5 p-1 text-xs font-medium text-white/90 transition-colors hover:text-[#eab308] sm:text-[15px]"
+                      >
+                        <IcSkipFwd className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <span className="hidden sm:inline">Tập kế tiếp</span>
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() => setDrawer(true)}
@@ -516,7 +563,7 @@ export function WatchPage({
                 </div>
 
                 {/* ngăn kéo danh sách tập */}
-                <div className={`absolute inset-0 right-0 z-50 transition-all duration-300 ease-in-out ${drawer ? "" : "pointer-events-none delay-200"}`}>
+                <div className={`absolute inset-0 right-0 z-50 overflow-hidden transition-all duration-300 ease-in-out ${drawer ? "" : "pointer-events-none delay-200"}`}>
                   <button
                     type="button"
                     aria-label="Đóng danh sách tập"
@@ -656,11 +703,21 @@ export function WatchPage({
                           </div>
                         </div>
                         <div className="flex items-center gap-1.5 sm:gap-6 relative">
+                          {hls && dur > 180 && cur < 90 && (
+                            <button
+                              type="button"
+                              title="Bỏ qua intro"
+                              onClick={skipIntro}
+                              className="flex items-center gap-1 whitespace-nowrap text-[11px] font-medium text-white/80 transition-colors hover:text-[#FFD166] sm:text-[13px]"
+                            >
+                              Bỏ qua intro
+                            </button>
+                          )}
                           <div className="flex items-center border-r border-white/20 pr-1.5 sm:pr-6 mr-0.5 sm:mr-2">
                             <button
                               type="button"
                               title="Tập kế tiếp (N)"
-                              onClick={() => server && eIdx < server.episodes.length - 1 && selectEp(sIdx, eIdx + 1)}
+                              onClick={nextEpisode}
                               className="text-white hover:text-[#FFD166] transition-all focus:outline-none flex h-9 w-9 sm:h-auto sm:w-auto items-center justify-center"
                             >
                               <IcSkipFwd className="w-5 h-5 sm:w-7 sm:h-7" />
@@ -762,7 +819,12 @@ export function WatchPage({
             <div className="flex items-center gap-3 md:gap-4 shrink-0">
               <button
                 type="button"
-                onClick={() => setAutoNext((v) => !v)}
+                aria-pressed={autoNext}
+                onClick={() => {
+                  const next = !autoNext;
+                  setAutoNext(next);
+                  setNotice(next ? "Đã bật tự động chuyển tập" : "Đã tắt tự động chuyển tập");
+                }}
                 className="flex items-center gap-2 hover:bg-white/10 transition-colors group outline-none py-1.5 px-2 md:px-3 rounded-lg"
               >
                 <IcSkipFwd className={`w-5 h-5 ${autoNext ? "text-[#FFD166]" : "text-white/70"}`} />
@@ -779,11 +841,15 @@ export function WatchPage({
                 type="button"
                 title="Tự động bỏ qua intro"
                 aria-pressed={autoSkip}
-                onClick={() => setAutoSkip((v) => !v)}
+                onClick={() => {
+                  const next = !autoSkip;
+                  setAutoSkip(next);
+                  setNotice(next ? "Đã bật tự động bỏ qua intro" : "Đã tắt tự động bỏ qua intro");
+                }}
                 className="hidden items-center gap-2 rounded-lg px-3 py-1.5 outline-none transition-colors hover:bg-white/10 md:flex group"
               >
-                <IcSkipFwd className="w-5 h-5 text-white/70 group-hover:text-white" />
-                <span className="hidden md:inline-block text-[13px] font-medium text-white/90 group-hover:text-white">Auto skip intro</span>
+                <IcSkipFwd className={`w-5 h-5 ${autoSkip ? "text-[#FFD166]" : "text-white/70 group-hover:text-white"}`} />
+                <span className={`hidden md:inline-block text-[13px] font-medium group-hover:text-white ${autoSkip ? "text-[#FFD166]" : "text-white/90"}`}>Auto skip intro</span>
                 <span className={`hidden md:inline-block text-[10px] font-bold px-1.5 py-[3px] rounded transition-colors ${autoSkip ? "text-[#FECF59] bg-[#FECF59]/10" : "text-white/40"}`}>
                   {autoSkip ? "ON" : "OFF"}
                 </span>
