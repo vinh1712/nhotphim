@@ -9,7 +9,7 @@ import { toCard } from "./movie-filter";
 import { home } from "./types";
 import { MobileHeaderBar, SearchAutocomplete } from "./SearchAutocomplete";
 
-const LOGO = withBasePath("/brand/nhotphim-logo-sharp.png");
+const LOGO = withBasePath("/brand/nhotphim-logo-tektur.png");
 
 const DROPDOWN_W = ["w-[480px]", "w-[400px]", "w-[200px]"];
 

@@ -1,5 +1,5 @@
 import { withBasePath } from "@/lib/base-path";
-const LOGO = withBasePath("/brand/nhotphim-logo-sharp.png");
+const LOGO = withBasePath("/brand/nhotphim-logo-tektur.png");
 const VN_FLAG = withBasePath("/sites/chophim/46d51573b642dc37.svg");
 
 const SOCIALS: { href: string; label: string; icon: string; size: number }[] = [
