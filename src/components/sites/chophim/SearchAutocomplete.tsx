@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { withBasePath } from "@/lib/base-path";
 import { searchMovies, stripVn, type CardMovie } from "./movie-filter";
 import { MobileMenu, type MobileMenuGroup, type MobileMenuLink } from "./MobileMenu";
+import { NotificationBell } from "./NotificationBell";
 
 /**
  * Ô tìm kiếm của chophim.wtf: gõ -> debounce 500ms -> gợi ý phim + "Có phải bạn muốn tìm"
@@ -194,6 +195,13 @@ export function MobileHeaderBar({
   groups,
   accountHref,
   appHref,
+  accountName,
+  accountEmail,
+  accountAvatar,
+  accountFrame,
+  accountEmoji,
+  loggedIn,
+  onLogout,
 }: {
   movies: CardMovie[];
   logoSrc: string;
@@ -201,6 +209,13 @@ export function MobileHeaderBar({
   groups: MobileMenuGroup[];
   accountHref: string;
   appHref: string;
+  accountName?: string;
+  accountEmail?: string;
+  accountAvatar?: string;
+  accountFrame?: string;
+  accountEmoji?: string;
+  loggedIn?: boolean;
+  onLogout?: () => void;
 }) {
   const [searching, setSearching] = useState(false);
 
@@ -232,6 +247,13 @@ export function MobileHeaderBar({
           groups={groups}
           accountHref={accountHref}
           appHref={appHref}
+          accountName={accountName}
+          accountEmail={accountEmail}
+          accountAvatar={accountAvatar}
+          accountFrame={accountFrame}
+          accountEmoji={accountEmoji}
+          loggedIn={loggedIn}
+          onLogout={onLogout}
           showWatchTogether
         />
         <a className="flex items-center shrink-0" href={withBasePath("/")}>
@@ -240,6 +262,7 @@ export function MobileHeaderBar({
         </a>
       </div>
       <div className="flex items-center gap-3 lg:hidden shrink-0">
+        <NotificationBell loggedIn={!!loggedIn} />
         <button
           type="button"
           onClick={() => setSearching(true)}

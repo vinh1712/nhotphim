@@ -5,6 +5,14 @@ import { signOut, updateProfile, useAuthSession } from "@/lib/auth";
 import { withBasePath } from "@/lib/base-path";
 import { ACCOUNT_TABS, getAccountTab, type AccountTab, type AccountTabInfo } from "@/lib/account-tabs";
 import { useUserLibrary, type LibraryEntry, type ProgressEntry } from "@/lib/user-library";
+import { timeAgo, useNotifications } from "@/lib/notifications";
+import {
+  AVATAR_CATEGORIES,
+  allFrameSrc,
+  avatarSrc,
+  frameSrc,
+} from "@/lib/avatar-data";
+import { UserAvatar } from "./UserAvatar";
 
 const INVALIDATE = "Nhót Phim";
 
@@ -69,12 +77,28 @@ function Icon({ name, className = "" }: { name: AccountTabInfo["icon"]; classNam
   );
 }
 
-function Avatar({ name, emoji }: { name: string; emoji?: string }) {
-  return (
-    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#FFD166]/15 text-lg font-bold text-[#FFD166] ring-1 ring-[#FFD166]/30">
-      {emoji || name.trim().charAt(0).toUpperCase() || "N"}
-    </span>
-  );
+function Avatar({
+  name,
+  emoji,
+  avatarUrl,
+  frameUrl,
+  size = 44,
+}: {
+  name: string;
+  emoji?: string;
+  avatarUrl?: string;
+  frameUrl?: string;
+  size?: number;
+}) {
+  return <UserAvatar name={name} emoji={emoji} avatarUrl={avatarUrl} frameUrl={frameUrl} size={size} />;
+}
+
+/** Định dạng thời gian giống chophim: 1h 12m / 2h 52m. */
+function fmtWatchTime(seconds: number): string {
+  if (!Number.isFinite(seconds) || seconds <= 0) return "0m";
+  const mins = Math.floor(seconds / 60);
+  const hours = Math.floor(mins / 60);
+  return hours > 0 ? `${hours}h ${mins % 60}m` : `${mins}m`;
 }
 
 function EmptyState({ title, hint }: { title: string; hint: string }) {
@@ -150,6 +174,10 @@ function ProfilePanel({
   emoji,
   setEmoji,
   email,
+  avatarUrl,
+  frameUrl,
+  onPickAvatar,
+  onPickFrame,
   busy,
   message,
   onSubmit,
@@ -161,107 +189,222 @@ function ProfilePanel({
   emoji: string;
   setEmoji: (value: string) => void;
   email: string;
+  avatarUrl: string;
+  frameUrl: string;
+  onPickAvatar: (src: string) => void;
+  onPickFrame: (src: string) => void;
   busy: boolean;
   message: string;
   onSubmit: () => void;
 }) {
   const emojis = ["🐻", "🔥", "🎮", "⚡", "🎀", "🦋", "💛", "🕊️"];
-  return (
-    <div className="max-w-[560px] rounded-2xl border border-white/5 bg-[#191b24] p-5 lg:p-7">
-      <div className="mb-6 flex items-center gap-4">
-        <Avatar name={displayName || email} emoji={emoji} />
-        <div className="min-w-0">
-          <p className="truncate font-semibold text-white">{displayName || email.split("@")[0] || "Thành viên"}</p>
-          <p className="truncate text-[12px] text-white/50">{email}</p>
-        </div>
-      </div>
+  const [picker, setPicker] = useState<"avatar" | "frame" | null>(null);
+  const [category, setCategory] = useState(AVATAR_CATEGORIES[0].key);
 
-      <label className="mb-4 block">
-        <span className="mb-2 block text-[13px] text-white/70">Email</span>
-        <input
-          type="email"
-          value={email}
-          readOnly
-          className="w-full rounded-lg border border-white/5 bg-black/25 px-4 py-3 text-[14px] text-white/60 outline-none"
-        />
-      </label>
-
-      <label className="mb-5 block">
-        <span className="mb-2 block text-[13px] text-white/70">Tên hiển thị</span>
-        <input
-          type="text"
-          value={displayName}
-          maxLength={30}
-          onChange={(event) => setDisplayName(event.target.value)}
-          placeholder="Tên bạn muốn hiển thị"
-          className="w-full rounded-lg border border-white/10 bg-black/25 px-4 py-3 text-[14px] text-white outline-none placeholder:text-white/25 focus:border-[#FFD166]/60"
-        />
-      </label>
-
-      <div className="mb-5">
-        <span className="mb-2 block text-[13px] text-white/70">Giới tính</span>
-        <div className="flex flex-wrap gap-2">
-          {[
-            ["nam", "Nam"],
-            ["nu", "Nữ"],
-            ["khong-xac-dinh", "Không xác định"],
-          ].map(([value, label]) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => setGender(value)}
-              className={`rounded-full border px-4 py-2 text-[13px] transition-colors ${
-                gender === value
-                  ? "border-[#FFD166] bg-[#FFD166] font-semibold text-[#171a26]"
-                  : "border-white/10 bg-white/5 text-white/70 hover:border-white/25"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="mb-6">
-        <span className="mb-2 block text-[13px] text-white/70">Emoji cạnh tên</span>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => setEmoji("")}
-            className={`rounded-lg border px-3 py-2 text-[13px] ${!emoji ? "border-[#FFD166] text-[#FFD166]" : "border-white/10 text-white/60"}`}
-          >
-            Chưa chọn
-          </button>
-          {emojis.map((item) => (
-            <button
-              key={item}
-              type="button"
-              onClick={() => setEmoji(item)}
-              aria-label={`Chọn emoji ${item}`}
-              className={`h-10 w-10 rounded-lg border text-lg ${emoji === item ? "border-[#FFD166] bg-[#FFD166]/10" : "border-white/10 bg-white/5"}`}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {message ? <p className="mb-4 text-[13px] text-[#FFD166]">{message}</p> : null}
-
-      <button
-        type="button"
-        onClick={onSubmit}
-        disabled={busy}
-        className="rounded-full bg-[#FFD166] px-7 py-2.5 text-[14px] font-bold text-[#171a26] transition-opacity hover:opacity-85 disabled:opacity-50"
+  const modal = picker ? (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4" onClick={() => setPicker(null)}>
+      <div
+        className="flex max-h-[86vh] w-full max-w-[720px] flex-col overflow-hidden rounded-2xl bg-[#191b24]"
+        onClick={(event) => event.stopPropagation()}
       >
-        {busy ? "Đang lưu..." : "Cập nhật"}
-      </button>
+        <div className="flex items-center justify-between border-b border-white/5 px-5 py-4">
+          <p className="text-[15px] font-bold text-white">
+            {picker === "avatar" ? "Chọn ảnh đại diện" : "Chọn khung avatar"}
+          </p>
+          <button type="button" onClick={() => setPicker(null)} aria-label="Đóng" className="text-white/60 hover:text-white">
+            <svg {...svgProps} className="h-5 w-5"><path d="M18 6 6 18M6 6l12 12" /></svg>
+          </button>
+        </div>
+        {picker === "avatar" ? (
+          <div className="flex flex-wrap gap-2 border-b border-white/5 px-5 py-3">
+            {AVATAR_CATEGORIES.map((item) => (
+              <button
+                key={item.key}
+                type="button"
+                onClick={() => setCategory(item.key)}
+                className={`rounded-full px-3 py-1.5 text-[12px] ${
+                  category === item.key ? "bg-[#FFD166] font-semibold text-[#171a26]" : "bg-white/5 text-white/60"
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="px-5 pt-3 text-[12px] text-white/50">Tất cả khung đều miễn phí</p>
+        )}
+        <div className="grid flex-1 grid-cols-4 gap-3 overflow-y-auto p-5 sm:grid-cols-6 md:grid-cols-8">
+          {picker === "avatar" ? (
+            Array.from(
+              { length: AVATAR_CATEGORIES.find((c) => c.key === category)?.count ?? 0 },
+              (_, i) => avatarSrc(category, i + 1)
+            ).map((src) => (
+              <button
+                key={src}
+                type="button"
+                onClick={() => {
+                  onPickAvatar(src);
+                  setPicker(null);
+                }}
+                className={`aspect-square overflow-hidden rounded-full ring-2 transition-all ${
+                  src === avatarUrl ? "ring-[#FFD166] scale-105" : "ring-transparent hover:ring-white/30"
+                }`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img alt="" src={src} loading="lazy" className="h-full w-full object-cover" />
+              </button>
+            ))
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => {
+                  onPickFrame("");
+                  setPicker(null);
+                }}
+                className="flex aspect-square items-center justify-center rounded-xl border border-white/10 text-[11px] text-white/60"
+              >
+                Không dùng khung
+              </button>
+              {allFrameSrc().map((src, i) => (
+                <button
+                  key={src}
+                  type="button"
+                  aria-label={`Khung ${i + 1}`}
+                  onClick={() => {
+                    onPickFrame(src);
+                    setPicker(null);
+                  }}
+                  className={`aspect-square overflow-hidden rounded-xl ring-2 transition-all ${
+                    src === frameUrl ? "ring-[#FFD166] scale-105" : "ring-transparent hover:ring-white/30"
+                  }`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img alt="" src={src} loading="lazy" className="h-full w-full object-contain" />
+                </button>
+              ))}
+            </>
+          )}
+        </div>
+      </div>
     </div>
+  ) : null;
+
+  return (
+    <>
+      {modal}
+      <div className="max-w-[560px] rounded-2xl border border-white/5 bg-[#191b24] p-5 lg:p-7">
+        <div className="mb-6 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+          <Avatar name={displayName || email} emoji={emoji} avatarUrl={avatarUrl} frameUrl={frameUrl} size={64} />
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-semibold text-white">{displayName || email.split("@")[0] || "Thành viên"}</p>
+            <p className="truncate text-[12px] text-white/50">{email}</p>
+            <div className="mt-2.5 flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setPicker("avatar")}
+                className="rounded-full border border-white/15 px-3 py-1.5 text-[12px] text-white/70 hover:border-[#FFD166] hover:text-[#FFD166]"
+              >
+                Ảnh có sẵn
+              </button>
+              <button
+                type="button"
+                onClick={() => setPicker("frame")}
+                className="rounded-full border border-white/15 px-3 py-1.5 text-[12px] text-white/70 hover:border-[#FFD166] hover:text-[#FFD166]"
+              >
+                Chọn khung avatar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <label className="mb-4 block">
+          <span className="mb-2 block text-[13px] text-white/70">Email</span>
+          <input
+            type="email"
+            value={email}
+            readOnly
+            className="w-full rounded-lg border border-white/5 bg-black/25 px-4 py-3 text-[14px] text-white/60 outline-none"
+          />
+        </label>
+
+        <label className="mb-5 block">
+          <span className="mb-2 block text-[13px] text-white/70">Tên hiển thị</span>
+          <input
+            type="text"
+            value={displayName}
+            maxLength={30}
+            onChange={(event) => setDisplayName(event.target.value)}
+            placeholder="Tên bạn muốn hiển thị"
+            className="w-full rounded-lg border border-white/10 bg-black/25 px-4 py-3 text-[14px] text-white outline-none placeholder:text-white/25 focus:border-[#FFD166]/60"
+          />
+        </label>
+
+        <div className="mb-5">
+          <span className="mb-2 block text-[13px] text-white/70">Giới tính</span>
+          <div className="flex flex-wrap gap-2">
+            {[
+              ["nam", "Nam"],
+              ["nu", "Nữ"],
+              ["khong-xac-dinh", "Không xác định"],
+            ].map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setGender(value)}
+                className={`rounded-full border px-4 py-2 text-[13px] transition-colors ${
+                  gender === value
+                    ? "border-[#FFD166] bg-[#FFD166] font-semibold text-[#171a26]"
+                    : "border-white/10 bg-white/5 text-white/70 hover:border-white/25"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="mb-6">
+          <span className="mb-2 block text-[13px] text-white/70">Emoji cạnh tên</span>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setEmoji("")}
+              className={`rounded-lg border px-3 py-2 text-[13px] ${!emoji ? "border-[#FFD166] text-[#FFD166]" : "border-white/10 text-white/60"}`}
+            >
+              Chưa chọn
+            </button>
+            {emojis.map((item) => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setEmoji(item)}
+                aria-label={`Chọn emoji ${item}`}
+                className={`h-10 w-10 rounded-lg border text-lg ${emoji === item ? "border-[#FFD166] bg-[#FFD166]/10" : "border-white/10 bg-white/5"}`}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {message ? <p className="mb-4 text-[13px] text-[#FFD166]">{message}</p> : null}
+
+        <button
+          type="button"
+          onClick={onSubmit}
+          disabled={busy}
+          className="rounded-full bg-[#FFD166] px-7 py-2.5 text-[14px] font-bold text-[#171a26] transition-opacity hover:opacity-85 disabled:opacity-50"
+        >
+          {busy ? "Đang lưu..." : "Cập nhật"}
+        </button>
+      </div>
+    </>
   );
 }
 
 export function AccountPage({ tab }: { tab: AccountTab }) {
-  const { user, loading } = useAuthSession();
+  const { user, loading, reload: reloadSession } = useAuthSession();
   const { favorites, watchlist, progress, hydrated, toggle, remove } = useUserLibrary();
   const [signingOut, setSigningOut] = useState(false);
   const [tvCode, setTvCode] = useState("");
@@ -269,9 +412,12 @@ export function AccountPage({ tab }: { tab: AccountTab }) {
   const [displayName, setDisplayName] = useState("");
   const [gender, setGender] = useState("");
   const [emoji, setEmoji] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [frameUrl, setFrameUrl] = useState("");
   const [profileBusy, setProfileBusy] = useState(false);
   const [profileMessage, setProfileMessage] = useState("");
   const [noticeFilter, setNoticeFilter] = useState("Tất cả");
+  const notices = useNotifications();
 
   const info = getAccountTab(tab);
   const email = user?.email ?? "";
@@ -282,6 +428,8 @@ export function AccountPage({ tab }: { tab: AccountTab }) {
     setDisplayName(profileName);
     setGender(String(user.user_metadata?.gender ?? ""));
     setEmoji(String(user.user_metadata?.chat_emoji ?? ""));
+    setAvatarUrl(String(user.user_metadata?.avatar_url ?? ""));
+    setFrameUrl(String(user.user_metadata?.avatar_frame ?? ""));
   }, [user, profileName]);
 
   if (loading) return null;
@@ -318,9 +466,30 @@ export function AccountPage({ tab }: { tab: AccountTab }) {
       full_name: displayName.trim(),
       gender,
       chat_emoji: emoji,
+      avatar_url: avatarUrl,
+      avatar_frame: frameUrl,
     });
     setProfileMessage(result.message);
     setProfileBusy(false);
+  };
+
+  // Chọn ảnh/khung lưu ngay như chophim, không cần bấm "Cập nhật".
+  const pickAvatar = async (src: string) => {
+    setAvatarUrl(src);
+    setProfileBusy(true);
+    const result = await updateProfile({ avatar_url: src });
+    setProfileMessage(result.ok ? "Đã cập nhật ảnh đại diện!" : result.message);
+    setProfileBusy(false);
+    reloadSession();
+  };
+
+  const pickFrame = async (src: string) => {
+    setFrameUrl(src);
+    setProfileBusy(true);
+    const result = await updateProfile({ avatar_frame: src });
+    setProfileMessage(result.ok ? (src ? "Đã cập nhật khung avatar!" : "Đã bỏ khung avatar!") : result.message);
+    setProfileBusy(false);
+    reloadSession();
   };
 
   const nav = (
@@ -384,21 +553,25 @@ export function AccountPage({ tab }: { tab: AccountTab }) {
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
           {progress.map((item) => {
             const percent = item.duration > 0 ? Math.min(100, Math.round((item.time / item.duration) * 100)) : 0;
+            const hash = `#tap=tap-${item.episode + 1}&sv=${encodeURIComponent(item.serverName || "")}&server_id=${item.server}&t=${Math.floor(item.time)}`;
             return (
               <div key={item.slug} className="group relative">
-                <a href={withBasePath(`/xem/${item.slug}#tap=${item.server}:${item.episode}`)}>
+                <a href={withBasePath(`/xem/${item.slug}${hash}`)}>
                   <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-bg-card ring-1 ring-white/5">
                     {item.poster ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img alt={item.title} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover" src={item.poster} />
                     ) : null}
+                    <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/70 px-3 py-1.5 text-[11px] font-semibold text-white opacity-0 transition-opacity group-hover:opacity-100">
+                      Xem lại
+                    </span>
                     <div className="absolute inset-x-0 bottom-0 h-1 bg-white/20">
                       <div className="h-full bg-[#FFD166]" style={{ width: `${percent}%` }} />
                     </div>
                   </div>
                   <p className="mt-2 truncate text-[12px] font-semibold text-text-primary group-hover:text-[#FFD166] sm:text-[13px]">{item.title}</p>
                   <p className="mt-0.5 truncate text-[10px] text-text-muted sm:text-[11px]">
-                    {item.serverName ? `${item.serverName} • ` : ""}Tập {item.episode}
+                    Tập {item.episode + 1} • {fmtWatchTime(item.time)} / {fmtWatchTime(item.duration)}
                   </p>
                 </a>
                 <button
@@ -444,7 +617,7 @@ export function AccountPage({ tab }: { tab: AccountTab }) {
           <div className="mt-7 rounded-xl border border-white/5 bg-black/20 p-4">
             <p className="mb-2 text-[12px] uppercase tracking-wide text-white/40">Tài khoản sẽ đăng nhập</p>
             <div className="flex items-center gap-3">
-              <Avatar name={displayName || email} emoji={emoji} />
+              <Avatar name={displayName || email} emoji={emoji} avatarUrl={avatarUrl} frameUrl={frameUrl} />
               <div className="min-w-0">
                 <p className="truncate text-[14px] font-semibold text-white">{displayName || email.split("@")[0]}</p>
                 <p className="truncate text-[12px] text-white/50">{email}</p>
@@ -471,9 +644,21 @@ export function AccountPage({ tab }: { tab: AccountTab }) {
 
     if (tab === "thong-bao") {
       const filters = ["Tất cả", "Chưa đọc", "Tập mới", "Hệ thống"];
+      const countOf = (filter: string) => {
+        if (filter === "Chưa đọc") return notices.unreadCount;
+        if (filter === "Tập mới") return notices.items.filter((n) => n.type === "new_episode").length;
+        if (filter === "Hệ thống") return notices.items.filter((n) => n.type === "admin").length;
+        return notices.items.length;
+      };
+      const list = notices.items.filter((n) => {
+        if (noticeFilter === "Chưa đọc") return !n.isRead;
+        if (noticeFilter === "Tập mới") return n.type === "new_episode";
+        if (noticeFilter === "Hệ thống") return n.type === "admin";
+        return true;
+      });
       return (
         <div>
-          <div className="mb-6 flex flex-wrap gap-2">
+          <div className="mb-6 flex flex-wrap items-center gap-2">
             {filters.map((filter) => (
               <button
                 key={filter}
@@ -485,17 +670,68 @@ export function AccountPage({ tab }: { tab: AccountTab }) {
                     : "border-white/10 bg-white/5 text-white/60 hover:text-white"
                 }`}
               >
-                {filter} <span className="ml-1 text-white/40">0</span>
+                {filter} <span className="ml-1 text-white/40">{countOf(filter)}</span>
               </button>
             ))}
+            {notices.unreadCount > 0 ? (
+              <button
+                type="button"
+                onClick={notices.markAllRead}
+                className="ml-auto rounded-full px-3 py-2 text-[13px] text-[#FFD166]/80 hover:bg-[#FFD166]/10 hover:text-[#FFD166]"
+              >
+                Đọc tất cả
+              </button>
+            ) : null}
           </div>
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-[#191b24]/80 px-6 py-20 text-center">
-            <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white/5 text-text-muted">
-              <Icon name="bell" className="h-7 w-7" />
-            </span>
-            <p className="text-base font-semibold text-white">Chưa có thông báo</p>
-            <p className="mt-2 text-[13px] text-white/50">Các thông báo mới sẽ hiện ở đây</p>
-          </div>
+          {list.length === 0 ? (
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-[#191b24]/80 px-6 py-20 text-center">
+              <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white/5 text-text-muted">
+                <Icon name="bell" className="h-7 w-7" />
+              </span>
+              <p className="text-base font-semibold text-white">Chưa có thông báo</p>
+              <p className="mt-2 text-[13px] text-white/50">Các thông báo mới sẽ hiện ở đây</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {list.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    notices.markRead(item.id);
+                    if (item.link) window.location.href = withBasePath(item.link);
+                  }}
+                  className={`flex w-full items-start gap-3 rounded-xl border px-4 py-3 text-left transition-colors ${
+                    item.isRead
+                      ? "border-white/5 bg-[#191b24]/80 hover:bg-[#20232e]"
+                      : "border-white/10 bg-white/[0.025] hover:bg-white/[0.055]"
+                  }`}
+                >
+                  {item.poster && /^(https?:|\/|data:)/.test(item.poster) ? (
+                    <span className="h-[74px] w-[52px] shrink-0 overflow-hidden rounded-lg bg-white/5">
+                      <img src={item.poster} alt="" className="h-full w-full object-cover" loading="lazy" />
+                    </span>
+                  ) : (
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/5 text-[#64f7a1]">
+                      <Icon name="tv" className="h-5 w-5" />
+                    </span>
+                  )}
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-start justify-between gap-2">
+                      <span className={`truncate text-[14px] font-semibold ${item.isRead ? "text-white/60" : "text-white"}`}>
+                        {item.movieName || item.title}
+                      </span>
+                      {!item.isRead ? <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#ff4757]" /> : null}
+                    </span>
+                    <span className="mt-1 block text-[13px] text-white/55">{item.message}</span>
+                    <span className="mt-1.5 block text-[11px] text-white/30">
+                      Tập mới · {timeAgo(item.createdAt)}
+                    </span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       );
     }
@@ -510,6 +746,10 @@ export function AccountPage({ tab }: { tab: AccountTab }) {
           emoji={emoji}
           setEmoji={setEmoji}
           email={email}
+          avatarUrl={avatarUrl}
+          frameUrl={frameUrl}
+          onPickAvatar={(src) => void pickAvatar(src)}
+          onPickFrame={(src) => void pickFrame(src)}
           busy={profileBusy}
           message={profileMessage}
           onSubmit={doUpdateProfile}
@@ -558,7 +798,7 @@ export function AccountPage({ tab }: { tab: AccountTab }) {
             </div>
             <div className="mt-6 hidden border-t border-white/5 pt-5 lg:block">
               <div className="mb-4 flex items-center gap-3 px-1">
-                <Avatar name={displayName || email} emoji={emoji} />
+                <Avatar name={displayName || email} emoji={emoji} avatarUrl={avatarUrl} frameUrl={frameUrl} />
                 <div className="min-w-0">
                   <p className="truncate text-[13px] font-semibold text-white">{displayName || email.split("@")[0]}</p>
                   <p className="truncate text-[12px] text-white/45">{email}</p>

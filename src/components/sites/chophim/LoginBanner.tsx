@@ -1,3 +1,6 @@
+"use client";
+
+import { useAuthSession } from "@/lib/auth";
 import { withBasePath } from "@/lib/base-path";
 import { IconLogIn, IconHistory, IconMonitor, IconHeart, IconListPlus } from "./icons";
 
@@ -11,6 +14,10 @@ const FEATURES = [
 ];
 
 export function LoginBanner() {
+  const { user, loading } = useAuthSession();
+  // Ẩn luôn lúc chưa biết trạng thái đăng nhập để tài khoản không thấy banner
+  // trong HTML tĩnh rồi mới biến mất sau khi hydrate.
+  if (loading || user) return null;
   return (
     <section className="mb-6 mt-2">
       <div

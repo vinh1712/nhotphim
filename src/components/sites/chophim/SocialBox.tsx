@@ -68,10 +68,16 @@ function GenderIcon({ gender }: { gender: string | null }) {
 /* ------------------------------------------------------------------ */
 /* Thẻ bình luận                                                       */
 /* ------------------------------------------------------------------ */
+function cleanContent(content: string, isSpoiler?: boolean): string {
+  if (isSpoiler) return "Bình luận có chứa spoiler — bấm để xem chi tiết";
+  return content.replace(/\[gif\][\s\S]*?\[\/gif\]/g, " ").trim() || "Đã gửi một GIF";
+}
+
 function CommentCard({ c }: { c: CommentItem }) {
   const premium = c.user.subscriptionTier === "premium";
   const admin = c.user.role === "admin";
-  const href = withBasePath(`/phim/${c.movieSlug}#comment-${c.id}`);
+  const commentId = c.parentId ? `${c.parentId}-reply-${c.id}` : c.id;
+  const href = withBasePath(`/phim/${c.movieSlug}#comment-${commentId}`);
 
   return (
     <div className="shrink-0 !w-[260px] sm:!w-[280px] lg:!w-[290px] snap-start">
@@ -158,7 +164,7 @@ function CommentCard({ c }: { c: CommentItem }) {
                 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
             }}
           >
-            {c.content}
+            {cleanContent(c.content, c.isSpoiler)}
           </p>
           <div className="mt-auto flex items-center gap-4 text-[12px] font-semibold text-white/58">
             <span className="inline-flex items-center gap-1.5">

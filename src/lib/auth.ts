@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { clearLocalLibrary } from "./library-storage";
 
 /* Cấu hình lấy từ repo quản lí vinh1712/nhotphim-quanli (index.html).
  * Đây là SUPABASE_ANON_KEY — thiết kế để dùng public, RLS vẫn do Supabase giữ. */
@@ -165,6 +166,23 @@ async function parseData(res: Response): Promise<TokenData> {
 
 /* ── API chính ──────────────────────────────────────────────────────────── */
 
+export { SB_URL, SB_KEY };
+
+/** Gọi Supabase REST (PostgREST) với token của phiên hiện tại.
+ *  Dùng cho đồng bộ dữ liệu cá nhân qua bảng user_data. */
+export async function supabaseRest(path: string, init: RequestInit = {}): Promise<Response | null> {
+  // getSession() tự refresh access_token hết hạn — không gửi token cũ cho PostgREST.
+  const session = await getSession();
+  if (!session) return null;
+  return authFetch(path, {
+    ...init,
+    headers: {
+      ...(init.headers || {}),
+      Authorization: `Bearer ${session.access_token}`,
+    },
+  });
+}
+
 let refreshing: Promise<AuthSession | null> | null = null;
 
 /** Đọc session, tự refresh nếu hết hạn. */
@@ -277,7 +295,9 @@ export async function updateProfile(
     });
     const data = await parseData(res);
     if (!res.ok) return { ok: false, message: errorText(data, "Không thể cập nhật tài khoản.") };
-    const user = toUser(data.user);
+    // Supabase PUT /auth/v1/user trả thẳng object user (không nằm trong `user`).
+    const raw = (data as TokenData & { user_metadata?: unknown }).user_metadata ? data : data.user;
+    const user = toUser(raw);
     if (!user) return { ok: false, message: "Không đọc được thông tin tài khoản." };
     writeStored({ ...stored.session, user }, stored.remember);
     return { ok: true, message: "Cập nhật tài khoản thành công!" };
@@ -299,6 +319,7 @@ export async function signOut(): Promise<void> {
     }
   }
   clearStored();
+  clearLocalLibrary();
 }
 
 /** Hook dùng chung cho Header và trang đăng nhập. */

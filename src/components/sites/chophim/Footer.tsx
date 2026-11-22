@@ -2,15 +2,9 @@ import { withBasePath } from "@/lib/base-path";
 const LOGO = withBasePath("/brand/nhotphim-logo.png");
 const VN_FLAG = withBasePath("/sites/chophim/46d51573b642dc37.svg");
 
+/* Chỉ giữ kênh chính thức của Nhót Phim — bỏ các nút href="#" của chophim. */
 const SOCIALS: { href: string; label: string; icon: string; size: number }[] = [
   { href: "https://t.me/nhot2008", label: "Telegram", icon: withBasePath("/sites/chophim/659a62f126eec1fb.svg"), size: 18 },
-  { href: "#", label: "Discord", icon: withBasePath("/sites/chophim/a74ef964b69f0a52.svg"), size: 18 },
-  { href: "#", label: "X", icon: withBasePath("/sites/chophim/fca626aae2487b85.svg"), size: 16 },
-  { href: "#", label: "Facebook", icon: withBasePath("/sites/chophim/c8ba75c44abe5e61.svg"), size: 18 },
-  { href: "#", label: "TikTok", icon: withBasePath("/sites/chophim/87ac6d8ce867ad36.svg"), size: 18 },
-  { href: "#", label: "YouTube", icon: withBasePath("/sites/chophim/b87cd8184d357ebb.svg"), size: 18 },
-  { href: "#", label: "Threads", icon: withBasePath("/sites/chophim/9add8d6a49399db9.svg"), size: 18 },
-  { href: "#", label: "Instagram", icon: withBasePath("/sites/chophim/d1853b0887772a2e.svg"), size: 18 },
 ];
 
 const MENU = [
@@ -20,8 +14,6 @@ const MENU = [
   { label: "Giới thiệu", href: withBasePath("/gioi-thieu") },
   { label: "Liên hệ", href: withBasePath("/lien-he") },
 ];
-
-const FRIENDS = ["MotChill", "RoPhim", "PhimMoi", "GhienPhim", "MotChillTv"];
 
 const DESC =
   "NhótPhim - Trang xem phim online chất lượng cao miễn phí Vietsub, thuyết minh, lồng tiếng full HD. Kho phim mới khổng lồ, phim chiếu rạp, phim bộ, phim lẻ từ nhiều quốc gia như Việt Nam, Hàn Quốc, Trung Quốc, Thái Lan, Nhật Bản, Âu Mỹ… đa dạng thể loại. Khám phá nền tảng phim trực tuyến hay nhất 2026 với chất lượng 4K!";
@@ -92,18 +84,6 @@ export function Footer() {
               href={m.href}
             >
               {m.label}
-            </a>
-          ))}
-        </div>
-
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-6">
-          {FRIENDS.map((f) => (
-            <a
-              key={f}
-              className="text-[14px] text-white/70 hover:text-yellow-400 transition-colors"
-              href={withBasePath("/")}
-            >
-              {f}
             </a>
           ))}
         </div>

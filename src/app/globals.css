@@ -41,6 +41,42 @@
   }
 }
 
+/* Overlay loading: giữ đúng nhịp gentlePulse của chophim. */
+@keyframes gentlePulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Chuyển trang nội bộ (full reload của static export) không hiện lại overlay. */
+html[data-nhot-skip-overlay="1"] .nhot-loading-overlay {
+  display: none;
+}
+
+/* Nút chuông thông báo: clone nhịp rung của chophim. */
+@keyframes bellPulse {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(12deg);
+  }
+  40% {
+    transform: rotate(-10deg);
+  }
+  60% {
+    transform: rotate(6deg);
+  }
+  80% {
+    transform: rotate(-3deg);
+  }
+}
+
 body {
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);

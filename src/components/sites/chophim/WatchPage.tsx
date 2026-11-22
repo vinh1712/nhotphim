@@ -282,6 +282,7 @@ export function WatchPage({
   const [started, setStarted] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [nativeFullscreen, setNativeFullscreen] = useState(false);
+  const [touchDevice, setTouchDevice] = useState(false);
   const [cur, setCur] = useState(0);
   const [dur, setDur] = useState(0);
   const [vol, setVol] = useState(1);
@@ -320,22 +321,50 @@ export function WatchPage({
     }
 
     const raw = window.location.hash.replace(/^#/, "");
+    let hashEpisode: number | null = null;
+    let hashServer: number | null = null;
+    let explicitTime = 0;
     if (raw) {
       const p = new URLSearchParams(raw);
       const sid = p.get("server_id");
       const svName = p.get("sv");
-      if (sid && /^\d+$/.test(sid) && movie.servers[Number(sid)]) si = Number(sid);
-      else if (svName) {
+      if (sid && /^\d+$/.test(sid) && movie.servers[Number(sid)]) {
+        si = Number(sid);
+        hashServer = si;
+      } else if (svName) {
         const i = movie.servers.findIndex((s) => s.name === svName);
-        if (i >= 0) si = i;
+        if (i >= 0) {
+          si = i;
+          hashServer = i;
+        }
       }
-      const tap = (p.get("tap") || "").match(/^tap-(\d+)$/);
+      const tapValue = p.get("tap") || "";
+      const tap = tapValue.match(/^tap-(\d+)$/);
       if (tap) {
-        ei = Number(tap[1]) - 1;
-        resumeTime = 0;
+        hashEpisode = Number(tap[1]) - 1;
+        ei = hashEpisode;
+      } else if (/^full$/i.test(tapValue)) {
+        // Link dạng /xem/slug#tap=full (chophim dùng cho phim lẻ).
+        const fullIdx = movie.servers[si]?.episodes.findIndex((ep) => /full/i.test(ep.label)) ?? -1;
+        hashEpisode = fullIdx >= 0 ? fullIdx : 0;
+        ei = hashEpisode;
       }
       const t = Number(p.get("t") ?? "");
-      if (Number.isFinite(t) && t > 0) resumeTime = t;
+      if (Number.isFinite(t) && t > 0) explicitTime = t;
+    }
+
+    if (explicitTime > 0) {
+      resumeTime = explicitTime;
+    } else if (
+      saved &&
+      (hashEpisode === null || hashEpisode === saved.episode) &&
+      (hashServer === null || hashServer === saved.server)
+    ) {
+      // Cùng phim/cùng tập/cùng server -> tiếp tục đúng mốc đã xem (chophim làm vậy).
+      resumeTime = saved.time;
+    } else {
+      // Chọn tập mới hoặc server khác thì bắt đầu từ đầu.
+      resumeTime = 0;
     }
 
     ei = Math.max(0, Math.min(ei, (movie.servers[si]?.episodes.length ?? 1) - 1));
@@ -422,6 +451,43 @@ export function WatchPage({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [dur, eIdx, movie, sIdx, server?.name]
   );
+
+  /** Tua theo vị trí chạm/click trên thanh thời gian. Ghi luôn tiến trình để
+   *  đổi tập/tắt tab ngay sau khi tua vẫn giữ đúng mốc. */
+  const seekToClientX = useCallback(
+    (clientX: number, rect: DOMRect) => {
+      const v = videoRef.current;
+      if (!v || !Number.isFinite(v.duration) || v.duration <= 0 || rect.width <= 0) return;
+      const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+      const next = ratio * v.duration;
+      v.currentTime = next;
+      setCur(next);
+      persist(next, v.duration);
+    },
+    [persist]
+  );
+
+  // Lưu mốc hiện tại khi rời trang / ẩn tab / đổi tập (iOS dùng pagehide).
+  useEffect(() => {
+    const flush = () => {
+      const v = videoRef.current;
+      if (v && Number.isFinite(v.currentTime) && v.currentTime >= 1) {
+        persist(v.currentTime, Number.isFinite(v.duration) ? v.duration : dur);
+      }
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") flush();
+    };
+    window.addEventListener("pagehide", flush);
+    window.addEventListener("beforeunload", flush);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      flush();
+      window.removeEventListener("pagehide", flush);
+      window.removeEventListener("beforeunload", flush);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [dur, persist]);
 
   /* ── HLS cho link .m3u8 ──
    * Desktop: hls.js cắt hẳn dòng QC khỏi playlist trước khi parse.
@@ -609,7 +675,7 @@ export function WatchPage({
     enterNativeFullscreen();
   };
 
-  const showCtl = !nativeFullscreen && (hover || (started && !playing));
+  const showCtl = !nativeFullscreen && (hover || (touchDevice && started) || (started && !playing));
   const curCount = movie.current ?? server?.episodes.length ?? 0;
   const totalCount = movie.total ?? server?.episodes.length ?? 0;
 
@@ -628,6 +694,7 @@ export function WatchPage({
             className={`relative w-full aspect-video transition-shadow duration-[350ms] ${ambient ? "shadow-[0_0_70px_rgba(255,209,102,0.18)]" : ""}`}
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
+            onTouchStart={() => setTouchDevice(true)}
           >
             <div className="absolute inset-0 w-full h-full">
               <div className="relative flex h-full w-full items-center justify-center overflow-visible font-sans select-none focus:outline-none" tabIndex={0}>
@@ -802,10 +869,15 @@ export function WatchPage({
                         <span className="md:hidden shrink-0 text-[10px] font-medium text-white/80 tabular-nums">{fmt(cur)}</span>
                         <div
                           className="flex-1 relative flex flex-col justify-center h-7 cursor-pointer group/scrub"
-                          onClick={(e) => {
-                            const v = videoRef.current;
-                            const box = e.currentTarget.getBoundingClientRect();
-                            if (v && v.duration) v.currentTime = ((e.clientX - box.left) / box.width) * v.duration;
+                          style={{ touchAction: "none" }}
+                          onClick={(e) => seekToClientX(e.clientX, e.currentTarget.getBoundingClientRect())}
+                          onTouchStart={(e) => {
+                            const touch = e.touches[0];
+                            if (touch) seekToClientX(touch.clientX, e.currentTarget.getBoundingClientRect());
+                          }}
+                          onTouchMove={(e) => {
+                            const touch = e.touches[0];
+                            if (touch) seekToClientX(touch.clientX, e.currentTarget.getBoundingClientRect());
                           }}
                         >
                           <div className="relative w-full h-[6px] rounded-sm bg-white/15 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)] transition-all duration-200 group-hover/scrub:h-2">

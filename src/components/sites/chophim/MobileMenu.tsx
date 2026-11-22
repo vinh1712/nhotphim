@@ -1,9 +1,24 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { withBasePath } from "@/lib/base-path";
+import { UserAvatar } from "./UserAvatar";
+import { AccountIcon, type AccountIconName } from "./AccountIcon";
 
 export type MobileMenuLink = { label: string; href: string };
 export type MobileMenuGroup = { label: string; links: MobileMenuLink[] };
+
+/** Menu trong block tài khoản mobile, theo thứ tự của chophim.wtf. */
+const ACCOUNT_LINKS: { label: string; href: string; icon: AccountIconName }[] = [
+  { label: "Đồng bộ tài khoản", href: "/users/tai-khoan", icon: "sync" },
+  { label: "Đăng nhập TV", href: "/users/dang-nhap-tv", icon: "tv" },
+  { label: "Gói đăng ký", href: "/users/goi-dang-ky", icon: "crown" },
+  { label: "Yêu thích", href: "/users/yeu-thich", icon: "heart" },
+  { label: "Danh sách", href: "/users/danh-sach", icon: "list" },
+  { label: "Xem tiếp", href: "/users/xem-tiep", icon: "history" },
+  { label: "Thông báo", href: "/users/thong-bao", icon: "bell" },
+  { label: "Tài khoản", href: "/users/tai-khoan", icon: "user" },
+];
 
 /** Dropdown mobile dựng theo đúng cấu trúc panel của chophim.wtf. */
 export function MobileMenu({
@@ -11,16 +26,31 @@ export function MobileMenu({
   groups,
   accountHref,
   appHref,
+  accountName,
+  accountEmail,
+  accountAvatar,
+  accountFrame,
+  accountEmoji,
+  loggedIn = false,
+  onLogout,
   showWatchTogether = false,
 }: {
   primary: MobileMenuLink[];
   groups: MobileMenuGroup[];
   accountHref: string;
   appHref: string;
+  accountName?: string;
+  accountEmail?: string;
+  accountAvatar?: string;
+  accountFrame?: string;
+  accountEmoji?: string;
+  loggedIn?: boolean;
+  onLogout?: () => void;
   showWatchTogether?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
+  const [accountOpen, setAccountOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -29,12 +59,14 @@ export function MobileMenu({
       if (event.key === "Escape") {
         setOpen(false);
         setActiveGroup(null);
+        setAccountOpen(false);
       }
     };
     const onPointerDown = (event: PointerEvent) => {
       if (!rootRef.current?.contains(event.target as Node)) {
         setOpen(false);
         setActiveGroup(null);
+        setAccountOpen(false);
       }
     };
     document.addEventListener("keydown", onKeyDown);
@@ -111,6 +143,7 @@ export function MobileMenu({
         onClick={() => {
           setOpen((v) => !v);
           setActiveGroup(null);
+          setAccountOpen(false);
         }}
         className="p-2 -ml-2 text-[#ff6b6b] hover:text-[#ff8787]"
       >
@@ -131,16 +164,88 @@ export function MobileMenu({
           className="fixed w-[calc(100%-2rem)] max-w-sm left-4 top-[76px] bg-[#3B4987] border border-white/10 rounded-2xl shadow-2xl pb-4 z-50"
         >
           <div className="px-4 py-5 relative">
-            <a
-              href={accountHref}
-              onClick={() => setOpen(false)}
-              className="w-full flex justify-center items-center gap-2 py-2 bg-[#F2F4F7] hover:bg-white text-[#1c1c1c] rounded-full font-medium transition-colors mb-4 text-sm"
-            >
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-              </svg>
-              Thành viên
-            </a>
+            {loggedIn ? (
+              // chophim: block tài khoản bấm để mở menu con có mũi tên, không điều hướng thẳng.
+              <div className="relative mb-4 w-full">
+                <button
+                  type="button"
+                  aria-expanded={accountOpen}
+                  onClick={() => setAccountOpen((v) => !v)}
+                  className="flex w-full cursor-pointer items-center gap-3 rounded-xl border border-white/5 bg-white/5 px-3 py-2 transition-colors hover:bg-white/10"
+                >
+                  <UserAvatar
+                    name={accountName || "Thành viên"}
+                    email={accountEmail}
+                    avatarUrl={accountAvatar}
+                    frameUrl={accountFrame}
+                    emoji={accountEmoji}
+                    size={40}
+                  />
+                  <span className="min-w-0 flex-1 text-left">
+                    <span className="block truncate text-[14px] font-bold leading-tight text-white">
+                      {accountName || "Thành viên"}
+                    </span>
+                    <span className="mt-0.5 block truncate text-[12px] leading-tight text-white/50">
+                      {accountEmail}
+                    </span>
+                  </span>
+                  <svg
+                    className={`h-4 w-4 shrink-0 text-white/70 transition-transform ${accountOpen ? "rotate-180" : ""}`}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="m19 9-7 7-7-7" />
+                  </svg>
+                </button>
+                {accountOpen ? (
+                  <div className="absolute left-0 top-[calc(100%+8px)] z-50 w-full rounded-xl border border-white/10 bg-[#1e2545] py-2 shadow-2xl">
+                    {ACCOUNT_LINKS.map((item) => (
+                      <a
+                        key={item.label}
+                        href={withBasePath(item.href)}
+                        onClick={() => {
+                          setOpen(false);
+                          setAccountOpen(false);
+                        }}
+                        className="flex w-full items-center gap-2.5 px-4 py-2 text-sm text-white/80 transition-colors hover:bg-white/5 hover:text-[#FFD166]"
+                      >
+                        <AccountIcon name={item.icon} />
+                        {item.label}
+                      </a>
+                    ))}
+                    <div className="mx-2 my-1 h-px bg-white/10" />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpen(false);
+                        setAccountOpen(false);
+                        onLogout?.();
+                      }}
+                      className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm text-red-400 transition-colors hover:bg-white/5 hover:text-red-300"
+                    >
+                      <AccountIcon name="logout" />
+                      Đăng xuất
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              <a
+                href={accountHref}
+                onClick={() => setOpen(false)}
+                className="mb-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#F2F4F7] py-2 text-sm font-medium text-[#1c1c1c] hover:bg-white"
+              >
+                <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                </svg>
+                Thành viên
+              </a>
+            )}
 
             <a
               href={appHref}

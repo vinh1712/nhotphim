@@ -2,6 +2,7 @@ import homeJson from "./home.json";
 import moviesJson from "./movies.json";
 import commentsJson from "./comments.json";
 import taxonomiesJson from "./taxonomies.json";
+import notificationsJson from "./notifications.json";
 import { withBasePathDeep } from "@/lib/base-path";
 
 /**
@@ -12,3 +13,4 @@ export const homeData = withBasePathDeep(homeJson);
 export const moviesData = withBasePathDeep(moviesJson);
 export const commentsData = withBasePathDeep(commentsJson);
 export const taxonomiesData = withBasePathDeep(taxonomiesJson);
+export const notificationsData = withBasePathDeep(notificationsJson);

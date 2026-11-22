@@ -79,6 +79,8 @@ export type CommentItem = {
     selectedEmoji: string | null;
     showPremiumBadge: boolean;
   };
+  parentId?: string | null;
+  isSpoiler?: boolean;
 };
 
 export type RankRow = {

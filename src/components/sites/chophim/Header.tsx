@@ -3,23 +3,43 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { signOut, useAuthSession } from "@/lib/auth";
+import { useLibrarySync } from "@/lib/user-library";
 import { stripBasePath, withBasePath } from "@/lib/base-path";
 import { moviesData } from "@/data";
 import type { MovieDetail } from "./detail-types";
 import { toCard } from "./movie-filter";
 import { home } from "./types";
 import { MobileHeaderBar, SearchAutocomplete } from "./SearchAutocomplete";
+import { UserAvatar, profileMeta } from "./UserAvatar";
+import { AccountIcon, type AccountIconName } from "./AccountIcon";
+import { NotificationBell } from "./NotificationBell";
 
 const LOGO = withBasePath("/brand/nhotphim-logo.png");
 
 const DROPDOWN_W = ["w-[480px]", "w-[400px]", "w-[200px]"];
 
+const ACCOUNT_MENU: { href: string; label: string; icon: AccountIconName }[] = [
+  { href: "/users/dang-nhap-tv", label: "Đăng nhập TV", icon: "tv" },
+  { href: "/users/goi-dang-ky", label: "Gói đăng ký", icon: "crown" },
+  { href: "/users/yeu-thich", label: "Yêu thích", icon: "heart" },
+  { href: "/users/danh-sach", label: "Danh sách", icon: "list" },
+  { href: "/users/xem-tiep", label: "Xem tiếp", icon: "history" },
+  { href: "/users/thong-bao", label: "Thông báo", icon: "bell" },
+  { href: "/users/tai-khoan", label: "Tài khoản", icon: "user" },
+];
+
 export function Header() {
   const { user } = useAuthSession();
+  // Header có mặt ở mọi trang nên cũng là nơi kéo thư viện từ Supabase về.
+  const { syncing, lastSyncedAt, syncNow } = useLibrarySync();
   const accountLabel = user?.email ? user.email.split("@")[0] : "Thành viên";
-  const accountName = String(
-    user?.user_metadata?.display_name ?? user?.user_metadata?.full_name ?? accountLabel
-  );
+  const meta = profileMeta(user);
+  const accountName = meta.displayName || accountLabel;
+  const syncLabel = syncing
+    ? "Đang đồng bộ..."
+    : lastSyncedAt
+      ? `Đã đồng bộ lúc ${new Date(lastSyncedAt).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}`
+      : "Sẵn sàng đồng bộ";
   const [accountOpen, setAccountOpen] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
 
@@ -89,8 +109,15 @@ export function Header() {
           logoSrc={LOGO}
           nav={topLinks}
           groups={dropdowns}
-          accountHref={withBasePath(user ? "/users/yeu-thich" : "/dang-nhap")}
+          accountHref={withBasePath(user ? "/users/tai-khoan" : "/dang-nhap")}
           appHref={withBasePath("/tai-ung-dung")}
+          accountName={user ? accountName : ""}
+          accountEmail={user?.email ?? ""}
+          accountAvatar={meta.avatarUrl}
+          accountFrame={meta.frameUrl}
+          accountEmoji={meta.emoji}
+          loggedIn={!!user}
+          onLogout={() => void signOut()}
         />
 
         {/* --- desktop --- */}
@@ -154,57 +181,97 @@ export function Header() {
                 <p className="text-[14px] font-bold text-white leading-none">NhótPhim</p>
               </div>
             </a>
+            {user ? <NotificationBell loggedIn /> : null}
             {user ? (
               <div className="relative shrink-0" ref={accountRef}>
+                {/* chophim: ngoài header chỉ hiện avatar + chevron-down (không hiện tên). */}
                 <button
                   type="button"
-                  onClick={() => setAccountOpen((open) => !open)}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setAccountOpen((open) => !open);
+                  }}
                   aria-expanded={accountOpen}
                   aria-label="Quản lý tài khoản"
-                  className="flex justify-center items-center gap-1.5 h-9 xl:h-10 px-3 xl:px-4 bg-[#F2F4F7] hover:bg-white text-[#1c1c1c] rounded-full font-medium transition-colors text-[13px] xl:text-sm shadow-sm hover:shadow"
+                  className="flex items-center gap-1.5 h-9 xl:h-10 px-1.5 xl:px-2 rounded-full hover:bg-white/10 transition-colors"
                 >
-                  <svg className="w-4 h-4 xl:w-5 xl:h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                  <UserAvatar
+                    name={accountName}
+                    email={user.email ?? ""}
+                    avatarUrl={meta.avatarUrl}
+                    frameUrl={meta.frameUrl}
+                    emoji={meta.emoji}
+                    size={32}
+                  />
+                  <svg
+                    className={`h-5 w-5 text-white/70 transition-transform duration-200 ${accountOpen ? "rotate-180" : ""}`}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="m6 9 6 6 6-6" />
                   </svg>
-                  <span className="max-w-[110px] truncate">{accountLabel}</span>
                 </button>
                 {accountOpen ? (
-                  <div className="absolute right-0 top-full z-50 mt-3 w-[280px] overflow-hidden rounded-2xl border border-white/10 bg-[#191b24] py-2 shadow-2xl">
-                    <div className="border-b border-white/5 px-4 pb-3 pt-2">
-                      <p className="truncate text-[14px] font-bold text-white">{accountName}</p>
-                      <p className="mt-0.5 truncate text-[12px] text-white/50">{user.email}</p>
-                    </div>
-                    <div className="py-1">
-                      {[
-                        ["/users/goi-dang-ky", "Gói đăng ký"],
-                        ["/users/yeu-thich", "Yêu thích"],
-                        ["/users/danh-sach", "Danh sách"],
-                        ["/users/xem-tiep", "Xem tiếp"],
-                        ["/users/dang-nhap-tv", "Đăng Nhập TV"],
-                        ["/users/thong-bao", "Thông báo"],
-                        ["/users/tai-khoan", "Tài khoản"],
-                      ].map(([href, label]) => (
-                        <a
-                          key={href}
-                          href={withBasePath(href)}
-                          onClick={() => setAccountOpen(false)}
-                          className="flex items-center justify-between px-4 py-2.5 text-[13px] text-white/70 transition-colors hover:bg-white/5 hover:text-[#FFD166]"
+                  <div className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-white/10 bg-[#0a0a0f] shadow-2xl">
+                    <div className="px-5 pb-4 pt-5">
+                      <h3 className="mb-3 truncate text-[15px] font-bold text-white">{accountName}</h3>
+                      <p className="mb-4 text-[13px] leading-relaxed text-white/60">
+                        Yêu thích, danh sách và tiến độ xem được{" "}
+                        <span className="font-bold text-[#FFD166]">đồng bộ tự động</span> giữa các thiết bị.
+                      </p>
+                      <div className="flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2.5">
+                        <AccountIcon name="sync" className={`h-4 w-4 shrink-0 text-white/50 ${syncing ? "animate-spin" : ""}`} />
+                        <span className="truncate text-[11px] text-white/50">{syncLabel}</span>
+                        <button
+                          type="button"
+                          onClick={() => void syncNow()}
+                          className="ml-auto shrink-0 rounded-lg bg-white/10 px-2 py-1 text-[11px] font-semibold text-white/80 hover:bg-white/15 hover:text-white"
                         >
-                          {label}
-                          <span className="text-white/20">›</span>
+                          Ngay
+                        </button>
+                      </div>
+                      <a
+                        href={withBasePath("/users/tai-khoan")}
+                        onClick={() => setAccountOpen(false)}
+                        className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#FFD166] to-[#ffb347] py-2.5 text-sm font-bold text-[#1c1c1c] transition active:scale-[0.98] hover:shadow-lg hover:shadow-[#FFD166]/25"
+                      >
+                        Quản lý dữ liệu
+                        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="m9 18 6-6-6-6" />
+                        </svg>
+                      </a>
+                    </div>
+                    <div className="mx-3 h-px bg-white/[0.06]" />
+                    <div className="py-1.5">
+                      {ACCOUNT_MENU.map((item) => (
+                        <a
+                          key={item.href}
+                          href={withBasePath(item.href)}
+                          onClick={() => setAccountOpen(false)}
+                          className="flex w-full items-center gap-2.5 px-5 py-2 text-[13px] text-white/60 transition-colors hover:bg-white/5 hover:text-white"
+                        >
+                          <AccountIcon name={item.icon} />
+                          {item.label}
                         </a>
                       ))}
                     </div>
-                    <div className="border-t border-white/5 pt-1">
+                    <div className="mx-3 h-px bg-white/[0.06]" />
+                    <div className="py-1.5">
                       <button
                         type="button"
                         onClick={() => {
                           setAccountOpen(false);
                           void signOut();
                         }}
-                        className="w-full px-4 py-2.5 text-left text-[13px] text-white/60 transition-colors hover:bg-white/5 hover:text-[#ff6b6b]"
+                        className="flex w-full items-center gap-2.5 px-5 py-2 text-left text-[13px] text-red-400 transition-colors hover:bg-white/5"
                       >
-                        Thoát
+                        <AccountIcon name="logout" />
+                        Đăng xuất
                       </button>
                     </div>
                   </div>
