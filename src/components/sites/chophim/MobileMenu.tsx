@@ -32,6 +32,7 @@ export function MobileMenu({
   accountFrame,
   accountEmoji,
   loggedIn = false,
+  authLoading = false,
   onLogout,
   showWatchTogether = false,
 }: {
@@ -45,6 +46,7 @@ export function MobileMenu({
   accountFrame?: string;
   accountEmoji?: string;
   loggedIn?: boolean;
+  authLoading?: boolean;
   onLogout?: () => void;
   showWatchTogether?: boolean;
 }) {
@@ -164,7 +166,10 @@ export function MobileMenu({
           className="fixed w-[calc(100%-2rem)] max-w-sm left-4 top-[76px] bg-[#3B4987] border border-white/10 rounded-2xl shadow-2xl pb-4 z-50"
         >
           <div className="px-4 py-5 relative">
-            {loggedIn ? (
+            {authLoading ? (
+              // Chưa hydrate xong auth: không lộ nút "Thành viên" của khách.
+              <div aria-hidden="true" className="mb-4 h-[64px] w-full rounded-xl bg-white/5" />
+            ) : loggedIn ? (
               // chophim: block tài khoản bấm để mở menu con có mũi tên, không điều hướng thẳng.
               <div className="relative mb-4 w-full">
                 <button

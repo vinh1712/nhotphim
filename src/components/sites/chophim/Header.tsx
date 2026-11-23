@@ -29,7 +29,7 @@ const ACCOUNT_MENU: { href: string; label: string; icon: AccountIconName }[] = [
 
 export function Header() {
   const live = useLiveData();
-  const { user } = useAuthSession();
+  const { user, loading: authLoading } = useAuthSession();
   // Header có mặt ở mọi trang nên cũng là nơi kéo thư viện từ Supabase về.
   // Chỉ giữ tác dụng đồng bộ — không hiển thị trạng thái "đã đồng bộ lúc...".
   useLibrarySync();
@@ -113,6 +113,7 @@ export function Header() {
           accountFrame={meta.frameUrl}
           accountEmoji={meta.emoji}
           loggedIn={!!user}
+          authLoading={authLoading}
           onLogout={() => void signOut()}
         />
 
@@ -177,8 +178,12 @@ export function Header() {
                 <p className="text-[14px] font-bold text-white leading-none">NhótPhim</p>
               </div>
             </a>
-            {user ? <NotificationBell loggedIn /> : null}
-            {user ? (
+            {!authLoading && user ? <NotificationBell loggedIn /> : null}
+            {authLoading ? (
+              // HTML tĩnh không biết trạng thái đăng nhập: đợi hydrate xong rồi mới
+              // chọn avatar hoặc nút đăng nhập để không nháy sang sai trạng thái.
+              <span aria-hidden="true" className="h-9 xl:h-10 w-9 xl:w-10 rounded-full bg-white/10 shrink-0" />
+            ) : user ? (
               <div className="relative shrink-0" ref={accountRef}>
                 {/* chophim: ngoài header chỉ hiện avatar + chevron-down (không hiện tên). */}
                 <button

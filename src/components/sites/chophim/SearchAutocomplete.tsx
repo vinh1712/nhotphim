@@ -202,6 +202,7 @@ export function MobileHeaderBar({
   accountFrame,
   accountEmoji,
   loggedIn,
+  authLoading,
   onLogout,
 }: {
   movies: CardMovie[];
@@ -216,6 +217,7 @@ export function MobileHeaderBar({
   accountFrame?: string;
   accountEmoji?: string;
   loggedIn?: boolean;
+  authLoading?: boolean;
   onLogout?: () => void;
 }) {
   const [searching, setSearching] = useState(false);
@@ -254,6 +256,7 @@ export function MobileHeaderBar({
           accountFrame={accountFrame}
           accountEmoji={accountEmoji}
           loggedIn={loggedIn}
+          authLoading={authLoading}
           onLogout={onLogout}
           showWatchTogether
         />
