@@ -28,6 +28,8 @@ export type MovieDetail = {
   duration: string | null;
   trailer: string | null;
   source: string;
+  /** Slug gốc trên phimapi.com để lấy thời lượng khi admin không nhập duration. */
+  apiSlug?: string | null;
   /** Nhóm phim nhiều phần trong trang quản lí (cột series_group). */
   seriesGroup?: string | null;
   /** Thứ tự phần trong nhóm (cột part_number). */

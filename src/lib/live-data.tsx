@@ -160,13 +160,22 @@ const directM3u8 = (u: unknown): string | null => {
 };
 const isKkEmbed = (u: unknown): boolean => str(u).includes("player.phimapi.com");
 
+/** Admin có khi lưu tên tập là "Tập 1" / "Tập 01"; đừng thêm chữ "Tập" lần nữa. */
+const episodeLabel = (value: unknown, type: "series" | "movie"): string => {
+  if (type === "movie") return "Full";
+  const raw = str(value);
+  if (!raw || /^full$/i.test(raw)) return "Full";
+  const digits = raw.replace(/[^\d]/g, "");
+  return digits ? `Tập ${pad2(digits)}` : raw;
+};
+
 function buildServers(row: Row, sub: string): MovieServer[] {
   const episodes = parseJson(row.episodes);
   const fields = [
     { key: "link", name: `${sub} (NC)` },
     { key: "link3", name: `${sub} (VP)` },
   ];
-  const labelOf = (ep: any): string => (row.type === "movie" ? "Full" : `Tập ${pad2(ep?.name)}`);
+  const labelOf = (ep: any): string => episodeLabel(ep?.name, row.type === "movie" ? "movie" : "series");
   const servers: MovieServer[] = [];
 
   if (Array.isArray(episodes) && episodes.length) {
@@ -193,8 +202,7 @@ function buildServers(row: Row, sub: string): MovieServer[] {
       { url: directM3u8(row.embedurl2) || directM3u8(row.m3u8url), name: `${sub} (KK)` },
     ].filter((x) => x.url);
     if (single.length) {
-      const label =
-        row.type === "movie" ? "Full" : row.currentep ? `Tập ${pad2(row.currentep)}` : "Full";
+      const label = episodeLabel(row.currentep, row.type === "movie" ? "movie" : "series");
       servers.push(
         ...single.map((s) => ({ name: s.name, episodes: [{ label, url: s.url }] }))
       );
@@ -268,6 +276,7 @@ function makeNormalizer(ctx: {
       description: str(row.description) || str(row.desc) || str(extra.metaDesc),
       director: str(extra.director) || null,
       duration: str(extra.duration) || null,
+      apiSlug: str(extra.slug) || str(row.ophim_slug) || slug,
       trailer: str(extra.trailer) || null,
       imdbId: str(extra.imdbId) || null,
       source: "quanli",
@@ -1008,6 +1017,67 @@ export function LiveDataProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<LiveContextValue>(() => ({ ...state, refresh }), [state, refresh]);
   return <LiveContext.Provider value={value}>{children}</LiveContext.Provider>;
+}
+
+/** Admin thường để trống extra.duration; chophim lấy thời lượng từ phimapi.com.
+ *  Gọi theo slug gốc (extra.slug) nên phim bị đổi slug do trùng vẫn lấy đúng. */
+const DURATION_CACHE_KEY = "nhotphim:duration:v1:";
+
+function formatApiTime(raw: unknown, type: "series" | "movie"): string | null {
+  const text = str(raw);
+  if (!text) return null;
+  const match = /(\d+)\s*phút/i.exec(text);
+  if (!match) return text;
+  return `${match[1]} phút${type === "series" ? " / tập" : ""}`;
+}
+
+export function useMovieDuration(movie: MovieDetail): string | null {
+  const apiSlug = (movie.apiSlug || movie.slug || "").trim();
+  const [duration, setDuration] = useState<string | null>(() =>
+    formatApiTime(movie.duration, movie.type)
+  );
+
+  useEffect(() => {
+    let active = true;
+    const own = formatApiTime(movie.duration, movie.type);
+    if (own) {
+      setDuration(own);
+      return () => {
+        active = false;
+      };
+    }
+    if (!apiSlug) return;
+    const key = DURATION_CACHE_KEY + apiSlug;
+    try {
+      const cached = window.localStorage.getItem(key);
+      if (cached) {
+        setDuration(cached);
+        return;
+      }
+    } catch {
+      /* localStorage có thể bị chặn */
+    }
+    void fetch(`https://phimapi.com/phim/${encodeURIComponent(apiSlug)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        const value = formatApiTime(json?.movie?.time, movie.type);
+        if (!value) return;
+        try {
+          window.localStorage.setItem(key, value);
+        } catch {
+          /* bỏ qua */
+        }
+        if (active) setDuration(value);
+      })
+      .catch(() => {
+        /* mạng lỗi thì giữ nguyên, không hiện lỗi lên giao diện */
+      });
+    return () => {
+      active = false;
+    };
+  }, [apiSlug, movie.duration, movie.type]);
+
+  return duration;
 }
 
 export function useLiveData(): LiveContextValue {

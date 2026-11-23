@@ -1,7 +1,7 @@
 "use client";
 
 import { withBasePath } from "@/lib/base-path";
-import { detailHref, watchHref } from "@/lib/live-data";
+import { detailHref, useMovieDuration, watchHref } from "@/lib/live-data";
 import { PartSelector } from "./PartSelector";
 import { isInList, toggleList } from "@/lib/user-library";
 import { useEffect, useState } from "react";
@@ -135,13 +135,13 @@ function Badges({ movie, size }: { movie: MovieDetail; size: "md" | "sm" }) {
   );
 }
 
-function infoRows(movie: MovieDetail): [string, string][] {
+function infoRows(movie: MovieDetail, duration: string | null): [string, string][] {
   return (
     [
       ["Trạng thái:", movie.status],
       ["Loại:", movie.type === "movie" ? "Phim Lẻ" : "Phim Bộ"],
       ["Năm:", movie.year ? String(movie.year) : ""],
-      ["Thời lượng:", movie.duration || ""],
+      ["Thời lượng:", duration || ""],
       ["Thể loại:", movie.genres.join(", ")],
       ["Quốc gia:", movie.countries.join(", ")],
       ["Đạo diễn:", movie.director || ""],
@@ -149,7 +149,15 @@ function infoRows(movie: MovieDetail): [string, string][] {
   ).filter(([, v]) => v);
 }
 
-function InfoGrid({ movie, size }: { movie: MovieDetail; size: "md" | "sm" }) {
+function InfoGrid({
+  movie,
+  size,
+  duration,
+}: {
+  movie: MovieDetail;
+  size: "md" | "sm";
+  duration: string | null;
+}) {
   return (
     <div
       className={
@@ -158,7 +166,7 @@ function InfoGrid({ movie, size }: { movie: MovieDetail; size: "md" | "sm" }) {
           : "grid grid-cols-1 sm:grid-cols-2 gap-2 text-[13px] mb-5 text-left"
       }
     >
-      {infoRows(movie).map(([k, v]) => (
+      {infoRows(movie, duration).map(([k, v]) => (
         <div key={k} className="flex items-start gap-2">
           <span className="text-text-muted shrink-0 w-20">{k}</span>
           <span className="text-text-secondary">{v}</span>
@@ -326,6 +334,7 @@ export function DetailPage({
   const [hideImg, setHideImg] = useState(false);
   const [sort, setSort] = useState<"new" | "top">("new");
   const [showMore, setShowMore] = useState(false);
+  const duration = useMovieDuration(movie);
 
   const serverIdx = Math.min(sv, Math.max(movie.servers.length - 1, 0));
   const server = movie.servers[serverIdx];
@@ -393,7 +402,7 @@ export function DetailPage({
               <p className="text-[13px] md:text-sm text-text-secondary mb-4 text-center md:text-left">{movie.origin}</p>
             )}
             <Badges movie={movie} size="md" />
-            <InfoGrid movie={movie} size="md" />
+            <InfoGrid movie={movie} size="md" duration={duration} />
 
             <div className="flex flex-col md:flex-row justify-center md:justify-start items-center gap-3 mb-8 w-full">
               <a
@@ -435,7 +444,7 @@ export function DetailPage({
               </button>
               <div className={`w-full text-left transition-all duration-300 overflow-hidden ${infoOpen ? "max-h-[1400px] opacity-100" : "max-h-0 opacity-0"}`}>
                 <Badges movie={movie} size="sm" />
-                <InfoGrid movie={movie} size="sm" />
+                <InfoGrid movie={movie} size="sm" duration={duration} />
                 <div className="mb-4 text-left md:hidden">
                   <h3 className="text-[16px] font-semibold text-text-primary mb-3">Nội dung phim</h3>
                   <div className="text-sm text-text-secondary leading-relaxed">{movie.description || "Đang cập nhật nội dung phim..."}</div>

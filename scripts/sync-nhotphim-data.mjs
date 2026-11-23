@@ -196,13 +196,22 @@ const directM3u8 = (u) => {
 };
 const isKkEmbed = (u) => str(u).includes("player.phimapi.com");
 
+// Admin có khi lưu "Tập 1" / "Tập 01" — chỉ lấy số rồi tự tạo một chữ "Tập".
+const episodeLabel = (value, type) => {
+  if (type === "movie") return "Full";
+  const raw = str(value);
+  if (!raw || /^full$/i.test(raw)) return "Full";
+  const digits = raw.replace(/[^\d]/g, "");
+  return digits ? `Tập ${pad2(digits)}` : raw;
+};
+
 function buildServers(row, sub) {
   const episodes = parseJson(row.episodes);
   const fields = [
     { key: "link", name: `${sub} (NC)` },
     { key: "link3", name: `${sub} (VP)` },
   ];
-  const labelOf = (ep) => (row.type === "movie" ? "Full" : `Tập ${pad2(ep?.name)}`);
+  const labelOf = (ep) => episodeLabel(ep?.name, row.type === "movie" ? "movie" : "series");
   const servers = [];
 
   if (Array.isArray(episodes) && episodes.length) {
@@ -229,7 +238,7 @@ function buildServers(row, sub) {
       { url: directM3u8(row.embedurl2) || directM3u8(row.m3u8url), name: `${sub} (KK)` },
     ].filter((x) => x.url);
     if (single.length) {
-      const label = row.type === "movie" ? "Full" : row.currentep ? `Tập ${pad2(row.currentep)}` : "Full";
+      const label = episodeLabel(row.currentep, row.type === "movie" ? "movie" : "series");
       servers.push(...single.map((s) => ({ name: s.name, episodes: [{ label, url: s.url }] })));
     }
   }
@@ -296,6 +305,7 @@ function makeNormalizer({ genreMap, catNameToSlug, homeSlugs, taxonomies }) {
       description: str(row.description) || str(row.desc) || str(extra.metaDesc),
       director: str(extra.director) || null,
       duration: str(extra.duration) || null,
+      apiSlug: str(extra.slug) || str(row.ophim_slug) || slug,
       trailer: str(extra.trailer) || null,
       imdbId: str(extra.imdbId) || null,
       source: "quanli",
