@@ -31,15 +31,11 @@ const ACCOUNT_MENU: { href: string; label: string; icon: AccountIconName }[] = [
 export function Header() {
   const { user } = useAuthSession();
   // Header có mặt ở mọi trang nên cũng là nơi kéo thư viện từ Supabase về.
-  const { syncing, lastSyncedAt, syncNow } = useLibrarySync();
+  // Chỉ giữ tác dụng đồng bộ — không hiển thị trạng thái "đã đồng bộ lúc...".
+  useLibrarySync();
   const accountLabel = user?.email ? user.email.split("@")[0] : "Thành viên";
   const meta = profileMeta(user);
   const accountName = meta.displayName || accountLabel;
-  const syncLabel = syncing
-    ? "Đang đồng bộ..."
-    : lastSyncedAt
-      ? `Đã đồng bộ lúc ${new Date(lastSyncedAt).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}`
-      : "Sẵn sàng đồng bộ";
   const [accountOpen, setAccountOpen] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
 
@@ -220,21 +216,6 @@ export function Header() {
                   <div className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-white/10 bg-[#0a0a0f] shadow-2xl">
                     <div className="px-5 pb-4 pt-5">
                       <h3 className="mb-3 truncate text-[15px] font-bold text-white">{accountName}</h3>
-                      <p className="mb-4 text-[13px] leading-relaxed text-white/60">
-                        Yêu thích, danh sách và tiến độ xem được{" "}
-                        <span className="font-bold text-[#FFD166]">đồng bộ tự động</span> giữa các thiết bị.
-                      </p>
-                      <div className="flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2.5">
-                        <AccountIcon name="sync" className={`h-4 w-4 shrink-0 text-white/50 ${syncing ? "animate-spin" : ""}`} />
-                        <span className="truncate text-[11px] text-white/50">{syncLabel}</span>
-                        <button
-                          type="button"
-                          onClick={() => void syncNow()}
-                          className="ml-auto shrink-0 rounded-lg bg-white/10 px-2 py-1 text-[11px] font-semibold text-white/80 hover:bg-white/15 hover:text-white"
-                        >
-                          Ngay
-                        </button>
-                      </div>
                       <a
                         href={withBasePath("/users/tai-khoan")}
                         onClick={() => setAccountOpen(false)}
