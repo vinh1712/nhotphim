@@ -7,7 +7,10 @@ import { SKIP_OVERLAY_KEY } from "@/lib/overlay";
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  viewportFit: "cover",
+  // Giống chophim: iOS tự chừa vùng tai thỏ (không dùng viewport-fit=cover)
+  // và không tự phóng to trang khi focus vào ô tìm kiếm.
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export const metadata: Metadata = {

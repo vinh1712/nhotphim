@@ -108,7 +108,7 @@ export function SearchAutocomplete({
             autoFocus={autoFocus}
             onFocus={() => results.length > 0 && setOpen(true)}
             onChange={(e) => onChange(e.target.value)}
-            className={`h-[42px] bg-white/10 text-[15px] text-text-primary placeholder:text-[#FFFFFF] focus:outline-none border transition-all ${
+            className={`h-[42px] bg-white/10 text-[15px] max-sm:text-[16px] text-text-primary placeholder:text-[#FFFFFF] focus:outline-none border transition-all ${
               fullWidth
                 ? "w-full px-4 border-white/20 focus:border-white rounded-md"
                 : "w-full pl-10 pr-4 border-white/0 focus:border-white rounded-[8px]"

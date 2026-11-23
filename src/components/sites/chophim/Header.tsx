@@ -98,7 +98,7 @@ export function Header() {
 
   return (
     <header className={headerClass}>
-      <div className="w-full px-2 lg:px-4 flex items-center justify-between h-[68px] lg:h-[76px] pt-1 lg:pt-2">
+      <div className="w-full flex items-center justify-between h-[68px] lg:h-[76px] pt-1 lg:pt-2 pl-[calc(0.5rem+env(safe-area-inset-left))] pr-[calc(0.5rem+env(safe-area-inset-right))] lg:pl-[calc(1rem+env(safe-area-inset-left))] lg:pr-[calc(1rem+env(safe-area-inset-right))]">
         {/* --- mobile: menu + logo + Search overlay (giống chophim.wtf) --- */}
         <MobileHeaderBar
           movies={cards}
