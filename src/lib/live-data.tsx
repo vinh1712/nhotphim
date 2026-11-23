@@ -427,6 +427,9 @@ function buildHome(
   const movies = Object.values(db);
   const createdDesc = (a: MovieDetail, b: MovieDetail) =>
     String(b.createdAt || "").localeCompare(String(a.createdAt || ""));
+  /** Các tab "mới" xếp theo năm phát hành, cùng năm thì theo ngày đưa lên admin. */
+  const releaseDesc = (a: MovieDetail, b: MovieDetail) =>
+    (b.year ?? 0) - (a.year ?? 0) || createdDesc(a, b);
   const ratingDesc = (a: MovieDetail, b: MovieDetail) =>
     (b.rating ?? -1) - (a.rating ?? -1) || createdDesc(a, b);
   const pick = <T,>(arr: T[], n: number): T[] => arr.slice(0, n);
@@ -487,15 +490,15 @@ function buildHome(
 
   const sections = (tpl.sections || []).map((s): Section => {
     switch (s.id) {
-      case "S:2": return fillSection(s, pick(ofCountry("han-quoc").sort(createdDesc), 15));
-      case "S:3": return fillSection(s, pick(ofCountry("trung-quoc").sort(createdDesc), 15));
-      case "S:4": return fillSection(s, pick(ofCountry("au-my").sort(createdDesc), 15));
+      case "S:2": return fillSection(s, pick(ofCountry("han-quoc").sort(releaseDesc), 15));
+      case "S:3": return fillSection(s, pick(ofCountry("trung-quoc").sort(releaseDesc), 15));
+      case "S:4": return fillSection(s, pick(ofCountry("au-my").sort(releaseDesc), 15));
       case "S:7":
         return fillSection(
           s,
           pick([...movies].sort((a, b) => Number(b.lang === "Vietsub") - Number(a.lang === "Vietsub") || ratingDesc(a, b)), 36)
         );
-      case "S:8": return fillSection(s, pick([...movies].sort(createdDesc), 24));
+      case "S:8": return fillSection(s, pick([...movies].sort(releaseDesc), 24));
       case "S:9": return fillSection(s, pick([...series].sort(ratingDesc), 10));
       case "S:a":
         return {
@@ -503,7 +506,7 @@ function buildHome(
           heading: LIVE_HORROR_HEADING,
           headingParts: [LIVE_HORROR_HEADING],
         };
-      case "S:b": return fillSection(s, pick([...series].sort(createdDesc), 24));
+      case "S:b": return fillSection(s, pick([...series].sort(releaseDesc), 24));
       case "S:c": return fillSection(s, pick([...viet].sort(createdDesc), 16));
       case "S:d": return fillSection(s, pick([...films].sort(createdDesc), 24));
       case "S:e": return fillSection(s, pick([...films].sort(ratingDesc), 10));
