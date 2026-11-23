@@ -2,9 +2,16 @@ import { withBasePath } from "@/lib/base-path";
 const LOGO = withBasePath("/brand/nhotphim-logo.png");
 const VN_FLAG = withBasePath("/sites/chophim/46d51573b642dc37.svg");
 
-/* Chỉ giữ kênh chính thức của Nhót Phim — bỏ các nút href="#" của chophim. */
-const SOCIALS: { href: string; label: string; icon: string; size: number }[] = [
-  { href: "https://t.me/nhot2008", label: "Telegram", icon: withBasePath("/sites/chophim/659a62f126eec1fb.svg"), size: 18 },
+/* Giữ bộ icon mạng xã hội như chophim nhưng chỉ để hiển thị — không gắn đường dẫn. */
+const SOCIALS: { label: string; icon: string; size: number }[] = [
+  { label: "Telegram", icon: withBasePath("/sites/chophim/659a62f126eec1fb.svg"), size: 18 },
+  { label: "Discord", icon: withBasePath("/sites/chophim/discord-icon.svg"), size: 18 },
+  { label: "X", icon: withBasePath("/sites/chophim/x-icon.svg"), size: 14 },
+  { label: "Facebook", icon: withBasePath("/sites/chophim/facebook-icon.svg"), size: 18 },
+  { label: "TikTok", icon: withBasePath("/sites/chophim/tiktok-icon.svg"), size: 18 },
+  { label: "YouTube", icon: withBasePath("/sites/chophim/youtube-icon.svg"), size: 18 },
+  { label: "Threads", icon: withBasePath("/sites/chophim/threads-icon.svg"), size: 18 },
+  { label: "Instagram", icon: withBasePath("/sites/chophim/instagram-icon.svg"), size: 18 },
 ];
 
 const MENU = [
@@ -54,12 +61,10 @@ export function Footer() {
           <div className="hidden md:block w-px h-10 bg-white/10" />
           <div className="flex flex-nowrap items-center justify-center md:justify-start gap-2.5 sm:gap-3 overflow-x-auto overflow-y-hidden w-full md:w-auto pb-2 md:pb-0 scrollbar-hide shrink-0">
             {SOCIALS.map((s) => (
-              <a
+              <span
                 key={s.label}
-                href={s.href}
-                target={s.href.startsWith("http") ? "_blank" : undefined}
-                rel={s.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                className="w-10 h-10 rounded-full bg-[#12121a] flex items-center justify-center text-white/80"
+                aria-label={s.label}
+                className="w-10 h-10 rounded-full bg-[#12121a] flex items-center justify-center text-white/80 shrink-0"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -68,10 +73,10 @@ export function Footer() {
                   width={s.size}
                   height={s.size}
                   decoding="async"
-                  className="opacity-80 hover:opacity-100 transition-opacity"
+                  className="opacity-80"
                   src={s.icon}
                 />
-              </a>
+              </span>
             ))}
           </div>
         </div>

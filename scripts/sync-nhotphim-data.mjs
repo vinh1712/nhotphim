@@ -537,17 +537,11 @@ function buildHome(tpl, db, comments, taxonomies, heroIds) {
     logoBox: tpl.hero?.slides?.[i % (tpl.hero.slides.length || 1)]?.logoBox,
   }));
 
-  // Chophim có 15 slide anime; bổ sung phim Nhật/hoạt hình nếu admin chưa đủ 15.
-  const animeExtra = movies.filter(
-    (m) => m.countrySlug === "nhat-ban" || (m.genres || []).some((g) => /hoạt hình|anime/i.test(g))
-  );
+  // Chỉ anime/hoạt hình; không chèn phim Nhật live-action hay phim thường cho đủ 15.
+  const animeExtra = movies.filter((m) => (m.genres || []).some((g) => /hoạt hình|anime/i.test(g)));
   const animePool = [...anime, ...animeExtra]
     .filter((m, i, arr) => arr.findIndex((x) => x.slug === m.slug) === i)
     .sort(createdDesc);
-  for (const m of [...movies].sort(createdDesc)) {
-    if (animePool.length >= 15) break;
-    if (!animePool.some((x) => x.slug === m.slug)) animePool.push(m);
-  }
   const animeSlides = pick(animePool, 15).map((m) => ({
     slug: m.slug,
     title: m.title,
