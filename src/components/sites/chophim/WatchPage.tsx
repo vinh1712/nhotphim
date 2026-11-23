@@ -2,6 +2,7 @@
 
 import { withBasePath } from "@/lib/base-path";
 import { detailHref } from "@/lib/live-data";
+import { PartSelector } from "./PartSelector";
 import { getProgress, isInList, removeProgress, saveProgress, toggleList } from "@/lib/user-library";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Hls, {
@@ -1230,6 +1231,7 @@ export function WatchPage({
                   Danh sách tập
                 </h3>
                 <div className="flex min-w-0 items-center gap-2">
+                  <PartSelector movie={movie} mode="watch" />
                   <span className="text-[13px] text-white/60 font-medium hidden sm:inline-block shrink-0">Chọn Server:</span>
                   <div className="relative min-w-0 sm:w-auto">
                     <select

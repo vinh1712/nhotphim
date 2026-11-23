@@ -299,6 +299,8 @@ function makeNormalizer({ genreMap, catNameToSlug, homeSlugs, taxonomies }) {
       trailer: str(extra.trailer) || null,
       imdbId: str(extra.imdbId) || null,
       source: "quanli",
+      seriesGroup: str(row.series_group) || null,
+      partNumber: num(row.part_number),
       id: row.id,
       createdAt: str(row.created_at),
       epstatus: epstatus || null,

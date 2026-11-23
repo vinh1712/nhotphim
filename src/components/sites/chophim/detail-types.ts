@@ -28,6 +28,10 @@ export type MovieDetail = {
   duration: string | null;
   trailer: string | null;
   source: string;
+  /** Nhóm phim nhiều phần trong trang quản lí (cột series_group). */
+  seriesGroup?: string | null;
+  /** Thứ tự phần trong nhóm (cột part_number). */
+  partNumber?: number | null;
   createdAt?: string;
   epstatus?: string | null;
   genreSlugs?: string[];

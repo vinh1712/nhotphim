@@ -2,6 +2,7 @@
 
 import { withBasePath } from "@/lib/base-path";
 import { detailHref, watchHref } from "@/lib/live-data";
+import { PartSelector } from "./PartSelector";
 import { isInList, toggleList } from "@/lib/user-library";
 import { useEffect, useState } from "react";
 import { fillStyle } from "./types";
@@ -464,8 +465,9 @@ export function DetailPage({
                   <div className="animate-fade-in" key={tab}>
                     {tab === "Tập phim" && (
                       <>
-                        {/* Máy chủ */}
+                        {/* Phần / Máy chủ — giữ đúng cụm điều khiển của chophim.wtf */}
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-6">
+                          <PartSelector movie={movie} mode="detail" withDivider />
                           <div className="flex items-center gap-1.5 text-[13px] font-semibold text-white/50 mr-1">
                             <IconServer className="w-4 h-4" />
                             Máy chủ:
