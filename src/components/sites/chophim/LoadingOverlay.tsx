@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { withBasePath } from "@/lib/base-path";
+import { SHOW_LOADING_EVENT } from "@/lib/overlay";
 
 // Clone đúng overlay của chophim: hiện 500ms → mờ dần 300ms → gỡ hẳn ở 1000ms.
 // Chỉ thay logo/tagline; không dựng thêm màn hình load mới.
@@ -12,15 +13,25 @@ const BACKGROUND = withBasePath("/sites/chophim/13533e9315d23bb7.jpg");
 export function LoadingOverlay() {
   const [visible, setVisible] = useState(true);
   const [fadingOut, setFadingOut] = useState(false);
+  const [run, setRun] = useState(0);
+
+  // Tab nằm lâu rồi quay lại: dữ liệu sống refresh, phát lại đúng overlay này.
+  useEffect(() => {
+    const onWake = () => setRun((v) => v + 1);
+    window.addEventListener(SHOW_LOADING_EVENT, onWake);
+    return () => window.removeEventListener(SHOW_LOADING_EVENT, onWake);
+  }, []);
 
   useEffect(() => {
+    setVisible(true);
+    setFadingOut(false);
     const fadeTimer = window.setTimeout(() => setFadingOut(true), 500);
     const hideTimer = window.setTimeout(() => setVisible(false), 1000);
     return () => {
       window.clearTimeout(fadeTimer);
       window.clearTimeout(hideTimer);
     };
-  }, []);
+  }, [run]);
 
   if (!visible) return null;
 

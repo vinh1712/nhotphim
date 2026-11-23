@@ -24,6 +24,7 @@ import {
 } from "react";
 import { commentsData, moviesData, notificationsData, taxonomiesData } from "@/data";
 import { stripBasePath, withBasePath } from "./base-path";
+import { SHOW_LOADING_EVENT, SKIP_OVERLAY_KEY, WAKE_REFRESH_MS } from "./overlay";
 import { SB_KEY, SB_URL, sbFetch, sbTable } from "./supabase";
 import type {
   DetailComment,
@@ -847,6 +848,7 @@ export function LiveDataProvider({ children }: { children: ReactNode }) {
     let debounce: number | undefined;
     let attempts = 0;
     let seq = 1;
+    let hiddenAt = 0;
 
     const onChange = () => {
       if (stopped) return;
@@ -916,7 +918,19 @@ export function LiveDataProvider({ children }: { children: ReactNode }) {
       if (document.visibilityState === "visible") void refresh(false);
     }, 20000);
     const onVisible = () => {
-      if (document.visibilityState === "visible") void refresh(false);
+      if (document.visibilityState !== "visible") {
+        hiddenAt = Date.now();
+        return;
+      }
+      const away = hiddenAt ? Date.now() - hiddenAt : 0;
+      hiddenAt = 0;
+      if (away >= WAKE_REFRESH_MS) {
+        // Dùng lại overlay có sẵn của chophim thay vì dựng màn load mới.
+        window.dispatchEvent(new Event(SHOW_LOADING_EVENT));
+        void refresh(true);
+      } else {
+        void refresh(false);
+      }
     };
     document.addEventListener("visibilitychange", onVisible);
 
@@ -957,8 +971,39 @@ export function LiveDataProvider({ children }: { children: ReactNode }) {
         /* link lạ — giữ nguyên */
       }
     };
+    // Đánh dấu link nội bộ thật (bản static export load lại cả trang). Dùng phase
+    // bubble để Next Link kịp preventDefault khi chuyển trang mềm; referrer cùng
+    // origin không còn được dùng để đoán vì trình duyệt tự reload tab cũng trùng.
+    const markInternalNav = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const target = event.target as HTMLElement | null;
+      const anchor = target?.closest?.("a") as HTMLAnchorElement | null;
+      if (!anchor || !anchor.href) return;
+      if (anchor.target && anchor.target !== "_self") return;
+      if (anchor.hasAttribute("download")) return;
+      try {
+        const url = new URL(anchor.href, window.location.href);
+        if (url.origin !== window.location.origin) return;
+        if (url.protocol !== "http:" && url.protocol !== "https:") return;
+        // clicking #anchor trên cùng trang không reload thì không đánh dấu.
+        if (
+          url.pathname === window.location.pathname &&
+          url.search === window.location.search &&
+          url.hash
+        )
+          return;
+        window.sessionStorage.setItem(SKIP_OVERLAY_KEY, String(Date.now()));
+      } catch {
+        /* không đọc được storage thì cứ để overlay hiện bình thường */
+      }
+    };
     document.addEventListener("click", onClick, true);
-    return () => document.removeEventListener("click", onClick, true);
+    document.addEventListener("click", markInternalNav);
+    return () => {
+      document.removeEventListener("click", onClick, true);
+      document.removeEventListener("click", markInternalNav);
+    };
   }, []);
 
   const value = useMemo<LiveContextValue>(() => ({ ...state, refresh }), [state, refresh]);
