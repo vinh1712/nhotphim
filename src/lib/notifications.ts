@@ -1,11 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { notificationsData } from "@/data";
 import { getList } from "./user-library";
+import { useLiveNotifications } from "./live-data";
 
-/** Bản static không có /api/notifications của chophim: danh sách được sync từ
- *  bảng ep_notifs của repo quản lí lúc build, trạng thái đã đọc lưu ở đây.
+/** Danh sách tập mới đọc trực tiếp từ bảng ep_notifs qua lớp dữ liệu sống
+ *  (fallback là dữ liệu build sẵn), trạng thái đã đọc lưu ở đây.
  *  Chỉ hiện tập mới của phim có trong danh sách yêu thích của người dùng. */
 export type Notice = {
   id: string;
@@ -81,6 +81,7 @@ export function timeAgo(iso: string): string {
 /** Header có 2 chuông (mobile/desktop) + tab thông báo: dùng chung storage và
  *  sự kiện nội bộ để badge ở mọi nơi đổi cùng lúc. */
 export function useNotifications() {
+  const liveNotices = useLiveNotifications();
   const [readIds, setReadIds] = useState<string[]>([]);
   const [favoriteKeys, setFavoriteKeys] = useState<FavoriteKeys>({ slugs: [], names: [] });
   const readIdsRef = useRef<string[]>([]);
@@ -128,8 +129,7 @@ export function useNotifications() {
   const favoriteNames = useMemo(() => new Set(favoriteKeys.names), [favoriteKeys.names]);
 
   const items = useMemo<NoticeItem[]>(() => {
-    const all = notificationsData as unknown as Notice[];
-    return all
+    return liveNotices
       .filter((notice) => {
         const slug = slugFromLink(notice.link);
         if (slug && favoriteSlugs.has(slug)) return true;
@@ -139,7 +139,7 @@ export function useNotifications() {
         );
       })
       .map((notice) => ({ ...notice, isRead: readIds.includes(String(notice.id)) }));
-  }, [favoriteNames, favoriteSlugs, readIds]);
+  }, [favoriteNames, favoriteSlugs, liveNotices, readIds]);
 
   const markRead = useCallback(
     (id: string) => {

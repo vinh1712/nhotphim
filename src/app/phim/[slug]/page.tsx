@@ -1,9 +1,6 @@
-import { withBasePath } from "@/lib/base-path";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Header } from "@/components/sites/chophim/Header";
-import { Footer } from "@/components/sites/chophim/Footer";
-import { DetailPage } from "@/components/sites/chophim/DetailPage";
+import { LiveRoute } from "@/components/sites/chophim/LiveRoute";
 import type { MovieDetail, Suggestion } from "@/components/sites/chophim/detail-types";
 import { commentsData, moviesData } from "@/data";
 
@@ -48,32 +45,6 @@ function pickSuggestions(movie: MovieDetail, limit = 12): Suggestion[] {
   }));
 }
 
-function jsonLd(movie: MovieDetail) {
-  const descBits = [
-    `Xem phim ${movie.title}`,
-    movie.origin ? `(${movie.origin})` : null,
-    movie.year ? `, ${movie.year}` : null,
-    movie.quality ? `, ${movie.quality}` : null,
-    movie.lang ? `, ${movie.lang}` : null,
-    movie.description ? `. ${movie.description.slice(0, 160)}${movie.description.length > 160 ? "…" : ""}` : ".",
-  ].filter(Boolean);
-  return {
-    "@context": "https://schema.org",
-    "@type": movie.type === "movie" ? "Movie" : "TVSeries",
-    "@id": withBasePath(`/phim/${movie.slug}#title`),
-    url: withBasePath(`/phim/${movie.slug}`),
-    name: movie.title,
-    ...(movie.origin ? { alternateName: movie.origin } : {}),
-    description: descBits.join(""),
-    image: movie.poster,
-    inLanguage: "vi",
-    ...(movie.year ? { copyrightYear: movie.year } : {}),
-    ...(movie.genres.length ? { genre: movie.genres } : {}),
-    ...(movie.countries.length ? { countryOfOrigin: movie.countries.map((c) => ({ "@type": "Country", name: c })) } : {}),
-    mainEntityOfPage: { "@type": "WebPage", "@id": withBasePath(`/phim/${movie.slug}`) },
-  };
-}
-
 export default async function MovieDetailPage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
   const movie = movies[slug];
@@ -83,15 +54,12 @@ export default async function MovieDetailPage({ params }: { params: Promise<Para
   const suggestions = pickSuggestions(movie);
 
   return (
-    <>
-      <Header />
-      <main className="flex-1 pt-16">
-        <div className="lg:-mt-16">
-          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd(movie)) }} />
-          <DetailPage movie={movie} comments={movieComments} suggestions={suggestions} />
-        </div>
-      </main>
-      <Footer />
-    </>
+    <LiveRoute
+      mode="detail"
+      slug={slug}
+      initialMovie={movie}
+      initialComments={movieComments}
+      initialSuggestions={suggestions}
+    />
   );
 }

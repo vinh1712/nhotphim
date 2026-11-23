@@ -2,21 +2,25 @@
 
 import { withBasePath } from "@/lib/base-path";
 // Kết quả tìm kiếm: đọc ?keyword= ở client để trang vẫn build tĩnh được.
-import { Suspense } from "react";
+import { Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
+import { useLiveData } from "@/lib/live-data";
 import { CategoryPage } from "./CategoryPage";
-import { searchMovies, type CardMovie } from "./movie-filter";
+import { newestFirst, searchMovies, toCard, type CardMovie } from "./movie-filter";
 
 function Results({ movies }: { movies: CardMovie[] }) {
   const searchParams = useSearchParams();
   const keyword = searchParams?.get("keyword") ?? "";
-  const results = searchMovies(movies, keyword);
+  const live = useLiveData();
+  const liveCards = useMemo(() => newestFirst(Object.values(live.movies)).map(toCard), [live.movies]);
+  const results = searchMovies(liveCards.length ? liveCards : movies, keyword);
   const title = keyword ? `Kết quả tìm kiếm: "${keyword}"` : "Tìm kiếm phim";
 
   return (
     <CategoryPage
       title={title}
       movies={results}
+      source="prop"
       basePath={withBasePath("/tim-kiem")}
       emptyText={
         keyword

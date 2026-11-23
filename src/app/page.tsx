@@ -1,5 +1,7 @@
+"use client";
+
 import { withBasePath } from "@/lib/base-path";
-import { home } from "@/components/sites/chophim/types";
+import { useLiveHome } from "@/lib/live-data";
 import { Header } from "@/components/sites/chophim/Header";
 import { Hero } from "@/components/sites/chophim/Hero";
 import { MobileHero } from "@/components/sites/chophim/MobileHero";
@@ -15,13 +17,16 @@ import { FeaturedRow } from "@/components/sites/chophim/FeaturedRow";
 import { AnimeSection } from "@/components/sites/chophim/AnimeSection";
 import { Footer } from "@/components/sites/chophim/Footer";
 
-const byId = (id: string) => {
-  const s = home.sections.find((x) => x.id === id);
-  if (!s) throw new Error(`Missing section ${id}`);
-  return s;
-};
-
 export default function HomePage() {
+  // Dữ liệu build sẵn được dùng ngay để HTML tĩnh giữ nguyên giao diện chophim;
+  // sau khi Supabase trả về, các section tự đổi sang dữ liệu mới nhất.
+  const home = useLiveHome();
+  const byId = (id: string) => {
+    const s = home.sections.find((x) => x.id === id);
+    if (!s) throw new Error(`Missing section ${id}`);
+    return s;
+  };
+
   return (
     <>
       <Header />

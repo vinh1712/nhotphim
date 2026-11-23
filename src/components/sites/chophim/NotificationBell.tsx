@@ -59,8 +59,8 @@ function ClapperIcon({ className = "" }: { className?: string }) {
 }
 
 /** Nút chuông + panel thông báo clone từ chophim.wtf.
- *  Dữ liệu là ep_notifs từ repo quản lí, sync vào src/data/notifications.json
- *  trước mỗi lần build; trạng thái đã đọc lưu trên thiết bị. */
+ *  Dữ liệu là ep_notifs từ repo quản lí, đọc realtime qua src/lib/live-data.tsx
+ *  (fallback là dữ liệu build sẵn); trạng thái đã đọc lưu trên thiết bị. */
 export function NotificationBell({ loggedIn }: { loggedIn: boolean }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);

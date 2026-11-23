@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Header } from "@/components/sites/chophim/Header";
-import { Footer } from "@/components/sites/chophim/Footer";
-import { WatchPage, type WatchSuggestion } from "@/components/sites/chophim/WatchPage";
+import { LiveRoute } from "@/components/sites/chophim/LiveRoute";
+import type { WatchSuggestion } from "@/components/sites/chophim/WatchPage";
 import type { MovieDetail } from "@/components/sites/chophim/detail-types";
 import { commentsData, moviesData } from "@/data";
 
@@ -60,12 +59,12 @@ export default async function WatchPageRoute({ params }: { params: Promise<Param
   const suggestions = pickWatchSuggestions(movie);
 
   return (
-    <>
-      <Header />
-      <main className="flex-1 pt-16">
-        <WatchPage movie={movie} comments={movieComments} suggestions={suggestions} />
-      </main>
-      <Footer />
-    </>
+    <LiveRoute
+      mode="watch"
+      slug={slug}
+      initialMovie={movie}
+      initialComments={movieComments}
+      initialSuggestions={suggestions}
+    />
   );
 }

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { withBasePath } from "@/lib/base-path";
-import { home, fillStyle, type CommentItem, type RankRow } from "./types";
+import { detailHref, useLiveHome } from "@/lib/live-data";
+import { fillStyle, type CommentItem, type RankRow } from "./types";
 import { SliderArrows } from "./SliderArrows";
 import {
   FlameCustom,
@@ -77,7 +78,7 @@ function CommentCard({ c }: { c: CommentItem }) {
   const premium = c.user.subscriptionTier === "premium";
   const admin = c.user.role === "admin";
   const commentId = c.parentId ? `${c.parentId}-reply-${c.id}` : c.id;
-  const href = withBasePath(`/phim/${c.movieSlug}#comment-${commentId}`);
+  const href = `${detailHref(c.movieSlug)}#comment-${commentId}`;
 
   return (
     <div className="shrink-0 !w-[260px] sm:!w-[280px] lg:!w-[290px] snap-start">
@@ -198,7 +199,7 @@ const GENRE_CLS = [
 ];
 
 function RankRowLink({ r, i, genres = false }: { r: RankRow; i: number; genres?: boolean }) {
-  const href = genres ? withBasePath(`/the-loai/${r.slug}`) : withBasePath(`/phim/${r.slug}`);
+  const href = genres ? withBasePath(`/the-loai/${r.slug}`) : detailHref(r.slug);
   return (
     <a
       className="flex items-center gap-2.5 px-1 h-[52px] rounded-lg hover:bg-white/[0.04] transition-colors group"
@@ -289,7 +290,7 @@ const RANK_TITLES: Record<RankKind, string> = {
 };
 
 function RankModal({ kind, onClose }: { kind: RankKind; onClose: () => void }) {
-  const { rankings } = home;
+  const { rankings } = useLiveHome();
   const rows = kind === "hot" ? rankings.hot : kind === "fav" ? rankings.favorite : rankings.genres;
   const icon =
     kind === "hot" ? (
@@ -357,6 +358,7 @@ function RankModal({ kind, onClose }: { kind: RankKind; onClose: () => void }) {
 /* Hộp Bình Luận Mới + Bảng Xếp Hạng (S:5 + S:6)                      */
 /* ------------------------------------------------------------------ */
 export function SocialBox() {
+  const home = useLiveHome();
   const { comments } = home;
   const [modal, setModal] = useState<RankKind | null>(null);
 

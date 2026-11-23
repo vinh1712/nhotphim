@@ -1,11 +1,14 @@
+"use client";
+
 import { withBasePath } from "@/lib/base-path";
-import { home } from "./types";
+import { useLiveHome } from "@/lib/live-data";
 import { IconChevronRight } from "./icons";
 
 const GRID_CLS =
   "-mx-4 flex gap-2 overflow-x-auto px-4 scroll-pl-4 pb-2 sm:-mx-6 sm:px-6 sm:scroll-pl-6 lg:mx-0 lg:grid lg:grid-cols-5 lg:gap-4 lg:overflow-visible lg:px-0 lg:scroll-pl-0 lg:pb-0 after:w-[1px] after:shrink-0 lg:after:hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]";
 
 export function Topics() {
+  const home = useLiveHome();
   return (
     <section>
       <div className="w-full">

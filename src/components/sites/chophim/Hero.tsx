@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { withBasePath } from "@/lib/base-path";
 import { getList, toggleList } from "@/lib/user-library";
-import { home, fillStyle, type HeroSlide as Slide } from "./types";
+import { useLiveHome } from "@/lib/live-data";
+import { fillStyle, type HeroSlide as Slide } from "./types";
 import { IconPlay, IconHeartSolid, IconInfo } from "./icons";
 
 const DOT_STYLE = {
@@ -251,6 +252,7 @@ function ThumbRow({
 }
 
 export function Hero() {
+  const home = useLiveHome();
   const slides = home.hero.slides;
   const thumbs = home.hero.thumbs;
   const n = slides.length;

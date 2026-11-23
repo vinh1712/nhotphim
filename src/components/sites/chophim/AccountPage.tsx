@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { signOut, updateProfile, useAuthSession } from "@/lib/auth";
 import { withBasePath } from "@/lib/base-path";
+import { detailHref, watchHref } from "@/lib/live-data";
 import { ACCOUNT_TABS, getAccountTab, type AccountTab, type AccountTabInfo } from "@/lib/account-tabs";
 import { useUserLibrary, type LibraryEntry, type ProgressEntry } from "@/lib/user-library";
 import { timeAgo, useNotifications } from "@/lib/notifications";
@@ -132,7 +133,7 @@ function PosterTile({
 }) {
   return (
     <div className="group relative">
-      <a className="block" href={withBasePath(`/phim/${item.slug}`)}>
+      <a className="block" href={detailHref(item.slug)}>
         <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-bg-card ring-1 ring-white/5">
           <svg className="absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 text-white/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4" />
@@ -556,7 +557,7 @@ export function AccountPage({ tab }: { tab: AccountTab }) {
             const hash = `#tap=tap-${item.episode + 1}&sv=${encodeURIComponent(item.serverName || "")}&server_id=${item.server}&t=${Math.floor(item.time)}`;
             return (
               <div key={item.slug} className="group relative">
-                <a href={withBasePath(`/xem/${item.slug}${hash}`)}>
+                <a href={watchHref(item.slug, hash)}>
                   <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-bg-card ring-1 ring-white/5">
                     {item.poster ? (
                       // eslint-disable-next-line @next/next/no-img-element

@@ -2,12 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { clearLocalLibrary } from "./library-storage";
-
-/* Cấu hình lấy từ repo quản lí vinh1712/nhotphim-quanli (index.html).
- * Đây là SUPABASE_ANON_KEY — thiết kế để dùng public, RLS vẫn do Supabase giữ. */
-const SB_URL = "https://tlbumpjugtltznzuwqwt.supabase.co";
-const SB_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRsYnVtcGp1Z3RsdHpuenV3cXd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjc0NDksImV4cCI6MjA5Mzg0MzQ0OX0.EMgx5_nREnfjZaIaLwU9q_KknbnqdxA2fbic_G_Xfdc";
+import { SB_KEY, SB_URL } from "./supabase";
 
 const SESSION_KEY = "nhotphim:auth:v1";
 const AUTH_EVENT = "nhotphim:auth-change";

@@ -2,15 +2,16 @@
  * Đồng bộ dữ liệu phim từ repo quản lí vinh1712/nhotphim-quanli.
  *
  * Admin (index.html) ghi vào Supabase: movies / taxonomies / comments /
- * app_settings.hero_movies. Web đang deploy dạng static (output: export) nên
- * không đọc Supabase lúc chạy — script này kéo về và sinh lại src/data/*.json
- * trước mỗi lần build. Nhờ đó thêm/sửa phim ở trang quản lí là build sau đó
- * tự động có trên web, kể cả route /phim/<slug> và /xem/<slug> mới.
+ * app_settings.hero_movies / ep_notifs. Web deploy dạng static (output: export)
+ * nhưng đọc Supabase trực tiếp ở client (src/lib/live-data.tsx) nên admin thêm
+ * hoặc sửa phim là web cập nhật ngay, KHÔNG cần build lại hay quét định kỳ.
+ *
+ * Script này chỉ dùng một lần để tạo bộ dữ liệu khởi tạo (HTML tĩnh load nhanh
+ * và làm fallback khi mạng lỗi). Không còn nối vào prebuild/CI.
  *
  * Chạy:
  *   node scripts/sync-nhotphim-data.mjs            # kéo + ghi đè src/data
  *   node scripts/sync-nhotphim-data.mjs --dry-run  # chỉ báo cáo, không ghi
- *   SKIP_DATA_SYNC=1 npm run build                 # build offline, giữ JSON cũ
  */
 import { existsSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -316,20 +317,51 @@ function makeNormalizer({ genreMap, catNameToSlug, homeSlugs, taxonomies }) {
 }
 
 function buildMovieDb(rows, normalize) {
-  const db = {};
-  let collisions = 0;
+  const bySlug = new Map();
   for (const row of rows) {
     if (row.hidden === true) continue;
     const rec = normalize(row);
     if (!rec.slug || !rec.title) continue;
-    const prev = db[rec.slug];
-    if (prev) {
-      collisions++;
-      const score = (x) => (x.servers[0]?.episodes.length || 0) * 100 + (x.current || 0);
-      if (score(rec) > score(prev)) db[rec.slug] = rec;
-      continue;
+    const list = bySlug.get(rec.slug) || [];
+    list.push({ row, rec });
+    bySlug.set(rec.slug, list);
+  }
+
+  const normTitle = (s) =>
+    str(s)
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/đ/g, "d")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+  const score = (x) => (x.servers[0]?.episodes.length || 0) * 100 + (x.current || 0);
+
+  const db = {};
+  let collisions = 0;
+  for (const [base, entries] of bySlug) {
+    const byTitle = new Map();
+    for (const e of entries) {
+      const key = normTitle(e.rec.title);
+      const list = byTitle.get(key) || [];
+      list.push(e);
+      byTitle.set(key, list);
     }
-    db[rec.slug] = rec;
+    const winners = [...byTitle.values()].map((list) =>
+      list.reduce((best, e) => (score(e.rec) > score(best.rec) ? e : best))
+    );
+    collisions += winners.length - 1;
+    winners.forEach((e, i) => {
+      let slug = base;
+      if (i > 0) {
+        const suffix = `${base}-${e.row.id ?? "new"}`;
+        slug = suffix;
+        let n = 2;
+        while (db[slug]) slug = `${suffix}-${n++}`;
+      }
+      e.rec.slug = slug;
+      db[slug] = e.rec;
+    });
   }
   return { db, collisions };
 }
@@ -552,8 +584,8 @@ function buildHome(tpl, db, comments, taxonomies, heroIds) {
   }
   homeComments.sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
 
-  const trend = ["up", "down", "same", "up", "down"];
-  const hot = pick([...movies].sort(ratingDesc), 5).map((m, i) => ({
+  const trend = ["up", "down", "same", "up", "down", "same", "up", "down", "same", "up"];
+  const hot = pick([...movies].sort(ratingDesc), 10).map((m, i) => ({
     slug: m.slug,
     name: m.title,
     poster_url: m.poster,
@@ -563,7 +595,7 @@ function buildHome(tpl, db, comments, taxonomies, heroIds) {
   const hotSet = new Set(hot.map((r) => r.slug));
   const favorite = pick(
     [...movies].filter((m) => !hotSet.has(m.slug)).sort((a, b) => (b.rating ?? -1) - (a.rating ?? -1) || (b.likes ?? 0) - (a.likes ?? 0)),
-    5
+    10
   ).map((m, i) => ({
     slug: m.slug,
     name: m.title,
@@ -575,7 +607,7 @@ function buildHome(tpl, db, comments, taxonomies, heroIds) {
   for (const m of movies) for (const g of m.genreSlugs) catCounts[g] = (catCounts[g] || 0) + 1;
   const genres = Object.entries(catCounts)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)
+    .slice(0, 7)
     .map(([slug, count], i) => ({
       name: taxonomies.find((t) => t.type === "category" && t.slug === slug)?.name || slug,
       slug,

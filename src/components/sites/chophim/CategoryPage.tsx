@@ -5,6 +5,7 @@ import { stripBasePath, withBasePath } from "@/lib/base-path";
 // Số trang mặc định đọc từ ?page= để page vẫn build được thành HTML tĩnh (output: "export").
 import { Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import { detailHref, useLiveData } from "@/lib/live-data";
 import { BottomBadges } from "./Badges";
 import { fillStyle, type MovieItem } from "./types";
 import {
@@ -14,7 +15,9 @@ import {
   bottomBadgeText,
   filtersFromParams,
   lockedFiltersFromPath,
+  newestFirst,
   paginate,
+  toCard,
   sortQueryValue,
   type CardMovie,
   type MovieFilters,
@@ -25,7 +28,7 @@ const CARD_BOTTOM_CLS =
 
 function toItem(m: CardMovie): MovieItem {
   return {
-    href: withBasePath(`/phim/${m.slug}`),
+    href: detailHref(m.slug),
     img: m.poster || m.backdrop,
     alt: m.title,
     title: m.title,
@@ -43,7 +46,7 @@ export function MovieCard({ m }: { m: CardMovie }) {
   const item = toItem(m);
   return (
     <div className="relative movie-card-wrapper">
-      <a className="movie-card block group" href={withBasePath(`/phim/${m.slug}`)}>
+      <a className="movie-card block group" href={detailHref(m.slug)}>
         <div className="relative rounded-lg overflow-hidden bg-bg-card aspect-[2/3] ring-1 ring-white/5 shadow-md flex items-center justify-center">
           <svg className="absolute w-12 h-12 text-white/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -246,6 +249,7 @@ export function CategoryPage({
   hideTitle = false,
   mainClassName = "flex-1 pt-16",
   banner,
+  source = "live",
 }: {
   title: string;
   movies: CardMovie[];
@@ -255,7 +259,12 @@ export function CategoryPage({
   hideTitle?: boolean;
   mainClassName?: string;
   banner?: ReactNode;
+  /** "live" lấy danh sách mới nhất từ Supabase; "prop" dùng danh sách cha truyền xuống (tìm kiếm). */
+  source?: "live" | "prop";
 }) {
+  const live = useLiveData();
+  const liveCards = useMemo(() => newestFirst(Object.values(live.movies)).map(toCard), [live.movies]);
+  const pool = source === "live" ? liveCards : movies;
   const pathname = usePathname() ?? (typeof window !== "undefined" ? window.location.pathname : "/");
   const locked = useMemo<Partial<MovieFilters>>(
     () => ({ ...lockedFiltersFromPath(stripBasePath(pathname)), ...lockedFilters }),
@@ -267,7 +276,7 @@ export function CategoryPage({
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const loadingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const filtered = useMemo(() => applyFilters(movies, applied), [movies, applied]);
+  const filtered = useMemo(() => applyFilters(pool, applied), [pool, applied]);
   const hasFilter =
     !!applied.country || !!applied.type || applied.genres.length > 0 || !!applied.lang || !!applied.year;
 

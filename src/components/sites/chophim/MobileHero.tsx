@@ -11,7 +11,7 @@ import { withBasePath } from "@/lib/base-path";
 // snap tiếp quãng đang kéo (0.55s cubic-bezier(.22,.9,.34,1)), chưa đủ thì nảy về.
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { home } from "./types";
+import { useLiveHome } from "@/lib/live-data";
 import { IconPlay, IconInfo } from "./icons";
 
 /** offset vòng tròn về (-n/2, n/2] */
@@ -30,6 +30,7 @@ const PILLS = [
 
 export function MobileHero() {
   const router = useRouter();
+  const home = useLiveHome();
   const slides = home.hero.slides;
   const n = slides.length;
   const [active, setActive] = useState(0);

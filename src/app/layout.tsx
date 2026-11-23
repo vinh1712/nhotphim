@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { LoadingOverlay } from "@/components/sites/chophim/LoadingOverlay";
+import { LiveDataProvider } from "@/lib/live-data";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -38,7 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen flex flex-col overflow-x-hidden pt-0 pt-[env(safe-area-inset-top)]">
         <LoadingOverlay />
-        {children}
+        <LiveDataProvider>{children}</LiveDataProvider>
       </body>
     </html>
   );

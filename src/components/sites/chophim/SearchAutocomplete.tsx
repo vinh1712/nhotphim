@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { withBasePath } from "@/lib/base-path";
+import { detailHref } from "@/lib/live-data";
 import { searchMovies, stripVn, type CardMovie } from "./movie-filter";
 import { MobileMenu, type MobileMenuGroup, type MobileMenuLink } from "./MobileMenu";
 import { NotificationBell } from "./NotificationBell";
@@ -136,7 +137,7 @@ export function SearchAutocomplete({
               {results.map((m) => (
                 <a
                   key={m.slug}
-                  href={withBasePath(`/phim/${m.slug}`)}
+                  href={detailHref(m.slug)}
                   onClick={closeAll}
                   className="flex items-center gap-3 px-3 py-2.5 hover:bg-bg-hover transition-colors"
                 >

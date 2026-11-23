@@ -1,12 +1,11 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { signOut, useAuthSession } from "@/lib/auth";
 import { useLibrarySync } from "@/lib/user-library";
 import { stripBasePath, withBasePath } from "@/lib/base-path";
-import { moviesData } from "@/data";
-import type { MovieDetail } from "./detail-types";
+import { useLiveData } from "@/lib/live-data";
 import { toCard } from "./movie-filter";
 import { home } from "./types";
 import { MobileHeaderBar, SearchAutocomplete } from "./SearchAutocomplete";
@@ -29,6 +28,7 @@ const ACCOUNT_MENU: { href: string; label: string; icon: AccountIconName }[] = [
 ];
 
 export function Header() {
+  const live = useLiveData();
   const { user } = useAuthSession();
   // Header có mặt ở mọi trang nên cũng là nơi kéo thư viện từ Supabase về.
   // Chỉ giữ tác dụng đồng bộ — không hiển thị trạng thái "đã đồng bộ lúc...".
@@ -42,7 +42,7 @@ export function Header() {
   // Source dùng đúng 2 link đầu cho lưới menu mobile (Phim Lẻ / Phim Bộ).
   const topLinks = home.header.nav.slice(0, 2);
   const dropdowns = home.header.dropdowns;
-  const cards = Object.values(moviesData as unknown as Record<string, MovieDetail>).map(toCard);
+  const cards = useMemo(() => Object.values(live.movies).map(toCard), [live.movies]);
 
   // chophim.wtf dùng header trong suốt ở home/detail/watch/topic detail,
   // và nền đen mờ ở các trang danh mục/tìm kiếm/chủ đề.

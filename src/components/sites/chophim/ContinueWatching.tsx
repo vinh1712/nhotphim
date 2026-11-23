@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
 import { useAuthSession } from "@/lib/auth";
-import { withBasePath } from "@/lib/base-path";
+import { watchHref as liveWatchHref } from "@/lib/live-data";
 import { getProgress, removeProgress, type ProgressEntry } from "@/lib/user-library";
 
 function formatTime(seconds: number): string {
@@ -18,7 +18,7 @@ function formatTime(seconds: number): string {
 /** Cùng dạng hash mà WatchPage và trang Xem tiếp đang dùng để phục hồi mốc xem. */
 function watchHref(item: ProgressEntry): string {
   const hash = `#tap=tap-${item.episode + 1}&sv=${encodeURIComponent(item.serverName || "")}&server_id=${item.server}&t=${Math.floor(item.time)}`;
-  return withBasePath(`/xem/${item.slug}${hash}`);
+  return liveWatchHref(item.slug, hash);
 }
 
 /** Section "Xem Tiếp" trên homepage của chophim: chỉ hiện khi đã đăng nhập

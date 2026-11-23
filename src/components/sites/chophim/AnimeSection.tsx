@@ -3,10 +3,11 @@
 import { withBasePath } from "@/lib/base-path";
 import { getList, toggleList } from "@/lib/user-library";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { home, fillStyle } from "./types";
+import { useLiveHome, watchHref } from "@/lib/live-data";
+import { fillStyle, type HomeData } from "./types";
 import { IconPlay, IconHeartSolid, IconInfo, IconChevronRight } from "./icons";
 
-type ASlide = (typeof home.anime.slides)[number];
+type ASlide = HomeData["anime"]["slides"][number];
 
 const stripTags = (html: string) => html.replace(/<[^>]*>/g, "").trim();
 
@@ -99,7 +100,7 @@ function DeskSlide({
                 <a
                   className="anime-play-btn w-16 h-16 text-[#0f1115] rounded-full flex items-center justify-center transition-transform hover:scale-105 shadow-[0_0_15px_rgba(254,207,89,0.5)] shrink-0"
                   title="Xem Ngay"
-                  href={withBasePath(`/xem/${s.slug}`)}
+                  href={watchHref(s.slug)}
                 >
                   <IconPlay className="relative w-12 h-12 text-[#0f1115]" />
                 </a>
@@ -211,6 +212,7 @@ function MobSlide({ s, active }: { s: ASlide; active: boolean }) {
 /* Section Thế giới Anime                                              */
 /* ------------------------------------------------------------------ */
 export function AnimeSection() {
+  const home = useLiveHome();
   // Sắp theo thời gian ra mắt phim (mới nhất trước), giữ thứ tự gốc khi cùng năm.
   const slides = home.anime.slides
     .map((slide, index) => ({ slide, index }))

@@ -5,7 +5,6 @@
   "scripts": {
     "dev": "next dev",
     "sync:data": "node scripts/sync-nhotphim-data.mjs",
-    "prebuild": "node scripts/sync-nhotphim-data.mjs",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",

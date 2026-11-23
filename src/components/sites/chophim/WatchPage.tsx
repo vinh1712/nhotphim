@@ -1,6 +1,7 @@
 "use client";
 
 import { withBasePath } from "@/lib/base-path";
+import { detailHref } from "@/lib/live-data";
 import { getProgress, isInList, removeProgress, saveProgress, toggleList } from "@/lib/user-library";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Hls, {
@@ -1144,7 +1145,7 @@ export function WatchPage({
           <div className="flex-1 min-w-0">
             {/* back link (mobile) */}
             <div className="flex sm:hidden items-center mb-4">
-              <a href={withBasePath(`/phim/${movie.slug}`)} className="flex items-center gap-3 text-white hover:text-[#FFD166] transition-colors">
+              <a href={detailHref(movie.slug)} className="flex items-center gap-3 text-white hover:text-[#FFD166] transition-colors">
                 <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center shrink-0">
                   <IcChevronLeft className="w-4 h-4" />
                 </div>
@@ -1213,7 +1214,7 @@ export function WatchPage({
                     <button type="button" onClick={() => setDescOpen((v) => !v)} className="text-white/40 hover:text-white/70 text-[12px] font-medium transition-colors">
                       {descOpen ? "Thu gọn" : "Xem thêm"}
                     </button>
-                    <a className="inline-flex items-center gap-1 text-[13px] text-[#eab308] hover:text-[#eab308]/80 transition-colors font-medium" href={withBasePath(`/phim/${movie.slug}`)}>
+                    <a className="inline-flex items-center gap-1 text-[13px] text-[#eab308] hover:text-[#eab308]/80 transition-colors font-medium" href={detailHref(movie.slug)}>
                       Thông tin phim <IcChevronRight className="w-4 h-4 ml-0.5" />
                     </a>
                   </div>
@@ -1382,7 +1383,7 @@ export function WatchPage({
               <h3 className="text-xl font-bold text-white mb-6">Đề xuất cho bạn</h3>
               <div className="flex flex-col gap-4">
                 {suggestions.map((s) => (
-                  <a key={s.slug} href={withBasePath(`/phim/${s.slug}`)} className="flex gap-3 rounded overflow-hidden bg-[#1A1A24] group">
+                  <a key={s.slug} href={detailHref(s.slug)} className="flex gap-3 rounded overflow-hidden bg-[#1A1A24] group">
                     <div className="relative w-[56px] sm:w-[64px] shrink-0 aspect-[2/3] bg-[#10121b]">
                       <img alt={s.title} loading="lazy" decoding="async" className="object-cover" style={fillStyle} src={s.poster} />
                     </div>

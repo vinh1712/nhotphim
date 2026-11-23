@@ -4,12 +4,8 @@ on:
   push:
     branches:
       - main
-  # Admin (nhotphim-quanli) ghi thẳng Supabase, không đẩy code ở repo này.
-  # Chạy định kỳ để kéo dữ liệu mới rồi build/deploy lại trang tĩnh.
-  schedule:
-    - cron: "*/10 * * * *"
-  repository_dispatch:
-    types: [sync-data]
+  # Admin ghi thẳng Supabase; web đọc realtime ở client nên không cần chạy định kỳ.
+  # Chỉ deploy lại khi có thay đổi code ở repo này.
   workflow_dispatch:
 
 permissions:
