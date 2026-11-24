@@ -77,6 +77,51 @@ html[data-nhot-skip-overlay="1"] .nhot-loading-overlay {
   }
 }
 
+/* Khung avatar bọc ngoài ảnh (scale 1.25 như chophim) với nhịp xoay/glow nhẹ. */
+.avatar-frame-loop {
+  transform: scale(1.25) rotate(0deg);
+  transform-origin: center;
+  animation:
+    avatarFrameSpin 24s linear infinite,
+    avatarFrameGlow 5s linear infinite;
+  will-change: transform, filter;
+}
+
+[data-avatar-frame-paused="true"] .avatar-frame-loop {
+  animation-play-state: paused;
+}
+
+@keyframes avatarFrameSpin {
+  from {
+    transform: scale(1.25) rotate(0deg);
+  }
+  to {
+    transform: scale(1.25) rotate(360deg);
+  }
+}
+
+@keyframes avatarFrameGlow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(255, 209, 102, 0));
+    opacity: 0.95;
+  }
+  50% {
+    filter: drop-shadow(0 0 4px rgba(255, 209, 102, 0.28));
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .avatar-frame-loop {
+    animation: none;
+    transform: scale(1.25);
+    filter: none;
+    opacity: 1;
+    will-change: auto;
+  }
+}
+
 body {
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);

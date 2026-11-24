@@ -29,3 +29,16 @@ export function allAvatarSrc(): string[] {
 export function allFrameSrc(): string[] {
   return Array.from({ length: AVATAR_FRAME_COUNT }, (_, i) => frameSrc(i + 1));
 }
+
+/** Chỉ nhận link ảnh tuyệt đối để lưu vào user_metadata; chặn javascript:, data:... */
+export function normalizeExternalImageUrl(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  try {
+    const url = new URL(trimmed);
+    if (url.protocol === "http:" || url.protocol === "https:") return url.toString();
+  } catch {
+    /* không phải link hợp lệ */
+  }
+  return "";
+}

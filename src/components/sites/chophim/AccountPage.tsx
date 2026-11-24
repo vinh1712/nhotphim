@@ -12,6 +12,7 @@ import {
   allFrameSrc,
   avatarSrc,
   frameSrc,
+  normalizeExternalImageUrl,
 } from "@/lib/avatar-data";
 import { UserAvatar } from "./UserAvatar";
 
@@ -201,6 +202,24 @@ function ProfilePanel({
   const emojis = ["🐻", "🔥", "🎮", "⚡", "🎀", "🦋", "💛", "🕊️"];
   const [picker, setPicker] = useState<"avatar" | "frame" | null>(null);
   const [category, setCategory] = useState(AVATAR_CATEGORIES[0].key);
+  const [customAvatar, setCustomAvatar] = useState("");
+  const [customAvatarError, setCustomAvatarError] = useState("");
+
+  useEffect(() => {
+    setCustomAvatar(/^https?:\/\//i.test(avatarUrl) ? avatarUrl : "");
+    setCustomAvatarError("");
+  }, [avatarUrl]);
+
+  const applyCustomAvatar = () => {
+    const url = normalizeExternalImageUrl(customAvatar);
+    if (!url) {
+      setCustomAvatarError("Nhập link ảnh http:// hoặc https:// hợp lệ.");
+      return;
+    }
+    setCustomAvatarError("");
+    onPickAvatar(url);
+    setPicker(null);
+  };
 
   const modal = picker ? (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4" onClick={() => setPicker(null)}>
@@ -217,19 +236,52 @@ function ProfilePanel({
           </button>
         </div>
         {picker === "avatar" ? (
-          <div className="flex flex-wrap gap-2 border-b border-white/5 px-5 py-3">
-            {AVATAR_CATEGORIES.map((item) => (
-              <button
-                key={item.key}
-                type="button"
-                onClick={() => setCategory(item.key)}
-                className={`rounded-full px-3 py-1.5 text-[12px] ${
-                  category === item.key ? "bg-[#FFD166] font-semibold text-[#171a26]" : "bg-white/5 text-white/60"
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
+          <div className="border-b border-white/5 px-5 py-3">
+            <label className="block">
+              <span className="mb-2 block text-[12px] text-white/50">Ảnh từ link</span>
+              <div className="flex gap-2">
+                <input
+                  type="url"
+                  inputMode="url"
+                  autoComplete="off"
+                  value={customAvatar}
+                  onChange={(event) => {
+                    setCustomAvatar(event.target.value);
+                    setCustomAvatarError("");
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      applyCustomAvatar();
+                    }
+                  }}
+                  placeholder="https://example.com/avatar.png"
+                  className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-[13px] text-white outline-none placeholder:text-white/25 focus:border-[#FFD166]/60"
+                />
+                <button
+                  type="button"
+                  onClick={applyCustomAvatar}
+                  className="shrink-0 rounded-lg bg-[#FFD166] px-4 py-2 text-[12px] font-bold text-[#171a26] transition-opacity hover:opacity-85"
+                >
+                  Dùng ảnh
+                </button>
+              </div>
+              {customAvatarError ? <span className="mt-2 block text-[12px] text-[#FF6B6B]">{customAvatarError}</span> : null}
+            </label>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {AVATAR_CATEGORIES.map((item) => (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => setCategory(item.key)}
+                  className={`rounded-full px-3 py-1.5 text-[12px] ${
+                    category === item.key ? "bg-[#FFD166] font-semibold text-[#171a26]" : "bg-white/5 text-white/60"
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
           </div>
         ) : (
           <p className="px-5 pt-3 text-[12px] text-white/50">Tất cả khung đều miễn phí</p>

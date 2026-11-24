@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import { withBasePath } from "@/lib/base-path";
 
 function asset(src?: string): string | undefined {
@@ -32,23 +35,83 @@ export function UserAvatar({
   size?: number;
   className?: string;
 }) {
+  const wrapperRef = useRef<HTMLSpanElement | null>(null);
+  const [framePaused, setFramePaused] = useState(false);
+  const [failedAvatar, setFailedAvatar] = useState<string | undefined>();
+  const [failedFrame, setFailedFrame] = useState<string | undefined>();
+
   const src = asset(avatarUrl);
   const frame = frameAsset(frameUrl);
   const label = (name || email || "N").trim().charAt(0).toUpperCase() || "N";
+  const showAvatar = Boolean(src) && failedAvatar !== src;
+  const showFrame = Boolean(frame) && failedFrame !== frame;
+
+  // Khung là hiệu ứng lặp: dừng khi avatar ra khỏi màn hình hoặc tab bị ẩn.
+  useEffect(() => {
+    const node = wrapperRef.current;
+    if (!node || !frame) return;
+
+    let visible = true;
+    const sync = () => setFramePaused(document.hidden || !visible);
+    sync();
+
+    const onVisibility = () => sync();
+    document.addEventListener("visibilitychange", onVisibility);
+
+    if (typeof IntersectionObserver === "undefined") {
+      return () => document.removeEventListener("visibilitychange", onVisibility);
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        visible = entries.some((entry) => entry.isIntersecting);
+        sync();
+      },
+      { rootMargin: "32px" }
+    );
+    observer.observe(node);
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [frame]);
+
   return (
     <span
-      className={`relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#FFD166]/15 text-[#FFD166] ring-1 ring-[#FFD166]/30 ${className}`}
-      style={{ width: size, height: size, fontSize: Math.round(size * 0.4) }}
+      ref={wrapperRef}
+      data-avatar-frame-paused={showFrame && framePaused ? "true" : undefined}
+      className={`relative inline-flex shrink-0 items-center justify-center ${className}`}
+      style={{ width: size, height: size }}
     >
-      {src ? (
+      <span
+        className="relative inline-flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-[#FFD166]/15 text-[#FFD166] ring-1 ring-[#FFD166]/30"
+        style={{ fontSize: Math.round(size * 0.4) }}
+      >
+        {showAvatar ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            alt=""
+            src={src}
+            onError={() => {
+              if (src) setFailedAvatar(src);
+            }}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        ) : (
+          <span className="font-bold leading-none">{emoji || label}</span>
+        )}
+      </span>
+      {showFrame ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img alt="" src={src} className="absolute inset-0 h-full w-full object-cover" />
-      ) : (
-        <span className="font-bold leading-none">{emoji || label}</span>
-      )}
-      {frame ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img alt="" src={frame} className="pointer-events-none absolute inset-0 z-10 h-full w-full object-contain" />
+        <img
+          alt=""
+          src={frame}
+          onError={() => {
+            if (frame) setFailedFrame(frame);
+          }}
+          className="avatar-frame-loop pointer-events-none absolute inset-0 z-10 h-full w-full object-contain"
+        />
       ) : null}
     </span>
   );
