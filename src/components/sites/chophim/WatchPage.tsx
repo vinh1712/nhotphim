@@ -510,13 +510,14 @@ export function WatchPage({
 
     if (
       fallbackDuration <= 0 &&
-      explicitTime > 0 &&
       saved &&
       (hashEpisode === null || hashEpisode === saved.episode) &&
       (hashServer === null || hashServer === saved.server) &&
       Number.isFinite(saved.duration) &&
       saved.duration > 0
     ) {
+      // Không chỉ dùng cho link có #t=: iOS 15.5 native HLS cũng có lúc báo
+      // duration sai ngay sau khi mở phim, cần mốc tổng thời lượng đã lưu.
       fallbackDuration = saved.duration;
     }
     fallbackDurationRef.current = fallbackDuration;
@@ -577,8 +578,15 @@ export function WatchPage({
    *  nhầm về đầu rồi xóa mốc resume. */
   const getPlayableDuration = useCallback((v: HTMLVideoElement | null) => {
     if (!v) return 0;
-    if (Number.isFinite(v.duration) && v.duration > 0) return v.duration;
-    return fallbackDurationRef.current;
+    const fallback = fallbackDurationRef.current;
+    if (Number.isFinite(v.duration) && v.duration > 0) {
+      // Native HLS trên iOS 15.5 có lúc báo duration = đoạn đã buffer trước khi
+      // đọc xong manifest. Tổng thời lượng từ "Xem tiếp" đáng tin hơn trong
+      // lúc này để không tua/ghi tiến trình nhầm về đầu phim.
+      if (nativeHlsRef.current && fallback > v.duration) return fallback;
+      return v.duration;
+    }
+    return fallback;
   }, []);
 
   /** Thử áp mốc "Xem tiếp" ở mọi sự kiện media có thể có metadata mới.
@@ -596,10 +604,19 @@ export function WatchPage({
       return;
     }
     pendingAttemptsRef.current += 1;
-    const total = getPlayableDuration(v);
     let target = pendingTimeRef.current;
-    if (total > 0) target = Math.min(target, Math.max(0, total - 1));
+    // iOS 15.5 native HLS có lúc trả duration = đoạn đã buffer (rất nhỏ) rồi
+    // mới đúng sau vài giây. Nếu clamp theo duration đó thì "Xem tiếp" bị kẹt
+    // về đầu phim. Khi có tổng thời lượng gửi từ hash/saved thì tin nó trước.
+    const seekLimit = Math.max(getPlayableDuration(v), fallbackDurationRef.current);
+    if (seekLimit > 0) target = Math.min(target, Math.max(0, seekLimit - 1));
     if (target <= 0) return;
+    // Đã ở đúng mốc thì không gán currentTime lặp lại làm giật phát lại.
+    // Với native HLS vẫn giữ pending để đợi sự kiện `seeked` xác nhận thật.
+    if (Math.abs(v.currentTime - target) < 1) {
+      if (!nativeHlsRef.current) pendingTimeRef.current = 0;
+      return;
+    }
     lastSeekTargetRef.current = target;
     try {
       v.currentTime = target;
@@ -760,6 +777,9 @@ export function WatchPage({
   useEffect(() => {
     const flush = () => {
       const v = videoRef.current;
+      // Đang chờ "Xem tiếp" áp mốc thì currentTime có thể là vị trí tạm/sai;
+      // ghi đè vào storage lúc này sẽ làm mất mốc đã lưu.
+      if (pendingTimeRef.current > 0) return;
       if (v && Number.isFinite(v.currentTime) && v.currentTime >= 1) {
         persist(v.currentTime, getPlayableDuration(v) || dur);
       }
@@ -1199,7 +1219,7 @@ export function WatchPage({
         </button>
         <span className="text-[13px] font-semibold text-white">{title}</span>
       </div>
-      <div className="max-h-[52vh] overflow-y-auto p-1.5">{body}</div>
+      <div className="max-h-[38vh] overflow-y-auto p-1.5 sm:max-h-[52vh]">{body}</div>
     </>
   );
 
@@ -1209,7 +1229,7 @@ export function WatchPage({
   // (0.22s, ease.soft), ra = transition.dismiss (0.2s, ease.away) — viết bằng
   // Tailwind transition cho khớp motion sẵn có của player (không thêm package).
   const popBase =
-    "absolute bottom-full right-0 z-50 mb-1 w-[calc(100vw-1.5rem)] origin-bottom-right overflow-hidden rounded-xl border border-white/10 bg-[#1c1c1e]/80 shadow-2xl backdrop-blur-xl ring-1 ring-white/10 transition-all motion-reduce:transition-none";
+    "absolute bottom-full right-0 z-50 mb-1 origin-bottom-right overflow-hidden rounded-xl border border-white/10 bg-[#1c1c1e]/80 shadow-2xl backdrop-blur-xl ring-1 ring-white/10 transition-all motion-reduce:transition-none";
   const popState = (open: boolean) =>
     open
       ? "opacity-100 scale-100 duration-[220ms] [transition-timing-function:cubic-bezier(0.215,0.61,0.355,1)]"
@@ -1220,12 +1240,12 @@ export function WatchPage({
       data-player-menu=""
       aria-hidden={menu !== "settings"}
       inert={menu !== "settings"}
-      className={`${popBase} max-w-64 ${popState(menu === "settings")}`}
+      className={`${popBase} w-56 max-w-[calc(100vw-2rem)] sm:w-64 ${popState(menu === "settings")}`}
     >
       {sub === null ? (
         <>
           <div className="border-b border-white/10 px-3.5 py-2.5 text-[13px] font-semibold text-white">Cài đặt</div>
-          <div className="max-h-[52vh] overflow-y-auto py-1.5">
+          <div className="max-h-[38vh] overflow-y-auto py-1.5 sm:max-h-[52vh]">
             <MenuRow label="Chất lượng" value={qualityValue} onClick={() => setSub("quality")} />
             <MenuRow label="Tốc độ" value={`${speed}x`} onClick={() => setSub("speed")} />
             <MenuRow
@@ -1331,7 +1351,7 @@ export function WatchPage({
       data-player-menu=""
       aria-hidden={menu !== "servers"}
       inert={menu !== "servers"}
-      className={`${popBase} max-w-[23rem] ${popState(menu === "servers")}`}
+      className={`${popBase} w-[23rem] max-w-[calc(100vw-2rem)] ${popState(menu === "servers")}`}
     >
       <div className="border-b border-white/10 px-3.5 py-2.5 text-[13px] font-semibold text-white">Máy chủ</div>
       <div className="max-h-[46vh] overflow-y-auto py-1.5">
@@ -1411,11 +1431,18 @@ export function WatchPage({
                       }}
                       onPause={(e) => {
                         setPlaying(false);
-                        persist(e.currentTarget.currentTime, getPlayableDuration(e.currentTarget) || dur);
+                        if (pendingTimeRef.current <= 0) {
+                          persist(e.currentTarget.currentTime, getPlayableDuration(e.currentTarget) || dur);
+                        }
                       }}
                       onTimeUpdate={(e) => {
                         const v = e.currentTarget;
-                        if (pendingTimeRef.current > 0) applyPendingTime();
+                        if (pendingTimeRef.current > 0) {
+                          applyPendingTime();
+                          skipNativeAds();
+                          setCur(v.currentTime);
+                          return;
+                        }
                         skipNativeAds();
                         const t = v.currentTime;
                         setCur(t);

@@ -554,7 +554,9 @@ export function AccountPage({ tab }: { tab: AccountTab }) {
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
           {progress.map((item) => {
             const percent = item.duration > 0 ? Math.min(100, Math.round((item.time / item.duration) * 100)) : 0;
-            const hash = `#tap=tap-${item.episode + 1}&sv=${encodeURIComponent(item.serverName || "")}&server_id=${item.server}&t=${Math.floor(item.time)}`;
+            // Gửi cả tổng thời lượng để iOS 15.5 native HLS vẫn tua đúng mốc
+            // dù video chưa trả duration thật lúc mới mở.
+            const hash = `#tap=tap-${item.episode + 1}&sv=${encodeURIComponent(item.serverName || "")}&server_id=${item.server}&t=${Math.floor(item.time)}&d=${Math.floor(item.duration)}`;
             return (
               <div key={item.slug} className="group relative">
                 <a href={watchHref(item.slug, hash)}>
