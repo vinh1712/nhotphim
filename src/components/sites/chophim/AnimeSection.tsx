@@ -198,7 +198,7 @@ function MobSlide({ s, active }: { s: ASlide; active: boolean }) {
             </div>
           </div>
           <a
-            className="absolute inset-0 z-50 pointer-events-none"
+            className="absolute inset-0 z-50"
             title="Chi tiết phim"
             href={s.href}
           />
@@ -233,7 +233,11 @@ export function AnimeSection() {
     const load = () => setFavoriteSlugs(getList("favorites").map((item) => item.slug));
     load();
     window.addEventListener("storage", load);
-    return () => window.removeEventListener("storage", load);
+    window.addEventListener("nhotphim:library-change", load);
+    return () => {
+      window.removeEventListener("storage", load);
+      window.removeEventListener("nhotphim:library-change", load);
+    };
   }, []);
 
   useEffect(() => {

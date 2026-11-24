@@ -13,7 +13,7 @@ import {
   IconInfinity,
 } from "./icons";
 import type { DetailComment, MovieDetail, Suggestion } from "./detail-types";
-import { enc } from "./detail-types";
+import { enc, sortComments } from "./detail-types";
 
 const TABS = ["Tập phim", "Gallery", "Diễn viên", "Đề xuất"] as const;
 
@@ -231,6 +231,31 @@ function ActionButtons({ mobile, movie }: { mobile: boolean; movie: MovieDetail 
 /* ── comment ───────────────────────────────────────────────────────────── */
 
 export function CommentItem({ c }: { c: DetailComment }) {
+  const [vote, setVote] = useState<"up" | "down" | null>(null);
+  const voteKey = `nhotphim:comment-vote:${c.id}`;
+
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(voteKey);
+      if (saved === "up" || saved === "down") setVote(saved);
+    } catch {
+      // Private mode / storage disabled — chỉ bỏ qua trạng thái vote local.
+    }
+  }, [voteKey]);
+
+  const castVote = (next: "up" | "down") => {
+    const value = vote === next ? null : next;
+    setVote(value);
+    try {
+      if (value) window.localStorage.setItem(voteKey, value);
+      else window.localStorage.removeItem(voteKey);
+    } catch {
+      // Giữ vote trong state dù không ghi được localStorage.
+    }
+  };
+
+  const likes = c.likes + (vote === "up" ? 1 : 0);
+  const dislikes = c.dislikes + (vote === "down" ? 1 : 0);
   const frameStyle: React.CSSProperties = {
     position: "absolute",
     height: "100%",
@@ -302,13 +327,25 @@ export function CommentItem({ c }: { c: DetailComment }) {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <button className="flex items-center gap-1.5 rounded-full text-xs transition-colors text-text-muted hover:text-white">
+            <button
+              type="button"
+              aria-label="Thích bình luận"
+              aria-pressed={vote === "up"}
+              onClick={() => castVote("up")}
+              className={`flex items-center gap-1.5 rounded-full text-xs transition-colors hover:text-white ${vote === "up" ? "text-[#FFD166]" : "text-text-muted"}`}
+            >
               <IconThumbsUp className="w-4 h-4" />
-              {c.likes > 0 && <span className="font-semibold">{c.likes}</span>}
+              {likes > 0 && <span className="font-semibold">{likes}</span>}
             </button>
-            <button className="flex items-center gap-1 rounded-full text-xs transition-colors text-text-muted hover:text-white">
+            <button
+              type="button"
+              aria-label="Không thích bình luận"
+              aria-pressed={vote === "down"}
+              onClick={() => castVote("down")}
+              className={`flex items-center gap-1 rounded-full text-xs transition-colors hover:text-white ${vote === "down" ? "text-[#FFD166]" : "text-text-muted"}`}
+            >
               <IconThumbsDown className="w-4 h-4" />
-              {c.dislikes > 0 && <span className="font-semibold">{c.dislikes}</span>}
+              {dislikes > 0 && <span className="font-semibold">{dislikes}</span>}
             </button>
           </div>
         </div>
@@ -340,7 +377,7 @@ export function DetailPage({
   const server = movie.servers[serverIdx];
   const backdrop = movie.backdrop || movie.poster;
 
-  const sorted = sort === "top" ? [...comments].sort((a, b) => b.likes - a.likes) : comments;
+  const sorted = sortComments(comments, sort);
   const visible = showMore ? sorted : sorted.slice(0, 5);
   const allShown = sorted.length <= 5;
 

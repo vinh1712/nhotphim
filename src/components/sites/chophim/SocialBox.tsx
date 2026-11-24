@@ -373,7 +373,15 @@ export function SocialBox() {
           </h2>
         </div>
         <div className="relative group/section">
-          <SliderArrows id="row-comments" pos="top-1/2" z="z-10" group="section" mobileVisible />
+          <SliderArrows
+            id="row-comments"
+            pos="top-1/2"
+            z="z-10"
+            group="section"
+            mobileVisible
+            prevLabel="Bình luận trước"
+            nextLabel="Bình luận tiếp theo"
+          />
           <div
             id="row-comments"
             className="-mx-1 px-1 pb-1 overflow-x-auto scrollbar-hide snap-x"

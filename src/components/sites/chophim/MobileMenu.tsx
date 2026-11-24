@@ -34,7 +34,6 @@ export function MobileMenu({
   loggedIn = false,
   authLoading = false,
   onLogout,
-  showWatchTogether = false,
 }: {
   primary: MobileMenuLink[];
   groups: MobileMenuGroup[];
@@ -48,7 +47,6 @@ export function MobileMenu({
   loggedIn?: boolean;
   authLoading?: boolean;
   onLogout?: () => void;
-  showWatchTogether?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
@@ -280,16 +278,6 @@ export function MobileMenu({
               ))}
 
               {groups.slice(0, -1).map((group, groupIndex) => renderGroup(group, groupIndex))}
-
-              {showWatchTogether && (
-                <div className="font-semibold text-[13px] text-white flex items-center gap-2">
-                  Xem Chung{" "}
-                  <span className="text-[9px] font-bold px-1.5 py-0.5 bg-[#FFD166] text-[#3B4168] rounded leading-none">
-                    B.Trì
-                  </span>
-                </div>
-              )}
-
               {groups.slice(-1).map((group) => renderGroup(group, groups.length - 1))}
             </div>
           </div>

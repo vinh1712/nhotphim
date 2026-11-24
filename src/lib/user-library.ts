@@ -98,6 +98,7 @@ export function toggleList(kind: LibraryKind, entry: NewLibraryEntry): boolean {
   write(kind, next);
   dirty[kind] = true;
   push(kind, next);
+  window.dispatchEvent(new Event("nhotphim:library-change"));
   return !exists;
 }
 
@@ -115,6 +116,7 @@ export function saveProgress(entry: NewProgressEntry): void {
   write("progress", next);
   dirty.progress = true;
   push("progress", next);
+  window.dispatchEvent(new Event("nhotphim:library-change"));
 }
 
 export function removeProgress(slug: string): void {
@@ -122,6 +124,7 @@ export function removeProgress(slug: string): void {
   write("progress", next);
   dirty.progress = true;
   push("progress", next);
+  window.dispatchEvent(new Event("nhotphim:library-change"));
 }
 
 function applyRemoteLibrary(remote: Partial<Record<SyncKind, unknown[]>> | null): boolean {

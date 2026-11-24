@@ -84,7 +84,9 @@ export function LiveRoute({
   const liveMovie = slug ? live.movies[slug] || null : null;
   const movie = liveMovie || initialMovie;
   const comments = liveMovie
-    ? live.comments[slug] || []
+    ? live.comments[slug]?.length
+      ? live.comments[slug]
+      : initialComments
     : initialComments;
 
   const suggestions = useMemo(() => {

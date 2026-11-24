@@ -267,10 +267,14 @@ export function Hero() {
   const [dragging, setDragging] = useState(false);
 
   useEffect(() => {
-    setFavoriteSlugs(getList("favorites").map((item) => item.slug));
-    const onStorage = () => setFavoriteSlugs(getList("favorites").map((item) => item.slug));
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+    const load = () => setFavoriteSlugs(getList("favorites").map((item) => item.slug));
+    load();
+    window.addEventListener("storage", load);
+    window.addEventListener("nhotphim:library-change", load);
+    return () => {
+      window.removeEventListener("storage", load);
+      window.removeEventListener("nhotphim:library-change", load);
+    };
   }, []);
 
   useEffect(() => {

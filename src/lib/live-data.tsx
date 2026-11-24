@@ -410,9 +410,11 @@ function buildComments(rows: Row[], db: Record<string, MovieDetail>): Record<str
     (entry as any).movieTitle = db[slug].title;
   }
   for (const list of Object.values(bySlug)) {
-    list.sort((a, b) =>
-      String((a as any).createdAt || "").localeCompare(String((b as any).createdAt || ""))
-    );
+    // "Mới nhất" của chophim là mặc định: mới trước, cùng thời giữ thứ tự gốc.
+    list.sort((a, b) => {
+      const byDate = String((b as any).createdAt || "").localeCompare(String((a as any).createdAt || ""));
+      return byDate;
+    });
   }
   return bySlug;
 }

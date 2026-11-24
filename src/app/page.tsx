@@ -6,7 +6,6 @@ import { Header } from "@/components/sites/chophim/Header";
 import { Hero } from "@/components/sites/chophim/Hero";
 import { MobileHero } from "@/components/sites/chophim/MobileHero";
 import { Topics } from "@/components/sites/chophim/Topics";
-import { LoginBanner } from "@/components/sites/chophim/LoginBanner";
 import { ContinueWatching } from "@/components/sites/chophim/ContinueWatching";
 import { MovieRow } from "@/components/sites/chophim/MovieRow";
 import { SocialBox } from "@/components/sites/chophim/SocialBox";
@@ -35,7 +34,6 @@ export default function HomePage() {
         <MobileHero />
         <div className="mx-auto mt-4 max-w-[1400px] space-y-12 px-4 pb-20 md:mt-12">
           <Topics />
-          <LoginBanner />
           <ContinueWatching />
 
           <MovieRow section={byId("S:2")} />

@@ -61,7 +61,18 @@ export type DetailComment = {
   avatar: string;
   frame: string | null;
   emoji: string | null;
+  createdAt?: string;
 };
+
+/** Chophim luôn đưa bình luận được ghim lên đầu, sau đó mới đến Mới nhất / Nổi bật. */
+export function sortComments(comments: DetailComment[], sort: "new" | "top"): DetailComment[] {
+  return [...comments].sort((a, b) => {
+    const pinned = Number(!!b.pinned) - Number(!!a.pinned);
+    if (pinned !== 0) return pinned;
+    if (sort === "top" && b.likes !== a.likes) return b.likes - a.likes;
+    return String(b.createdAt || "").localeCompare(String(a.createdAt || ""));
+  });
+}
 
 export type Suggestion = {
   slug: string;

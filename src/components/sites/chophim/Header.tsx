@@ -38,9 +38,12 @@ export function Header() {
   const accountName = meta.displayName || accountLabel;
   const [accountOpen, setAccountOpen] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
+  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+  const navRef = useRef<HTMLElement>(null);
 
-  // Source dùng đúng 2 link đầu cho lưới menu mobile (Phim Lẻ / Phim Bộ).
-  const topLinks = home.header.nav.slice(0, 2);
+  // Desktop có cả TV Shows như chophim.fit; mobile vẫn chỉ dùng 2 link đầu.
+  const topLinks = home.header.nav.slice(0, 3);
+  const mobilePrimary = home.header.nav.slice(0, 2);
   const dropdowns = home.header.dropdowns;
   const cards = useMemo(() => Object.values(live.movies).map(toCard), [live.movies]);
 
@@ -71,7 +74,24 @@ export function Header() {
 
   useEffect(() => {
     setAccountOpen(false);
+    setOpenDropdown(null);
   }, [pathname]);
+
+  useEffect(() => {
+    if (openDropdown === null) return;
+    const onClick = (event: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) setOpenDropdown(null);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpenDropdown(null);
+    };
+    document.addEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [openDropdown]);
 
   useEffect(() => {
     if (!accountOpen) return;
@@ -103,7 +123,7 @@ export function Header() {
         <MobileHeaderBar
           movies={cards}
           logoSrc={LOGO}
-          nav={topLinks}
+          nav={mobilePrimary}
           groups={dropdowns}
           accountHref={withBasePath(user ? "/users/tai-khoan" : "/dang-nhap")}
           appHref={withBasePath("/tai-ung-dung")}
@@ -128,7 +148,7 @@ export function Header() {
               <SearchAutocomplete movies={cards} />
             </div>
 
-            <nav className="flex items-center gap-0.5 xl:gap-1 ml-4 xl:ml-8">
+            <nav ref={navRef} className="flex items-center gap-0.5 xl:gap-1 ml-4 xl:ml-8">
               {topLinks.map((l) => (
                 <a
                   key={l.href + l.label}
@@ -139,14 +159,21 @@ export function Header() {
                 </a>
               ))}
               {dropdowns.map((d, i) => (
-                <div key={d.label} className={`nav-item relative${i === 2 ? " group" : ""}`}>
-                  <button className="px-2 xl:px-2.5 py-2 text-[13px] text-[#FFFFFF] hover:text-white transition-colors rounded-lg hover:bg-bg-hover whitespace-nowrap">
+                <div
+                  key={d.label}
+                  className={`nav-item relative${openDropdown === i ? " nav-open" : ""}`}
+                >
+                  <button
+                    type="button"
+                    aria-expanded={openDropdown === i}
+                    aria-haspopup="true"
+                    onClick={() => setOpenDropdown((cur) => (cur === i ? null : i))}
+                    className="px-2 xl:px-2.5 py-2 text-[13px] text-[#FFFFFF] hover:text-white transition-colors rounded-lg hover:bg-bg-hover whitespace-nowrap"
+                  >
                     {d.label}
                   </button>
                   <div
-                    className={`nav-dropdown absolute top-full left-0 mt-1 ${DROPDOWN_W[i] ?? "w-[480px]"} bg-bg-secondary border border-border rounded-xl p-4 shadow-2xl${
-                      i === 2 ? " invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200" : ""
-                    }`}
+                    className={`nav-dropdown absolute top-full left-0 mt-1 ${DROPDOWN_W[i] ?? "w-[480px]"} bg-bg-secondary border border-border rounded-xl p-4 shadow-2xl`}
                   >
                     <div className={i === 2 ? "flex flex-col gap-1" : "grid grid-cols-3 gap-1"}>
                       {d.links.map((lk) => (
@@ -154,6 +181,7 @@ export function Header() {
                           key={lk.href + lk.label}
                           className="px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-hover rounded-lg transition-colors"
                           href={lk.href}
+                          onClick={() => setOpenDropdown(null)}
                         >
                           {lk.label}
                         </a>
@@ -272,7 +300,7 @@ export function Header() {
                 <svg className="w-4 h-4 xl:w-5 xl:h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                 </svg>
-                <span className="max-w-[110px] truncate">Đăng nhập</span>
+                <span className="max-w-[110px] truncate">Thành viên</span>
               </a>
             )}
           </div>

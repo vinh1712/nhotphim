@@ -1,10 +1,11 @@
 "use client";
 
 import { withBasePath } from "@/lib/base-path";
+import { useAuthSession } from "@/lib/auth";
 import { detailHref } from "@/lib/live-data";
 import { PartSelector } from "./PartSelector";
 import { getProgress, isInList, removeProgress, saveProgress, toggleList } from "@/lib/user-library";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Hls, {
   type LoaderCallbacks,
   type LoaderConfiguration,
@@ -16,8 +17,9 @@ import { loadKkAdRanges, stripKkAds, type AdRange } from "./kk-ads";
 import { fillStyle } from "./types";
 import { CommentItem } from "./DetailPage";
 import { IconLanguages, IconLogIn } from "./icons";
+import { profileMeta } from "./UserAvatar";
 import type { DetailComment, MovieDetail } from "./detail-types";
-import { enc } from "./detail-types";
+import { enc, sortComments } from "./detail-types";
 
 /* ── kiểu dữ liệu ───────────────────────────────────────────────────────── */
 
@@ -271,7 +273,11 @@ const isHlsUrl = (u: string | null) => {
   }
 };
 
-const DEFAULT_INTRO_END = 90;
+const DEFAULT_LOCAL_AVATAR =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="88" height="88"><rect width="88" height="88" fill="#2a2d3a"/><circle cx="44" cy="34" r="16" fill="#5b6072"/><ellipse cx="44" cy="76" rx="26" ry="18" fill="#5b6072"/></svg>'
+  );
 
 type HlsLoaderCtor = new (config: unknown) => {
   load(ctx: LoaderContext, cfg: LoaderConfiguration, cb: LoaderCallbacks<LoaderContext>): void;
@@ -359,6 +365,10 @@ export function WatchPage({
   const [subLabels, setSubLabels] = useState<string[]>([]);
   const [subTrack, setSubTrack] = useState<number | null>(null);
   const [pings, setPings] = useState<Record<number, { ms: number | null; label: string }>>({});
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [draftComment, setDraftComment] = useState("");
+  const [postedComments, setPostedComments] = useState<DetailComment[]>([]);
+  const { user } = useAuthSession();
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
@@ -428,7 +438,10 @@ export function WatchPage({
 
   // intro_end lấy từ /api/skip-times của chophim. Với desktop QC bị cắt khỏi
   // playlist; với Safari/iOS (native HLS) phát link gốc rồi tự tua qua QC.
-  const introEnd = movie.introEnd ?? DEFAULT_INTRO_END;
+  // Chỉ dùng mốc intro khi API của phim cung cấp — không tự giả định 90 giây.
+  const introEnd =
+    typeof movie.introEnd === "number" && Number.isFinite(movie.introEnd) ? movie.introEnd : null;
+  const hasIntro = introEnd !== null;
 
   /* ── khôi phục tiến trình + đọc hash (#tap=tap-N&sv=...&server_id=N&t=giây) ── */
   useEffect(() => {
@@ -530,6 +543,8 @@ export function WatchPage({
 
   const selectEp = useCallback(
     (si: number, ei: number) => {
+      // Bấm lại đúng tập/server đang xem không được reload player.
+      if (si === sIdx && ei === eIdx) return;
       setServerIdx(si);
       setEpIdx(ei);
       setStarted(false);
@@ -545,7 +560,7 @@ export function WatchPage({
       writeHash(si, ei);
       document.getElementById("watch-player")?.scrollIntoView({ behavior: "smooth", block: "center" });
     },
-    [writeHash]
+    [eIdx, sIdx, writeHash]
   );
 
   const changeServer = useCallback(
@@ -604,8 +619,32 @@ export function WatchPage({
   }, []);
 
   useEffect(() => {
-    setFav(isInList("favorites", movie.slug));
-    setAdded(isInList("watchlist", movie.slug));
+    const load = () => {
+      setFav(isInList("favorites", movie.slug));
+      setAdded(isInList("watchlist", movie.slug));
+    };
+    load();
+    window.addEventListener("storage", load);
+    window.addEventListener("nhotphim:library-change", load);
+    return () => {
+      window.removeEventListener("storage", load);
+      window.removeEventListener("nhotphim:library-change", load);
+    };
+  }, [movie.slug]);
+
+  useEffect(() => {
+    const key = `nhotphim:local-comments:${movie.slug}`;
+    setDraftComment("");
+    setPostedComments([]);
+    try {
+      const raw = window.localStorage.getItem(key);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) setPostedComments(parsed as DetailComment[]);
+      }
+    } catch {
+      // Bỏ qua dữ liệu local hỏng, vẫn dùng bình luận từ server.
+    }
   }, [movie.slug]);
 
   useEffect(() => {
@@ -623,6 +662,22 @@ export function WatchPage({
     document.getElementById("episodes-section")?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
   };
 
+  const songServerIdx = movie.servers.findIndex((s) => /song|song ngữ|việt-anh|bilingual/i.test(s.name));
+  const switchToSong = () => {
+    if (songServerIdx < 0) {
+      setNotice("Phim này chưa có máy chủ Song Ngữ.");
+      scrollToServers();
+      return;
+    }
+    if (songServerIdx === sIdx) {
+      setNotice("Đang dùng bản Song Ngữ.");
+      scrollToServers();
+      return;
+    }
+    changeServer(songServerIdx);
+    setNotice("Đã chuyển sang bản Song Ngữ.");
+  };
+
   const libraryEntry = {
     slug: movie.slug,
     title: movie.title,
@@ -632,6 +687,39 @@ export function WatchPage({
 
   const toggleFavorite = () => setFav(toggleList("favorites", libraryEntry));
   const toggleWatchlist = () => setAdded(toggleList("watchlist", libraryEntry));
+
+  const submitComment = () => {
+    const text = draftComment.trim();
+    if (!text || !user) return;
+    const meta = profileMeta(user);
+    const now = new Date();
+    const entry: DetailComment = {
+      id: `local-${now.getTime()}`,
+      pinned: false,
+      admin: false,
+      name: meta.displayName || meta.emoji || user.email || "Bạn",
+      gender: meta.gender === "male" || meta.gender === "female" ? meta.gender : null,
+      time: now.toLocaleDateString("vi-VN"),
+      content: text,
+      likes: 0,
+      dislikes: 0,
+      avatar: meta.avatarUrl || DEFAULT_LOCAL_AVATAR,
+      frame: meta.frameUrl || null,
+      emoji: meta.emoji || null,
+      createdAt: now.toISOString(),
+    };
+    const next = [entry, ...postedComments];
+    setPostedComments(next);
+    setDraftComment("");
+    setSort("new");
+    setShowMore(true);
+    setNotice("Đã gửi bình luận");
+    try {
+      window.localStorage.setItem(`nhotphim:local-comments:${movie.slug}`, JSON.stringify(next));
+    } catch {
+      // Vẫn giữ bình luận trong phiên hiện tại nếu không ghi được storage.
+    }
+  };
 
   const persist = useCallback(
     (time: number, total?: number) => {
@@ -845,6 +933,7 @@ export function WatchPage({
 
   const skipIntro = useCallback(() => {
     const v = videoRef.current;
+    if (introEnd === null) return;
     if (!v || !Number.isFinite(v.duration) || v.duration <= introEnd + 30) return;
     v.currentTime = Math.min(introEnd + 0.05, Math.max(0, v.duration - 1));
     setNotice("Đã bỏ qua phần giới thiệu");
@@ -876,12 +965,14 @@ export function WatchPage({
 
   const onEnded = () => {
     setPlaying(false);
+    // Tập đã xem xong thì bỏ khỏi "Xem tiếp" dù có tự chuyển tập hay không.
+    removeProgress(movie.slug);
     if (autoNext) nextEpisode();
   };
 
   // Auto skip intro cũng chạy khi bật tính năng lúc video đang phát.
   useEffect(() => {
-    if (!autoSkip || !hls) return;
+    if (!autoSkip || !hls || introEnd === null) return;
     const v = videoRef.current;
     if (!v || !Number.isFinite(v.duration) || v.duration <= introEnd + 30) return;
     if (v.currentTime > 0 && v.currentTime < introEnd) skipIntro();
@@ -942,13 +1033,23 @@ export function WatchPage({
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const el = e.target as HTMLElement | null;
-      const tag = el?.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || el?.isContentEditable) return;
       const k = e.key;
+      // Ô nhập luôn được ưu tiên; Escape thì vẫn đóng menu kể cả khi nút đang focus.
+      if (
+        el?.closest?.("input, textarea, select, [contenteditable='true'], [role='textbox']")
+      ) {
+        return;
+      }
       if (k === "Escape" && menu) {
         setMenu(null);
         setSub(null);
         bumpIdle();
+        return;
+      }
+      // Space/Enter trên nút hoặc link đang focus phải kích hoạt chính nút đó.
+      if (
+        el?.closest?.("button, a, [role='button'], [role='menuitem'], [tabindex]:not([tabindex='-1'])")
+      ) {
         return;
       }
       if (k === " " || k === "Spacebar") {
@@ -1016,6 +1117,24 @@ export function WatchPage({
     document.addEventListener("pointerdown", onDown);
     return () => document.removeEventListener("pointerdown", onDown);
   }, [bumpIdle, menu]);
+
+  // "Hướng dẫn thao tác" là popover có aria-expanded như trang gốc.
+  useEffect(() => {
+    if (!helpOpen) return;
+    const onDown = (e: PointerEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t && !t.closest("[data-help-panel], [data-help-toggle]")) setHelpOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setHelpOpen(false);
+    };
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [helpOpen]);
 
   // Đo độ trễ từng máy chủ khi mở popover "Máy chủ": Mượt / Ổn / Chậm + ms (giống chophim).
   useEffect(() => {
@@ -1250,7 +1369,8 @@ export function WatchPage({
   const curCount = movie.current ?? server?.episodes.length ?? 0;
   const totalCount = movie.total ?? server?.episodes.length ?? 0;
 
-  const sorted = sort === "top" ? [...comments].sort((a, b) => b.likes - a.likes) : comments;
+  const allComments = useMemo(() => [...postedComments, ...comments], [postedComments, comments]);
+  const sorted = sortComments(allComments, sort);
   const visible = showMore ? sorted : sorted.slice(0, 5);
   const allShown = sorted.length <= 5;
 
@@ -1396,7 +1516,8 @@ export function WatchPage({
                     <button
                       type="button"
                       onClick={() => setDrawer(true)}
-                      className="hidden flex-row items-center gap-1.5 p-1 text-xs font-medium text-white/90 transition-colors hover:text-[#eab308] sm:flex sm:text-[15px]"
+                      aria-label="Danh sách tập"
+                      className="flex flex-row items-center gap-1.5 p-1 text-xs font-medium text-white/90 transition-colors hover:text-[#eab308] sm:text-[15px]"
                     >
                       <IcList className="w-4 h-4 sm:w-5 sm:h-5" />
                       <span className="hidden sm:inline">Danh sách tập</span>
@@ -1605,7 +1726,7 @@ export function WatchPage({
                           </div>
                         </div>
                         <div className="flex items-center gap-1.5 sm:gap-6 relative">
-                          {hls && dur > introEnd + 30 && cur < introEnd + 1 && (
+                          {hls && introEnd !== null && dur > introEnd + 30 && cur < introEnd + 1 && (
                             <button
                               type="button"
                               title="Bỏ qua intro"
@@ -1629,7 +1750,15 @@ export function WatchPage({
                             type="button"
                             aria-label="Phụ đề"
                             title="Phụ đề"
-                            onClick={() => setNotice(`Ngôn ngữ phim: ${movie.lang}.`)}
+                            onClick={() => {
+                              if (subLabels.length === 0) {
+                                setNotice("Nguồn này chưa có phụ đề nhúng để chọn.");
+                                return;
+                              }
+                              setMenu("settings");
+                              setSub("subs");
+                              bumpIdle();
+                            }}
                             className="hidden transition-colors hover:text-white/80 focus:outline-none sm:flex items-center justify-center text-white"
                           >
                             <IcCaptions className="h-7 w-7" />
@@ -1637,7 +1766,9 @@ export function WatchPage({
                           <div className="relative flex items-center justify-center">
                             <button
                               type="button"
-                              onClick={() => setNotice("Đây là bản song ngữ/gốc; chọn máy chủ để đổi bản lồng tiếng nếu có.")}
+                              aria-label="Song Ngữ"
+                              title={movie.servers[songServerIdx]?.name || "Song Ngữ"}
+                              onClick={switchToSong}
                               className="text-white transition-colors hover:text-white/80 focus:outline-none flex h-9 w-9 sm:h-auto sm:w-auto items-center justify-center relative active:scale-[0.97] motion-reduce:transform-none group"
                             >
                               <IcMic className="w-5 h-5 sm:w-7 sm:h-7 transition-[transform] duration-[220ms] group-hover:rotate-12 motion-reduce:transform-none" />
@@ -1711,12 +1842,13 @@ export function WatchPage({
             </button>
             <button
               type="button"
-              onClick={() => setNotice(`Ngôn ngữ phim: ${movie.lang}.`)}
+              aria-label="Song Ngữ"
+              title={movie.servers[songServerIdx]?.name || "Song Ngữ"}
+              onClick={switchToSong}
               className="inline-flex shrink-0 items-center gap-1.5 text-[13px] font-medium text-white/75 transition-colors hover:text-white whitespace-nowrap"
-              title={movie.lang}
             >
               <IcCaptions className="h-4 w-4" />
-              <span>{movie.lang}</span>
+              <span>Song Ngữ</span>
             </button>
           </div>
 
@@ -1769,9 +1901,13 @@ export function WatchPage({
               </button>
               <button
                 type="button"
-                title={isEmbed ? "Nguồn embed không hỗ trợ tua intro" : "Tự động bỏ qua intro"}
-                aria-pressed={autoSkip && !isEmbed}
+                title={!hasIntro ? "Nguồn này chưa có mốc intro" : isEmbed ? "Nguồn embed không hỗ trợ tua intro" : "Tự động bỏ qua intro"}
+                aria-pressed={autoSkip && hasIntro && !isEmbed}
                 onClick={() => {
+                  if (!hasIntro) {
+                    setNotice("Nguồn này chưa có mốc intro để tự động bỏ qua.");
+                    return;
+                  }
                   if (isEmbed) {
                     setNotice("Nguồn embed không hỗ trợ bỏ qua intro. Chọn nguồn KK để dùng tính năng này.");
                     return;
@@ -1803,7 +1939,13 @@ export function WatchPage({
               </button>
               <button
                 type="button"
-                onClick={() => setNotice("Gặp lỗi phát? Đổi máy chủ ở danh sách tập hoặc báo qua Telegram @nhot2008.")}
+                onClick={() => {
+                  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+                  document.getElementById("report-banner")?.scrollIntoView({
+                    behavior: reduce ? "auto" : "smooth",
+                    block: "center",
+                  });
+                }}
                 className="flex items-center gap-2 hover:bg-white/10 transition-colors group outline-none py-1.5 px-2 md:px-3 rounded-lg"
               >
                 <IcBug className="w-5 h-5 text-white/70 group-hover:text-[#eab308] transition-colors" />
@@ -1811,9 +1953,9 @@ export function WatchPage({
               </button>
               <button
                 type="button"
-                onClick={() =>
-                  setNotice("Phím tắt: Space = phát/dừng, ←/→ = tua 10s, ↑/↓ = âm lượng, M = tắt/bật âm thanh, F = toàn màn hình, N = tập kế tiếp.")
-                }
+                data-help-toggle=""
+                onClick={() => setHelpOpen((v) => !v)}
+                aria-expanded={helpOpen}
                 className="flex items-center justify-center py-1.5 px-2 rounded-lg hover:bg-white/10 transition-colors"
                 aria-label="Hướng dẫn thao tác"
                 title="Hướng dẫn thao tác"
@@ -1824,6 +1966,40 @@ export function WatchPage({
 
           </div>
         </div>
+
+        {helpOpen && (
+          <div
+            data-help-panel=""
+            className="mt-2 rounded-xl border border-white/[0.06] bg-white/[0.04] px-4 py-4 text-[12px] text-white/65"
+          >
+            <p className="mb-3 font-semibold text-white">Hướng dẫn thao tác</p>
+            <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+              {[
+                ["Phát / tạm dừng", "Space"],
+                ["Toàn màn hình", "F"],
+                ["Tua lùi / tới 10 giây", "← / →"],
+                ["Tăng / giảm âm lượng", "↑ / ↓"],
+                ["Chuyển tập kế tiếp", "N"],
+              ].map(([label, key]) => (
+                <div key={label} className="flex items-center justify-between gap-3 rounded-md bg-white/[0.04] px-3 py-2">
+                  <span>{label}</span>
+                  <kbd className="rounded bg-white/10 px-1.5 py-0.5 font-semibold text-white/90">{key}</kbd>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 border-t border-white/[0.06] pt-3">
+              <p className="mb-2 font-semibold text-white/90">Mobile</p>
+              <ul className="grid gap-1.5 sm:grid-cols-2">
+                <li>Chạm một lần để hiện / ẩn thanh điều khiển</li>
+                <li>Chạm đúp bên trái / phải để tua 10 giây</li>
+                <li>Nhấn giữ trên video để tua nhanh 2x, thả tay để trở lại tốc độ cũ</li>
+              </ul>
+            </div>
+            <p className="mt-3 border-t border-white/[0.06] pt-3 text-white/45">
+              Nút dưới video: Tự động chuyển tập • Tự động bỏ qua intro • Ánh sáng môi trường • Báo lỗi phim. Vàng = đang bật.
+            </p>
+          </div>
+        )}
 
         {notice && (
           <div
@@ -1847,8 +2023,8 @@ export function WatchPage({
               </a>
             </div>
 
-            {/* thông báo */}
-            <div className="mb-2.5 flex items-start gap-2.5 rounded-lg border border-[#eab308]/20 bg-[#eab308]/10 px-3 py-2 sm:items-center sm:py-3">
+            {/* thông báo — mục tiêu cuộn khi bấm "Báo lỗi" */}
+            <div id="report-banner" className="mb-2.5 flex items-start gap-2.5 rounded-lg border border-[#eab308]/20 bg-[#eab308]/10 px-3 py-2 sm:items-center sm:py-3 scroll-mt-24">
               <IcInfo className="w-4 h-4 text-[#eab308] shrink-0 mt-0.5 sm:mt-0" />
               <p className="text-[12px] md:text-[13px] text-white/80 leading-relaxed font-medium">
                 Phim bị lỗi âm thanh, giật lag, chất lượng kém ? Vui lòng chuyển sang <span className="text-[#eab308]">Máy chủ Dự phòng</span> bên dưới.
@@ -2021,7 +2197,7 @@ export function WatchPage({
                 <div className="flex items-center gap-2.5">
                   <IcMessage className="w-6 h-6 text-white fill-white" />
                   <h2 className="text-xl font-bold text-white">
-                    Bình luận <span className="text-white/60">({comments.length})</span>
+                    Bình luận <span className="text-white/60">({allComments.length})</span>
                   </h2>
                 </div>
                 <div className="flex items-center rounded-lg border border-white/10 bg-white/[0.03] p-0.5 text-[12px] font-medium">
@@ -2044,25 +2220,65 @@ export function WatchPage({
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 mb-8 p-4 bg-[#1a1a24] border border-white/10 rounded-xl">
-                <IconLogIn className="w-5 h-5 text-text-muted shrink-0" />
-                <p className="text-sm text-text-muted">Đăng nhập để bình luận về phim này.</p>
-              </div>
+              {user ? (
+                <div className="mb-8 flex items-start gap-3 rounded-xl border border-white/10 bg-[#1a1a24] p-4">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    alt=""
+                    width={40}
+                    height={40}
+                    decoding="async"
+                    className="h-10 w-10 shrink-0 rounded-full object-cover ring-2 ring-[#FFD166]/40"
+                    src={profileMeta(user).avatarUrl || DEFAULT_LOCAL_AVATAR}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <textarea
+                      value={draftComment}
+                      onChange={(e) => setDraftComment(e.target.value)}
+                      onKeyDown={(e) => {
+                        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") submitComment();
+                      }}
+                      placeholder="Viết bình luận của bạn..."
+                      rows={2}
+                      className="w-full resize-none rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none transition-colors focus:border-[#FFD166]/50"
+                    />
+                    <div className="mt-2 flex items-center justify-between gap-3">
+                      <span className="text-[11px] text-white/35">Ctrl + Enter để gửi nhanh</span>
+                      <button
+                        type="button"
+                        disabled={!draftComment.trim()}
+                        onClick={submitComment}
+                        className="rounded-lg bg-[#FFD166] px-4 py-1.5 text-sm font-semibold text-[#1a1a24] transition-colors hover:bg-[#ffe08a] disabled:opacity-40"
+                      >
+                        Gửi bình luận
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3 mb-8 p-4 bg-[#1a1a24] border border-white/10 rounded-xl">
+                  <IconLogIn className="w-5 h-5 text-text-muted shrink-0" />
+                  <p className="text-sm text-text-muted">Đăng nhập để bình luận về phim này.</p>
+                </div>
+              )}
 
-              {comments.length > 0 && (
+              {allComments.length > 0 && (
                 <div className="divide-y divide-white/5">
                   {visible.map((c) => (
                     <CommentItem key={c.id} c={c} />
                   ))}
                 </div>
               )}
+              {allComments.length === 0 && (
+                <p className="text-sm text-white/45">Chưa có bình luận nào. Hãy là người đầu tiên!</p>
+              )}
 
-              {comments.length > 0 && (
+              {!allShown && allComments.length > 0 && (
                 <div className="flex justify-center gap-3 mt-4">
                   <button
-                    disabled={allShown}
+                    type="button"
                     onClick={() => setShowMore(true)}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm text-white/70 hover:text-white transition-all disabled:opacity-50"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm text-white/70 hover:text-white transition-all"
                   >
                     <IcChevronDown className="w-4 h-4" />
                     Xem thêm bình luận

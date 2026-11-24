@@ -25,9 +25,9 @@ export function SearchAutocomplete({
 }) {
   const router = useRouter();
   const [query, setQuery] = useState("");
+  const [activeQuery, setActiveQuery] = useState("");
   const [results, setResults] = useState<CardMovie[]>([]);
-  const [fuzzy, setFuzzy] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [people, setPeople] = useState<{ name: string; movie: CardMovie }[]>([]);
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -49,20 +49,25 @@ export function SearchAutocomplete({
     const id = ++requestRef.current;
     if (!q) {
       setResults([]);
-      setFuzzy(false);
-      setLoading(false);
+      setPeople([]);
+      setActiveQuery("");
       setOpen(false);
       return;
     }
-    setLoading(true);
     const found = searchMovies(movies, q).slice(0, 5);
     const needle = stripVn(q);
-    const exact = found.some((m) => stripVn(`${m.title} ${m.origin}`).includes(needle));
+    // Dữ liệu tĩnh không có bảng diễn viên; dùng `director` để ô tìm kiếm
+    // "phim, diễn viên" vẫn trả về người liên quan thay vì bỏ qua hoàn toàn.
+    const byPerson = new Map<string, CardMovie>();
+    for (const m of movies) {
+      const name = m.director?.trim();
+      if (name && stripVn(name).includes(needle) && !byPerson.has(name)) byPerson.set(name, m);
+    }
     if (id !== requestRef.current) return;
+    setActiveQuery(q);
     setResults(found);
-    setFuzzy(found.length > 0 && !exact);
-    setLoading(false);
-    setOpen(found.length > 0);
+    setPeople([...byPerson].slice(0, 3).map(([name, movie]) => ({ name, movie })));
+    setOpen(found.length > 0 || byPerson.size > 0);
   };
 
   const onChange = (value: string) => {
@@ -79,6 +84,8 @@ export function SearchAutocomplete({
     setOpen(false);
     setQuery("");
     setResults([]);
+    setPeople([]);
+    setActiveQuery("");
     onSelect?.();
   };
 
@@ -106,7 +113,9 @@ export function SearchAutocomplete({
             placeholder="Tìm kiếm phim, diễn viên"
             value={query}
             autoFocus={autoFocus}
-            onFocus={() => results.length > 0 && setOpen(true)}
+            onFocus={() => {
+              if (results.length > 0 || people.length > 0) setOpen(true);
+            }}
             onChange={(e) => onChange(e.target.value)}
             className={`h-[42px] bg-white/10 text-[15px] max-sm:text-[16px] text-text-primary placeholder:text-[#FFFFFF] focus:outline-none border transition-all ${
               fullWidth
@@ -119,11 +128,6 @@ export function SearchAutocomplete({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           )}
-          {loading && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              <div className="w-4 h-4 border-2 border-white/25 border-t-white/70 rounded-full animate-spin" />
-            </div>
-          )}
         </div>
       </form>
 
@@ -132,7 +136,7 @@ export function SearchAutocomplete({
           {hasMovies && (
             <div>
               <div className="px-3 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-white/40">
-                {fuzzy ? "Có phải bạn muốn tìm" : "Phim"}
+                Phim
               </div>
               {results.map((m) => (
                 <a
@@ -173,7 +177,40 @@ export function SearchAutocomplete({
             </div>
           )}
 
-          {query.trim() && (
+          {people.length > 0 && (
+            <div className="border-t border-white/5">
+              <div className="px-3 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-white/40">
+                Diễn viên
+              </div>
+              {people.map(({ name, movie }) => (
+                <a
+                  key={`${name}-${movie.slug}`}
+                  href={withBasePath(`/tim-kiem?keyword=${encodeURIComponent(name)}`)}
+                  onClick={closeAll}
+                  className="flex items-center gap-3 px-3 py-2.5 hover:bg-bg-hover transition-colors"
+                >
+                  <div className="relative w-10 h-10 shrink-0 overflow-hidden rounded-full bg-bg-card">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      alt={name}
+                      className="object-cover"
+                      style={{ position: "absolute", height: "100%", width: "100%", inset: 0, color: "transparent" }}
+                      src={movie.poster || movie.backdrop}
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).style.opacity = "0";
+                      }}
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-white truncate">{name}</p>
+                    <p className="text-xs text-white/50 truncate">Đạo diễn • {movie.title}</p>
+                  </div>
+                </a>
+              ))}
+            </div>
+          )}
+
+          {activeQuery.trim() && (
             <button
               type="button"
               onClick={goSearchPage}
@@ -258,7 +295,6 @@ export function MobileHeaderBar({
           loggedIn={loggedIn}
           authLoading={authLoading}
           onLogout={onLogout}
-          showWatchTogether
         />
         <a className="flex items-center shrink-0" href={withBasePath("/")}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
