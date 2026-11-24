@@ -77,49 +77,11 @@ html[data-nhot-skip-overlay="1"] .nhot-loading-overlay {
   }
 }
 
-/* Khung avatar bọc ngoài ảnh (scale 1.25 như chophim) với nhịp xoay/glow nhẹ. */
-.avatar-frame-loop {
-  transform: scale(var(--avatar-frame-scale, 1.25)) rotate(0deg);
+/* Chophim không xoay ảnh khung: khung chỉ được phóng cố định bọc ngoài avatar.
+   Chuyển động duy nhất là premiumRingGlow của viền premium bên dưới. */
+.avatar-frame {
+  transform: scale(var(--avatar-frame-scale, 1.25));
   transform-origin: center;
-  animation:
-    avatarFrameSpin 24s linear infinite,
-    avatarFrameGlow 5s linear infinite;
-  will-change: transform, filter;
-}
-
-[data-avatar-frame-paused="true"] .avatar-frame-loop {
-  animation-play-state: paused;
-}
-
-@keyframes avatarFrameSpin {
-  from {
-    transform: scale(var(--avatar-frame-scale, 1.25)) rotate(0deg);
-  }
-  to {
-    transform: scale(var(--avatar-frame-scale, 1.25)) rotate(360deg);
-  }
-}
-
-@keyframes avatarFrameGlow {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 0 rgba(255, 209, 102, 0));
-    opacity: 0.95;
-  }
-  50% {
-    filter: drop-shadow(0 0 4px rgba(255, 209, 102, 0.28));
-    opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .avatar-frame-loop {
-    animation: none;
-    transform: scale(var(--avatar-frame-scale, 1.25));
-    filter: none;
-    opacity: 1;
-    will-change: auto;
-  }
 }
 
 body {

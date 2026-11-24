@@ -303,14 +303,6 @@ export function CommentItem({
     setConfirmDelete(false);
     await onDelete?.(c.id);
   };
-  const frameStyle: React.CSSProperties = {
-    position: "absolute",
-    height: "100%",
-    width: "100%",
-    inset: 0,
-    color: "transparent",
-    transform: "scale(1.25)",
-  };
   return (
     <div
       id={`comment-${c.id}`}
@@ -331,7 +323,7 @@ export function CommentItem({
               )}
             </div>
             {c.frame && (
-              <img alt="" loading="lazy" decoding="async" className="pointer-events-none absolute inset-0 z-10 object-contain" style={frameStyle} src={c.frame} />
+              <img alt="" loading="lazy" decoding="async" className="avatar-frame pointer-events-none absolute inset-0 z-10 h-full w-full object-contain" src={c.frame} />
             )}
           </div>
         </div>

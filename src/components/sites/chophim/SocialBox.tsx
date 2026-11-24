@@ -183,7 +183,7 @@ function CommentCard({ c }: { c: CommentItem }) {
                     alt=""
                     loading="lazy"
                     decoding="async"
-                    className="avatar-frame-loop pointer-events-none absolute inset-0 z-10 h-full w-full object-contain"
+                    className="avatar-frame pointer-events-none absolute inset-0 z-10 h-full w-full object-contain"
                     src={c.user.avatarFrame}
                   />
                 )}

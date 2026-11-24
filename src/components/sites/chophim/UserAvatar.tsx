@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useState, type CSSProperties } from "react";
 import { withBasePath } from "@/lib/base-path";
 
 function asset(src?: string): string | undefined {
@@ -39,8 +39,6 @@ export function UserAvatar({
   sizeClassName?: string;
   className?: string;
 }) {
-  const wrapperRef = useRef<HTMLSpanElement | null>(null);
-  const [framePaused, setFramePaused] = useState(false);
   const [failedAvatar, setFailedAvatar] = useState<string | undefined>();
   const [failedFrame, setFailedFrame] = useState<string | undefined>();
 
@@ -56,41 +54,8 @@ export function UserAvatar({
     ...(frameScale !== undefined ? { "--avatar-frame-scale": String(frameScale) } : {}),
   } as CSSProperties;
 
-  // Khung là hiệu ứng lặp: dừng khi avatar ra khỏi màn hình hoặc tab bị ẩn.
-  useEffect(() => {
-    const node = wrapperRef.current;
-    if (!node || !frame) return;
-
-    let visible = true;
-    const sync = () => setFramePaused(document.hidden || !visible);
-    sync();
-
-    const onVisibility = () => sync();
-    document.addEventListener("visibilitychange", onVisibility);
-
-    if (typeof IntersectionObserver === "undefined") {
-      return () => document.removeEventListener("visibilitychange", onVisibility);
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        visible = entries.some((entry) => entry.isIntersecting);
-        sync();
-      },
-      { rootMargin: "32px" }
-    );
-    observer.observe(node);
-
-    return () => {
-      observer.disconnect();
-      document.removeEventListener("visibilitychange", onVisibility);
-    };
-  }, [frame]);
-
   return (
     <span
-      ref={wrapperRef}
-      data-avatar-frame-paused={showFrame && framePaused ? "true" : undefined}
       className={`relative inline-flex shrink-0 items-center justify-center ${sizeClassName} ${className}`}
       style={style}
     >
@@ -120,7 +85,7 @@ export function UserAvatar({
           onError={() => {
             if (frame) setFailedFrame(frame);
           }}
-          className="avatar-frame-loop pointer-events-none absolute inset-0 z-10 h-full w-full object-contain"
+          className="avatar-frame pointer-events-none absolute inset-0 z-10 h-full w-full object-contain"
         />
       ) : null}
     </span>
