@@ -2,6 +2,12 @@
 
 import { withBasePath } from "@/lib/base-path";
 import { useAuthSession } from "@/lib/auth";
+import {
+  LOCAL_COMMENTS_EVENT,
+  localCommentsKey,
+  readLocalComments,
+  writeLocalComments,
+} from "@/lib/local-comments";
 import { detailHref, useMovieDuration, watchHref } from "@/lib/live-data";
 import { PartSelector } from "./PartSelector";
 import { isInList, toggleList } from "@/lib/user-library";
@@ -424,29 +430,6 @@ export function CommentItem({
 
 /* ── bình luận dùng chung cho trang phim và trang xem ─────────────────── */
 
-const localCommentsKey = (slug: string) => `nhotphim:local-comments:${slug}`;
-const LOCAL_COMMENTS_EVENT = "nhotphim:local-comments-change";
-
-function readLocalComments(slug: string): DetailComment[] {
-  try {
-    const raw = window.localStorage.getItem(localCommentsKey(slug));
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? (parsed as DetailComment[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function writeLocalComments(slug: string, list: DetailComment[]): boolean {
-  try {
-    window.localStorage.setItem(localCommentsKey(slug), JSON.stringify(list));
-    return true;
-  } catch {
-    // Private mode / hết dung lượng: giữ nguyên danh sách đang có.
-    return false;
-  }
-}
-
 function useLocalComments(slug: string) {
   const [comments, setComments] = useState<DetailComment[]>([]);
   const ref = useRef<DetailComment[]>([]);
@@ -603,15 +586,15 @@ export function CommentsSection({
       {authLoading ? null : user && viewerMeta ? (
         <div className="mb-8 p-3 sm:p-4 bg-[#191b24] border border-white/5 rounded-xl">
           <div className="flex items-center gap-2.5 px-1 mb-3">
-            <div className="relative w-7 h-7 shrink-0">
-              <UserAvatar
-                name={viewerName}
-                avatarUrl={viewerMeta.avatarUrl || undefined}
-                frameUrl={viewerMeta.frameUrl || undefined}
-                emoji={viewerMeta.selectedEmoji || viewerMeta.emoji || undefined}
-                size={28}
-              />
-            </div>
+            <UserAvatar
+              name={viewerName}
+              avatarUrl={viewerMeta.avatarUrl || undefined}
+              frameUrl={viewerMeta.frameUrl || undefined}
+              emoji={viewerMeta.selectedEmoji || viewerMeta.emoji || undefined}
+              size={44}
+              frameScale={1.35}
+              sizeClassName="!h-9 !w-9 sm:!h-11 sm:!w-11"
+            />
             <span className="text-[13px] font-semibold text-white">{viewerName}</span>
           </div>
           <textarea

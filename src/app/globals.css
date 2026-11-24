@@ -79,7 +79,7 @@ html[data-nhot-skip-overlay="1"] .nhot-loading-overlay {
 
 /* Khung avatar bọc ngoài ảnh (scale 1.25 như chophim) với nhịp xoay/glow nhẹ. */
 .avatar-frame-loop {
-  transform: scale(1.25) rotate(0deg);
+  transform: scale(var(--avatar-frame-scale, 1.25)) rotate(0deg);
   transform-origin: center;
   animation:
     avatarFrameSpin 24s linear infinite,
@@ -93,10 +93,10 @@ html[data-nhot-skip-overlay="1"] .nhot-loading-overlay {
 
 @keyframes avatarFrameSpin {
   from {
-    transform: scale(1.25) rotate(0deg);
+    transform: scale(var(--avatar-frame-scale, 1.25)) rotate(0deg);
   }
   to {
-    transform: scale(1.25) rotate(360deg);
+    transform: scale(var(--avatar-frame-scale, 1.25)) rotate(360deg);
   }
 }
 
@@ -115,7 +115,7 @@ html[data-nhot-skip-overlay="1"] .nhot-loading-overlay {
 @media (prefers-reduced-motion: reduce) {
   .avatar-frame-loop {
     animation: none;
-    transform: scale(1.25);
+    transform: scale(var(--avatar-frame-scale, 1.25));
     filter: none;
     opacity: 1;
     will-change: auto;

@@ -1,9 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { withBasePath } from "@/lib/base-path";
-import { detailHref, useLiveHome } from "@/lib/live-data";
+import {
+  LOCAL_COMMENTS_EVENT,
+  readAllLocalComments,
+} from "@/lib/local-comments";
+import { detailHref, useLiveData, useLiveHome } from "@/lib/live-data";
 import { fillStyle, type CommentItem, type RankRow } from "./types";
+import type { DetailComment, MovieDetail } from "./detail-types";
 import { SliderArrows } from "./SliderArrows";
 import {
   FlameCustom,
@@ -74,6 +79,39 @@ function cleanContent(content: string, isSpoiler?: boolean): string {
   return content.replace(/\[gif\][\s\S]*?\[\/gif\]/g, " ").trim() || "Đã gửi một GIF";
 }
 
+/** Bình luận gửi từ browser chưa có trong bản tĩnh; đưa về dạng thẻ "Bình Luận Mới". */
+function localToHomeComment(
+  slug: string,
+  c: DetailComment,
+  movie: MovieDetail
+): CommentItem {
+  const role = c.role || (c.admin ? "admin" : "user");
+  return {
+    id: c.id,
+    movieSlug: slug,
+    movieName: movie.title,
+    posterUrl: movie.poster,
+    backdropUrl: movie.backdrop || movie.poster,
+    content: c.content,
+    likes: c.likes,
+    dislikes: c.dislikes,
+    replies: 0,
+    user: {
+      displayName: c.name,
+      avatarUrl: c.avatar || "",
+      avatarFrame: c.frame,
+      subscriptionTier: "free",
+      role,
+      gender: c.gender,
+      selectedEmoji: c.emoji,
+      showPremiumBadge: false,
+    },
+    createdAt: c.createdAt,
+    parentId: null,
+    isSpoiler: false,
+  };
+}
+
 function CommentCard({ c }: { c: CommentItem }) {
   const premium = c.user.subscriptionTier === "premium";
   const admin = c.user.role === "admin";
@@ -122,16 +160,22 @@ function CommentCard({ c }: { c: CommentItem }) {
                       : "ring-1 ring-white/15 rounded-full p-[2px] transition-colors group-hover:ring-white"
                   }
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    alt=""
-                    loading="lazy"
-                    width={44}
-                    height={44}
-                    decoding="async"
-                    className="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover relative z-10"
-                    src={c.user.avatarUrl}
-                  />
+                  {c.user.avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      alt=""
+                      loading="lazy"
+                      width={44}
+                      height={44}
+                      decoding="async"
+                      className="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover relative z-10"
+                      src={c.user.avatarUrl}
+                    />
+                  ) : (
+                    <span className="relative z-10 flex w-9 h-9 sm:w-11 sm:h-11 items-center justify-center rounded-full bg-[#FFD166] text-[15px] font-bold text-[#1c1c1c]">
+                      {c.user.selectedEmoji || c.user.displayName.trim().charAt(0).toUpperCase() || "?"}
+                    </span>
+                  )}
                 </div>
                 {c.user.avatarFrame && (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -139,8 +183,7 @@ function CommentCard({ c }: { c: CommentItem }) {
                     alt=""
                     loading="lazy"
                     decoding="async"
-                    className="pointer-events-none absolute inset-0 z-10 object-contain"
-                    style={{ ...fillStyle, transform: "scale(1.25)" }}
+                    className="avatar-frame-loop pointer-events-none absolute inset-0 z-10 h-full w-full object-contain"
                     src={c.user.avatarFrame}
                   />
                 )}
@@ -359,8 +402,44 @@ function RankModal({ kind, onClose }: { kind: RankKind; onClose: () => void }) {
 /* ------------------------------------------------------------------ */
 export function SocialBox() {
   const home = useLiveHome();
-  const { comments } = home;
+  const { movies } = useLiveData();
+  const [localCards, setLocalCards] = useState<CommentItem[]>([]);
   const [modal, setModal] = useState<RankKind | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    const load = () => {
+      const cards = readAllLocalComments()
+        .map(({ slug, comment }) => {
+          const movie = movies[slug];
+          return movie ? localToHomeComment(slug, comment, movie) : null;
+        })
+        .filter((card): card is CommentItem => card !== null)
+        .sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+      if (alive) setLocalCards(cards);
+    };
+    load();
+    const reload = () => load();
+    window.addEventListener(LOCAL_COMMENTS_EVENT, reload);
+    window.addEventListener("storage", reload);
+    window.addEventListener("focus", reload);
+    document.addEventListener("visibilitychange", reload);
+    return () => {
+      alive = false;
+      window.removeEventListener(LOCAL_COMMENTS_EVENT, reload);
+      window.removeEventListener("storage", reload);
+      window.removeEventListener("focus", reload);
+      document.removeEventListener("visibilitychange", reload);
+    };
+  }, [movies]);
+
+  const comments = useMemo(
+    () =>
+      [...localCards, ...home.comments].sort((a, b) =>
+        String(b.createdAt || "").localeCompare(String(a.createdAt || ""))
+      ),
+    [home.comments, localCards]
+  );
 
   return (
     <section className="rounded-2xl border border-white/[0.09] bg-transparent flex flex-col">

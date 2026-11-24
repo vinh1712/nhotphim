@@ -81,6 +81,7 @@ export type CommentItem = {
   };
   parentId?: string | null;
   isSpoiler?: boolean;
+  createdAt?: string;
 };
 
 export type RankRow = {
