@@ -1,0 +1,34 @@
+import { readFileSync, writeFileSync } from "node:fs";
+const rows = JSON.parse(readFileSync("docs/research/quanli/movies.json", "utf8"));
+const n = rows.length;
+const has = (r, k) => r[k] != null && String(r[k]).trim() !== "";
+const stats = {};
+for (const k of Object.keys(rows[0])) stats[k] = rows.filter((r) => has(r, k)).length;
+console.log("total", n);
+console.log(JSON.stringify(stats, null, 0));
+const typeC = {};
+for (const r of rows) typeC[r.type] = (typeC[r.type] || 0) + 1;
+console.log("type", JSON.stringify(typeC));
+const hidden = rows.filter((r) => r.hidden);
+console.log("hidden", hidden.length, JSON.stringify(hidden.slice(0, 3).map((r) => r.title)));
+const genreC = {};
+for (const r of rows) for (const g of String(r.genre || "").split(",").map((x) => x.trim()).filter(Boolean)) genreC[g] = (genreC[g] || 0) + 1;
+console.log("genres", JSON.stringify(genreC));
+const countryC = {};
+for (const r of rows) countryC[r.country || "?"] = (countryC[r.country || "?"] || 0) + 1;
+console.log("countries", JSON.stringify(countryC));
+const yearC = {};
+for (const r of rows) yearC[r.year || "?"] = (yearC[r.year || "?"] || 0) + 1;
+console.log("years", JSON.stringify(yearC));
+// extra / logo / backdrop samples
+const withLogo = rows.filter((r) => has(r, "logo"));
+console.log("logo sample", JSON.stringify(withLogo.slice(0, 3).map((r) => [r.title, r.logo])));
+console.log("extra sample", JSON.stringify(rows.filter((r) => has(r, "extra")).slice(0, 2).map((r) => [r.title, String(r.extra).slice(0, 300)])));
+console.log("poster host", JSON.stringify([...new Set(rows.filter((r) => has(r, "poster")).map((r) => { try { return new URL(r.poster).host } catch { return "?" } }))]));
+console.log("backdrop host", JSON.stringify([...new Set(rows.filter((r) => has(r, "backdrop")).map((r) => { try { return new URL(r.backdrop).host } catch { return "?" } }))]));
+// slug candidates
+console.log("ophim_slug", rows.filter((r) => has(r, "ophim_slug")).length);
+console.log("series_group", rows.filter((r) => has(r, "series_group")).length, JSON.stringify(rows.filter((r) => has(r, "series_group")).slice(0, 5).map((r) => [r.title, r.series_group, r.part_number])));
+console.log("epstatus", JSON.stringify([...new Set(rows.map((r) => r.epstatus))]));
+console.log("quality", JSON.stringify([...new Set(rows.map((r) => r.quality))]));
+console.log("rating sample", JSON.stringify([...new Set(rows.map((r) => r.rating))].slice(0, 20)));
