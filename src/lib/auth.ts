@@ -11,6 +11,7 @@ export type AuthUser = {
   id: string;
   email: string | null;
   user_metadata: Record<string, unknown>;
+  app_metadata?: Record<string, unknown>;
 };
 
 export type AuthSession = {
@@ -118,10 +119,12 @@ function toUser(raw: unknown): AuthUser | null {
   const u = raw as Record<string, unknown>;
   if (typeof u.id !== "string") return null;
   const meta = u.user_metadata && typeof u.user_metadata === "object" ? u.user_metadata : {};
+  const appMeta = u.app_metadata && typeof u.app_metadata === "object" ? u.app_metadata : {};
   return {
     id: u.id,
     email: typeof u.email === "string" ? u.email : null,
     user_metadata: meta as Record<string, unknown>,
+    app_metadata: appMeta as Record<string, unknown>,
   };
 }
 
@@ -334,18 +337,25 @@ export function useAuthSession() {
 
   useEffect(() => {
     let alive = true;
-    void getSession().then((s) => {
-      if (!alive) return;
-      setSession(s);
-      setLoading(false);
-    });
-    const onChange = () => void getSession().then(setSession);
-    window.addEventListener(AUTH_EVENT, onChange);
-    window.addEventListener("storage", onChange);
+    // Đọc lại cả khi quay lại tab: sessionStorage (không ghi nhớ) không bắn
+    // storage event sang tab khác, nên watch page có thể vẫn tưởng chưa đăng nhập.
+    const sync = () =>
+      void getSession().then((s) => {
+        if (!alive) return;
+        setSession(s);
+        setLoading(false);
+      });
+    sync();
+    window.addEventListener(AUTH_EVENT, sync);
+    window.addEventListener("storage", sync);
+    window.addEventListener("focus", sync);
+    document.addEventListener("visibilitychange", sync);
     return () => {
       alive = false;
-      window.removeEventListener(AUTH_EVENT, onChange);
-      window.removeEventListener("storage", onChange);
+      window.removeEventListener(AUTH_EVENT, sync);
+      window.removeEventListener("storage", sync);
+      window.removeEventListener("focus", sync);
+      document.removeEventListener("visibilitychange", sync);
     };
   }, []);
 

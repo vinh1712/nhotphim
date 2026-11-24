@@ -1,11 +1,10 @@
 "use client";
 
 import { withBasePath } from "@/lib/base-path";
-import { useAuthSession } from "@/lib/auth";
 import { detailHref } from "@/lib/live-data";
 import { PartSelector } from "./PartSelector";
 import { getProgress, isInList, removeProgress, saveProgress, toggleList } from "@/lib/user-library";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Hls, {
   type LoaderCallbacks,
   type LoaderConfiguration,
@@ -15,11 +14,10 @@ import Hls, {
 } from "hls.js";
 import { loadKkAdRanges, stripKkAds, type AdRange } from "./kk-ads";
 import { fillStyle } from "./types";
-import { CommentItem } from "./DetailPage";
-import { IconLanguages, IconLogIn } from "./icons";
-import { profileMeta } from "./UserAvatar";
+import { CommentsSection } from "./DetailPage";
+import { IconLanguages } from "./icons";
 import type { DetailComment, MovieDetail } from "./detail-types";
-import { enc, sortComments } from "./detail-types";
+import { enc } from "./detail-types";
 
 /* ── kiểu dữ liệu ───────────────────────────────────────────────────────── */
 
@@ -203,11 +201,6 @@ const IcMic = ({ className }: { className?: string }) => (
     <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3" />
   </I>
 );
-const IcMessage = ({ className }: { className?: string }) => (
-  <I className={className}>
-    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-  </I>
-);
 const IcTelegram = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className={className} aria-hidden="true">
     <path
@@ -272,12 +265,6 @@ const isHlsUrl = (u: string | null) => {
     return false;
   }
 };
-
-const DEFAULT_LOCAL_AVATAR =
-  "data:image/svg+xml;utf8," +
-  encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" width="88" height="88"><rect width="88" height="88" fill="#2a2d3a"/><circle cx="44" cy="34" r="16" fill="#5b6072"/><ellipse cx="44" cy="76" rx="26" ry="18" fill="#5b6072"/></svg>'
-  );
 
 type HlsLoaderCtor = new (config: unknown) => {
   load(ctx: LoaderContext, cfg: LoaderConfiguration, cb: LoaderCallbacks<LoaderContext>): void;
@@ -344,8 +331,6 @@ export function WatchPage({
   const [ambient, setAmbient] = useState(false);
   const [notice, setNotice] = useState("");
   const [descOpen, setDescOpen] = useState(false);
-  const [sort, setSort] = useState<"new" | "top">("new");
-  const [showMore, setShowMore] = useState(false);
   const [hover, setHover] = useState(false);
   const [started, setStarted] = useState(false);
   const [playing, setPlaying] = useState(false);
@@ -366,9 +351,6 @@ export function WatchPage({
   const [subTrack, setSubTrack] = useState<number | null>(null);
   const [pings, setPings] = useState<Record<number, { ms: number | null; label: string }>>({});
   const [helpOpen, setHelpOpen] = useState(false);
-  const [draftComment, setDraftComment] = useState("");
-  const [postedComments, setPostedComments] = useState<DetailComment[]>([]);
-  const { user } = useAuthSession();
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
@@ -657,21 +639,6 @@ export function WatchPage({
   }, [movie.slug]);
 
   useEffect(() => {
-    const key = `nhotphim:local-comments:${movie.slug}`;
-    setDraftComment("");
-    setPostedComments([]);
-    try {
-      const raw = window.localStorage.getItem(key);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) setPostedComments(parsed as DetailComment[]);
-      }
-    } catch {
-      // Bỏ qua dữ liệu local hỏng, vẫn dùng bình luận từ server.
-    }
-  }, [movie.slug]);
-
-  useEffect(() => {
     lastSavedRef.current = 0;
   }, [sIdx, eIdx]);
 
@@ -711,39 +678,6 @@ export function WatchPage({
 
   const toggleFavorite = () => setFav(toggleList("favorites", libraryEntry));
   const toggleWatchlist = () => setAdded(toggleList("watchlist", libraryEntry));
-
-  const submitComment = () => {
-    const text = draftComment.trim();
-    if (!text || !user) return;
-    const meta = profileMeta(user);
-    const now = new Date();
-    const entry: DetailComment = {
-      id: `local-${now.getTime()}`,
-      pinned: false,
-      admin: false,
-      name: meta.displayName || meta.emoji || user.email || "Bạn",
-      gender: meta.gender === "male" || meta.gender === "female" ? meta.gender : null,
-      time: now.toLocaleDateString("vi-VN"),
-      content: text,
-      likes: 0,
-      dislikes: 0,
-      avatar: meta.avatarUrl || DEFAULT_LOCAL_AVATAR,
-      frame: meta.frameUrl || null,
-      emoji: meta.emoji || null,
-      createdAt: now.toISOString(),
-    };
-    const next = [entry, ...postedComments];
-    setPostedComments(next);
-    setDraftComment("");
-    setSort("new");
-    setShowMore(true);
-    setNotice("Đã gửi bình luận");
-    try {
-      window.localStorage.setItem(`nhotphim:local-comments:${movie.slug}`, JSON.stringify(next));
-    } catch {
-      // Vẫn giữ bình luận trong phiên hiện tại nếu không ghi được storage.
-    }
-  };
 
   const persist = useCallback(
     (time: number, total?: number) => {
@@ -1395,11 +1329,6 @@ export function WatchPage({
   const showCtl = !nativeFullscreen && !locked && (hover || scrubbing || menu !== null);
   const curCount = movie.current ?? server?.episodes.length ?? 0;
   const totalCount = movie.total ?? server?.episodes.length ?? 0;
-
-  const allComments = useMemo(() => [...postedComments, ...comments], [postedComments, comments]);
-  const sorted = sortComments(allComments, sort);
-  const visible = showMore ? sorted : sorted.slice(0, 5);
-  const allShown = sorted.length <= 5;
 
   return (
     <div className="max-w-[1400px] mx-auto px-4 sm:px-4 sm:py-6">
@@ -2229,100 +2158,7 @@ export function WatchPage({
             </div>
 
             {/* ── Bình luận ── */}
-            <div className="mb-12">
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-                <div className="flex items-center gap-2.5">
-                  <IcMessage className="w-6 h-6 text-white fill-white" />
-                  <h2 className="text-xl font-bold text-white">
-                    Bình luận <span className="text-white/60">({allComments.length})</span>
-                  </h2>
-                </div>
-                <div className="flex items-center rounded-lg border border-white/10 bg-white/[0.03] p-0.5 text-[12px] font-medium">
-                  <button
-                    type="button"
-                    aria-pressed={sort === "new"}
-                    onClick={() => setSort("new")}
-                    className={`rounded-md px-2.5 py-1.5 transition-colors ${sort === "new" ? "bg-white/10 text-white" : "text-white/45 hover:text-white/80"}`}
-                  >
-                    Mới nhất
-                  </button>
-                  <button
-                    type="button"
-                    aria-pressed={sort === "top"}
-                    onClick={() => setSort("top")}
-                    className={`rounded-md px-2.5 py-1.5 transition-colors ${sort === "top" ? "bg-white/10 text-white" : "text-white/45 hover:text-white/80"}`}
-                  >
-                    Nổi bật
-                  </button>
-                </div>
-              </div>
-
-              {user ? (
-                <div className="mb-8 flex items-start gap-3 rounded-xl border border-white/10 bg-[#1a1a24] p-4">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    alt=""
-                    width={40}
-                    height={40}
-                    decoding="async"
-                    className="h-10 w-10 shrink-0 rounded-full object-cover ring-2 ring-[#FFD166]/40"
-                    src={profileMeta(user).avatarUrl || DEFAULT_LOCAL_AVATAR}
-                  />
-                  <div className="min-w-0 flex-1">
-                    <textarea
-                      value={draftComment}
-                      onChange={(e) => setDraftComment(e.target.value)}
-                      onKeyDown={(e) => {
-                        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") submitComment();
-                      }}
-                      placeholder="Viết bình luận của bạn..."
-                      rows={2}
-                      className="w-full resize-none rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none transition-colors focus:border-[#FFD166]/50"
-                    />
-                    <div className="mt-2 flex items-center justify-between gap-3">
-                      <span className="text-[11px] text-white/35">Ctrl + Enter để gửi nhanh</span>
-                      <button
-                        type="button"
-                        disabled={!draftComment.trim()}
-                        onClick={submitComment}
-                        className="rounded-lg bg-[#FFD166] px-4 py-1.5 text-sm font-semibold text-[#1a1a24] transition-colors hover:bg-[#ffe08a] disabled:opacity-40"
-                      >
-                        Gửi bình luận
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-center gap-3 mb-8 p-4 bg-[#1a1a24] border border-white/10 rounded-xl">
-                  <IconLogIn className="w-5 h-5 text-text-muted shrink-0" />
-                  <p className="text-sm text-text-muted">Đăng nhập để bình luận về phim này.</p>
-                </div>
-              )}
-
-              {allComments.length > 0 && (
-                <div className="divide-y divide-white/5">
-                  {visible.map((c) => (
-                    <CommentItem key={c.id} c={c} />
-                  ))}
-                </div>
-              )}
-              {allComments.length === 0 && (
-                <p className="text-sm text-white/45">Chưa có bình luận nào. Hãy là người đầu tiên!</p>
-              )}
-
-              {!allShown && allComments.length > 0 && (
-                <div className="flex justify-center gap-3 mt-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowMore(true)}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm text-white/70 hover:text-white transition-all"
-                  >
-                    <IcChevronDown className="w-4 h-4" />
-                    Xem thêm bình luận
-                  </button>
-                </div>
-              )}
-            </div>
+            <CommentsSection slug={movie.slug} comments={comments} className="mb-12" />
           </div>
 
           {/* ── Đề xuất ── */}

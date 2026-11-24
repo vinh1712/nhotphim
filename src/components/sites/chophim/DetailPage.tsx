@@ -1,11 +1,13 @@
 "use client";
 
 import { withBasePath } from "@/lib/base-path";
+import { useAuthSession } from "@/lib/auth";
 import { detailHref, useMovieDuration, watchHref } from "@/lib/live-data";
 import { PartSelector } from "./PartSelector";
 import { isInList, toggleList } from "@/lib/user-library";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { fillStyle } from "./types";
+import { UserAvatar, profileMeta } from "./UserAvatar";
 import {
   IconLanguages,
   IconLogIn,
@@ -79,6 +81,27 @@ function IconThumbsDown({ className }: { className?: string }) {
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
       <path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z" />
       <path d="M17 14V2" />
+    </svg>
+  );
+}
+
+function IconTrash2({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="M10 11v6" />
+      <path d="M14 11v6" />
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+      <path d="M3 6h18" />
+      <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    </svg>
+  );
+}
+
+function IconSend({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="m22 2-7 20-4-9-9-4Z" />
+      <path d="M22 2 11 13" />
     </svg>
   );
 }
@@ -230,8 +253,19 @@ function ActionButtons({ mobile, movie }: { mobile: boolean; movie: MovieDetail 
 
 /* ── comment ───────────────────────────────────────────────────────────── */
 
-export function CommentItem({ c }: { c: DetailComment }) {
+export function CommentItem({
+  c,
+  currentUserId = null,
+  currentUserRole = null,
+  onDelete,
+}: {
+  c: DetailComment;
+  currentUserId?: string | null;
+  currentUserRole?: string | null;
+  onDelete?: (id: string) => boolean | Promise<boolean>;
+}) {
   const [vote, setVote] = useState<"up" | "down" | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const voteKey = `nhotphim:comment-vote:${c.id}`;
 
   useEffect(() => {
@@ -256,6 +290,13 @@ export function CommentItem({ c }: { c: DetailComment }) {
 
   const likes = c.likes + (vote === "up" ? 1 : 0);
   const dislikes = c.dislikes + (vote === "down" ? 1 : 0);
+  // Giống chophim: hiện Xóa cho comment của mình hoặc khi đang là admin.
+  const canDelete =
+    !!onDelete && ((!!currentUserId && currentUserId === c.userId) || currentUserRole === "admin");
+  const deleteOwn = async () => {
+    setConfirmDelete(false);
+    await onDelete?.(c.id);
+  };
   const frameStyle: React.CSSProperties = {
     position: "absolute",
     height: "100%",
@@ -275,7 +316,13 @@ export function CommentItem({ c }: { c: DetailComment }) {
         <div className="shrink-0 mt-0.5">
           <div className="relative shrink-0">
             <div className={c.pinned ? "avatar-ring-premium " : "ring-1 ring-white/15 rounded-full p-[2px] transition-colors"}>
-              <img alt="" loading="lazy" width={44} height={44} decoding="async" className="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover relative z-10" style={fillStyle} src={c.avatar} />
+              {c.avatar ? (
+                <img alt="" loading="lazy" width={44} height={44} decoding="async" className="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover relative z-10" style={fillStyle} src={c.avatar} />
+              ) : (
+                <span className="relative z-10 flex w-9 h-9 sm:w-11 sm:h-11 items-center justify-center rounded-full bg-[#FFD166] text-[15px] font-bold text-[#1c1c1c]">
+                  {c.name.trim().charAt(0).toUpperCase() || "?"}
+                </span>
+              )}
             </div>
             {c.frame && (
               <img alt="" loading="lazy" decoding="async" className="pointer-events-none absolute inset-0 z-10 object-contain" style={frameStyle} src={c.frame} />
@@ -347,9 +394,291 @@ export function CommentItem({ c }: { c: DetailComment }) {
               <IconThumbsDown className="w-4 h-4" />
               {dislikes > 0 && <span className="font-semibold">{dislikes}</span>}
             </button>
+            {canDelete &&
+              (confirmDelete ? (
+                <div className="flex items-center gap-2 ml-2 animate-fade-in">
+                  <span className="text-[11px] text-red-400">Xác nhận xóa?</span>
+                  <button type="button" onClick={() => void deleteOwn()} className="text-[11px] font-bold text-red-400 hover:text-red-300 transition-colors">
+                    Xóa
+                  </button>
+                  <button type="button" onClick={() => setConfirmDelete(false)} className="text-[11px] text-text-muted hover:text-white transition-colors">
+                    Hủy
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setConfirmDelete(true)}
+                  className="flex items-center gap-1 text-xs text-text-muted hover:text-red-400 transition-colors ml-2"
+                >
+                  <IconTrash2 className="w-3.5 h-3.5" />
+                  <span>Xóa</span>
+                </button>
+              ))}
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ── bình luận dùng chung cho trang phim và trang xem ─────────────────── */
+
+const localCommentsKey = (slug: string) => `nhotphim:local-comments:${slug}`;
+const LOCAL_COMMENTS_EVENT = "nhotphim:local-comments-change";
+
+function readLocalComments(slug: string): DetailComment[] {
+  try {
+    const raw = window.localStorage.getItem(localCommentsKey(slug));
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? (parsed as DetailComment[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeLocalComments(slug: string, list: DetailComment[]): boolean {
+  try {
+    window.localStorage.setItem(localCommentsKey(slug), JSON.stringify(list));
+    return true;
+  } catch {
+    // Private mode / hết dung lượng: giữ nguyên danh sách đang có.
+    return false;
+  }
+}
+
+function useLocalComments(slug: string) {
+  const [comments, setComments] = useState<DetailComment[]>([]);
+  const ref = useRef<DetailComment[]>([]);
+
+  useEffect(() => {
+    let alive = true;
+    const load = () => {
+      const next = readLocalComments(slug);
+      if (!alive) return;
+      ref.current = next;
+      setComments(next);
+    };
+    load();
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === localCommentsKey(slug)) load();
+    };
+    window.addEventListener("storage", onStorage);
+    window.addEventListener(LOCAL_COMMENTS_EVENT, load);
+    return () => {
+      alive = false;
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener(LOCAL_COMMENTS_EVENT, load);
+    };
+  }, [slug]);
+
+  const addComment = useCallback(
+    (entry: DetailComment) => {
+      const next = [entry, ...ref.current];
+      if (!writeLocalComments(slug, next)) return false;
+      ref.current = next;
+      setComments(next);
+      window.dispatchEvent(new Event(LOCAL_COMMENTS_EVENT));
+      return true;
+    },
+    [slug]
+  );
+
+  const removeComment = useCallback(
+    (id: string) => {
+      const next = ref.current.filter((c) => c.id !== id);
+      if (next.length === ref.current.length) return true;
+      if (!writeLocalComments(slug, next)) return false;
+      ref.current = next;
+      setComments(next);
+      window.dispatchEvent(new Event(LOCAL_COMMENTS_EVENT));
+      return true;
+    },
+    [slug]
+  );
+
+  return { comments, addComment, removeComment };
+}
+
+export function CommentsSection({
+  slug,
+  comments,
+  className = "",
+}: {
+  slug: string;
+  comments: DetailComment[];
+  className?: string;
+}) {
+  const { user, loading: authLoading } = useAuthSession();
+  const viewerMeta = useMemo(() => (user ? profileMeta(user) : null), [user]);
+  const viewerName = viewerMeta
+    ? viewerMeta.displayName || viewerMeta.emoji || user?.email?.split("@")[0] || "Bạn"
+    : "";
+  const { comments: localComments, addComment, removeComment } = useLocalComments(slug);
+  const [draft, setDraft] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [sort, setSort] = useState<"new" | "top">("new");
+  const [showMore, setShowMore] = useState(false);
+
+  const allComments = useMemo(() => [...localComments, ...comments], [localComments, comments]);
+  const sorted = useMemo(() => sortComments(allComments, sort), [allComments, sort]);
+  const visible = showMore ? sorted : sorted.slice(0, 5);
+  const allShown = sorted.length <= 5;
+
+  const submit = useCallback(() => {
+    const text = draft.trim();
+    if (!text || !user || !viewerMeta) return;
+    const now = new Date();
+    const entry: DetailComment = {
+      id: `local-${now.getTime()}`,
+      pinned: false,
+      admin: viewerMeta.role === "admin",
+      name: viewerName,
+      gender: viewerMeta.gender === "male" || viewerMeta.gender === "female" ? viewerMeta.gender : null,
+      time: now.toLocaleDateString("vi-VN"),
+      content: text,
+      likes: 0,
+      dislikes: 0,
+      // Để trống khi chưa có ảnh: CommentItem sẽ hiện chữ cái đầu như chophim.
+      avatar: viewerMeta.avatarUrl || "",
+      frame: viewerMeta.frameUrl || null,
+      emoji: viewerMeta.selectedEmoji || viewerMeta.emoji || null,
+      createdAt: now.toISOString(),
+      userId: user.id,
+      role: viewerMeta.role || null,
+    };
+    if (!addComment(entry)) {
+      setError("Không thể gửi bình luận");
+      return;
+    }
+    setError(null);
+    setDraft("");
+    setSort("new");
+    setShowMore(true);
+  }, [addComment, draft, user, viewerMeta, viewerName]);
+
+  const deleteOwn = useCallback(
+    (id: string) => {
+      if (!removeComment(id)) {
+        setError("Không thể xóa bình luận");
+        return false;
+      }
+      setError(null);
+      return true;
+    },
+    [removeComment]
+  );
+
+  return (
+    <div id="comment-section" className={className}>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div className="flex items-center gap-2.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-circle w-6 h-6 text-white fill-white" aria-hidden="true">
+            <path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719" />
+          </svg>
+          <h2 className="text-xl font-bold text-white">
+            Bình luận <span className="text-white/60">({allComments.length})</span>
+          </h2>
+        </div>
+        <div className="flex items-center rounded-lg border border-white/10 bg-white/[0.03] p-0.5 text-[12px] font-medium">
+          <button
+            type="button"
+            aria-pressed={sort === "new"}
+            onClick={() => setSort("new")}
+            className={`rounded-md px-2.5 py-1.5 transition-colors ${sort === "new" ? "bg-white/10 text-white" : "text-white/45 hover:text-white/80"}`}
+          >
+            Mới nhất
+          </button>
+          <button
+            type="button"
+            aria-pressed={sort === "top"}
+            onClick={() => setSort("top")}
+            className={`rounded-md px-2.5 py-1.5 transition-colors ${sort === "top" ? "bg-white/10 text-white" : "text-white/45 hover:text-white/80"}`}
+          >
+            Nổi bật
+          </button>
+        </div>
+      </div>
+
+      {authLoading ? null : user && viewerMeta ? (
+        <div className="mb-8 p-3 sm:p-4 bg-[#191b24] border border-white/5 rounded-xl">
+          <div className="flex items-center gap-2.5 px-1 mb-3">
+            <div className="relative w-7 h-7 shrink-0">
+              <UserAvatar
+                name={viewerName}
+                avatarUrl={viewerMeta.avatarUrl || undefined}
+                frameUrl={viewerMeta.frameUrl || undefined}
+                emoji={viewerMeta.selectedEmoji || viewerMeta.emoji || undefined}
+                size={28}
+              />
+            </div>
+            <span className="text-[13px] font-semibold text-white">{viewerName}</span>
+          </div>
+          <textarea
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                submit();
+              }
+            }}
+            placeholder="Viết bình luận"
+            maxLength={1000}
+            rows={5}
+            className="w-full bg-[#0f111a] border-none rounded-lg px-4 py-3 pt-4 text-[14px] text-white placeholder:text-text-muted resize-none focus:outline-none focus:ring-1 transition-shadow focus:ring-white/10 block"
+          />
+          <div className="mt-3 flex items-center justify-end gap-3 px-1 pb-1 sm:px-2">
+            <span className={`text-[11px] ${draft.length > 950 ? "text-red-400 font-bold" : "text-text-muted"}`}>
+              {draft.length} / 1000
+            </span>
+            <button
+              type="button"
+              disabled={!draft.trim()}
+              onClick={submit}
+              className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[#F5C518] hover:bg-white/5 disabled:opacity-40 transition-opacity"
+            >
+              <span className="font-bold text-[14px]">Gửi</span>
+              <IconSend className="w-4 h-4 text-[#F5C518]" />
+            </button>
+          </div>
+          {error && <p className="text-red-400 text-xs mt-2 px-2">{error}</p>}
+        </div>
+      ) : (
+        <div className="flex items-center gap-3 mb-8 p-4 bg-[#1a1a24] border border-white/10 rounded-xl">
+          <IconLogIn className="w-5 h-5 text-text-muted shrink-0" />
+          <p className="text-sm text-text-muted">Đăng nhập để bình luận về phim này.</p>
+        </div>
+      )}
+
+      {allComments.length > 0 ? (
+        <div className="divide-y divide-white/5">
+          {visible.map((c) => (
+            <CommentItem
+              key={c.id}
+              c={c}
+              currentUserId={user?.id ?? null}
+              currentUserRole={viewerMeta?.role ?? null}
+              onDelete={c.userId ? deleteOwn : undefined}
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="text-sm text-white/45">Chưa có bình luận nào. Hãy là người đầu tiên!</p>
+      )}
+
+      {!allShown && allComments.length > 0 && (
+        <div className="flex justify-center gap-3 mt-4">
+          <button
+            type="button"
+            onClick={() => setShowMore(true)}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm text-white/70 hover:text-white transition-all"
+          >
+            <IconChevronDown className="w-4 h-4" />
+            Xem thêm bình luận
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -369,17 +698,11 @@ export function DetailPage({
   const [sv, setSv] = useState(0);
   const [infoOpen, setInfoOpen] = useState(false);
   const [hideImg, setHideImg] = useState(false);
-  const [sort, setSort] = useState<"new" | "top">("new");
-  const [showMore, setShowMore] = useState(false);
   const duration = useMovieDuration(movie);
 
   const serverIdx = Math.min(sv, Math.max(movie.servers.length - 1, 0));
   const server = movie.servers[serverIdx];
   const backdrop = movie.backdrop || movie.poster;
-
-  const sorted = sortComments(comments, sort);
-  const visible = showMore ? sorted : sorted.slice(0, 5);
-  const allShown = sorted.length <= 5;
 
   const cur = movie.current ?? server?.episodes.length ?? 0;
   const total = movie.total ?? server?.episodes.length ?? 0;
@@ -628,64 +951,7 @@ export function DetailPage({
         </div>
 
         {/* ── Bình luận ── */}
-        <div id="comment-section" className="mt-10 border-t border-white/10 pt-8">
-          <div>
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-              <div className="flex items-center gap-2.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-circle w-6 h-6 text-white fill-white" aria-hidden="true">
-                  <path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719" />
-                </svg>
-                <h2 className="text-xl font-bold text-white">
-                  Bình luận <span className="text-white/60">({comments.length})</span>
-                </h2>
-              </div>
-              <div className="flex items-center rounded-lg border border-white/10 bg-white/[0.03] p-0.5 text-[12px] font-medium">
-                <button
-                  type="button"
-                  aria-pressed={sort === "new"}
-                  onClick={() => setSort("new")}
-                  className={`rounded-md px-2.5 py-1.5 transition-colors ${sort === "new" ? "bg-white/10 text-white" : "text-white/45 hover:text-white/80"}`}
-                >
-                  Mới nhất
-                </button>
-                <button
-                  type="button"
-                  aria-pressed={sort === "top"}
-                  onClick={() => setSort("top")}
-                  className={`rounded-md px-2.5 py-1.5 transition-colors ${sort === "top" ? "bg-white/10 text-white" : "text-white/45 hover:text-white/80"}`}
-                >
-                  Nổi bật
-                </button>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 mb-8 p-4 bg-[#1a1a24] border border-white/10 rounded-xl">
-              <IconLogIn className="w-5 h-5 text-text-muted shrink-0" />
-              <p className="text-sm text-text-muted">Đăng nhập để bình luận về phim này.</p>
-            </div>
-
-            {comments.length > 0 && (
-              <div className="divide-y divide-white/5">
-                {visible.map((c) => (
-                  <CommentItem key={c.id} c={c} />
-                ))}
-              </div>
-            )}
-
-            {comments.length > 0 && (
-              <div className="flex justify-center gap-3 mt-4">
-                <button
-                  disabled={allShown}
-                  onClick={() => setShowMore(true)}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm text-white/70 hover:text-white transition-all disabled:opacity-50"
-                >
-                  <IconChevronDown className="w-4 h-4" />
-                  Xem thêm bình luận
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
+        <CommentsSection slug={movie.slug} comments={comments} className="mt-10 border-t border-white/10 pt-8" />
       </div>
     </>
   );

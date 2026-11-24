@@ -6,6 +6,13 @@ function asset(src?: string): string | undefined {
   return withBasePath(src);
 }
 
+/** Khung có thể lưu dưới dạng tên file (chophim) hoặc đường dẫn đầy đủ (repo quản lí). */
+function frameAsset(src?: string): string | undefined {
+  if (!src) return undefined;
+  if (/^(?:https?:\/\/|data:|blob:)/i.test(src) || src.startsWith("/")) return withBasePath(src);
+  return withBasePath(`/avt_frames/${src}`);
+}
+
 /** Avatar dùng chung: header, mobile menu, trang tài khoản.
  *  Ảnh và khung được lưu trong user_metadata của Supabase Auth. */
 export function UserAvatar({
@@ -26,7 +33,7 @@ export function UserAvatar({
   className?: string;
 }) {
   const src = asset(avatarUrl);
-  const frame = asset(frameUrl);
+  const frame = frameAsset(frameUrl);
   const label = (name || email || "N").trim().charAt(0).toUpperCase() || "N";
   return (
     <span
@@ -47,13 +54,38 @@ export function UserAvatar({
   );
 }
 
-export function profileMeta(user: { user_metadata?: Record<string, unknown> } | null) {
+export function profileMeta(
+  user: {
+    user_metadata?: Record<string, unknown>;
+    app_metadata?: Record<string, unknown>;
+  } | null
+) {
   const meta = user?.user_metadata ?? {};
+  const app = user?.app_metadata ?? {};
+  const str = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim() : "");
+  // Chophim đọc user từ AuthProvider (camelCase); repo quản lí lưu user_metadata
+  // (snake_case). Nhận cả hai để comment/avatar hiển thị giống bản gốc.
+  const pick = (...keys: string[]) => {
+    for (const key of keys) {
+      const value = str(meta[key]) || str(app[key]);
+      if (value) return value;
+    }
+    return "";
+  };
+
+  const avatarFrame = pick("avatarFrame", "avatar_frame");
+  const legacyFrameUrl = pick("frameUrl", "frame_url");
+  const emoji = pick("selectedEmoji", "selected_emoji", "chat_emoji");
+
   return {
-    displayName: String(meta.display_name ?? meta.full_name ?? ""),
-    gender: String(meta.gender ?? ""),
-    emoji: String(meta.chat_emoji ?? ""),
-    avatarUrl: String(meta.avatar_url ?? ""),
-    frameUrl: String(meta.avatar_frame ?? ""),
+    displayName: pick("displayName", "display_name", "full_name", "name"),
+    gender: pick("gender"),
+    emoji,
+    avatarUrl: pick("avatarUrl", "avatar_url"),
+    frameUrl: frameAsset(avatarFrame || legacyFrameUrl),
+    avatarFrame,
+    role: pick("role"),
+    subscriptionTier: pick("subscriptionTier", "subscription_tier", "tier"),
+    selectedEmoji: pick("selectedEmoji", "selected_emoji"),
   };
 }
