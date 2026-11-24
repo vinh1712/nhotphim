@@ -110,11 +110,36 @@ const IcVolume = ({ className }: { className?: string }) => (
     <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
   </I>
 );
+const IcVolumeX = ({ className }: { className?: string }) => (
+  <I className={className}>
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+    <path d="M22 9l-6 6" />
+    <path d="M16 9l6 6" />
+  </I>
+);
 const IcMaximize = ({ className }: { className?: string }) => (
   <I
     className={className}
     d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"
   />
+);
+const IcPip = ({ className }: { className?: string }) => (
+  <I className={className}>
+    <path d="M21 9V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h4" />
+    <rect width="10" height="7" x="12" y="13" rx="2" />
+  </I>
+);
+const IcLock = ({ className }: { className?: string }) => (
+  <I className={className}>
+    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+  </I>
+);
+const IcLockOpen = ({ className }: { className?: string }) => (
+  <I className={className}>
+    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+    <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+  </I>
 );
 const IcSettings = ({ className }: { className?: string }) => (
   <I className={className}>
@@ -189,6 +214,41 @@ const IcTelegram = ({ className }: { className?: string }) => (
     />
   </svg>
 );
+
+/* ── popover Cài đặt (giống chophim.fit) ────────────────────────────────── */
+
+const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+
+function MenuRow({ label, value, onClick, chevron = true }: { label: string; value: string; onClick: () => void; chevron?: boolean }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex h-11 w-full items-center justify-between gap-3 px-3.5 text-left transition-colors hover:bg-white/[0.06] focus:bg-white/[0.06] focus:outline-none"
+    >
+      <span className="truncate text-[13px] text-white/90">{label}</span>
+      <span className="flex shrink-0 items-center gap-1 text-[12px] text-white/50">
+        <span className="max-w-[9rem] truncate">{value}</span>
+        {chevron && <IcChevronRight className="w-3.5 h-3.5" />}
+      </span>
+    </button>
+  );
+}
+
+function MenuOption({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex w-full items-center justify-between gap-2 rounded-md px-3 py-2 text-left text-[12px] transition-colors focus:outline-none ${
+        selected ? "bg-white/[0.08] text-[#FFD166]" : "text-white/75 hover:bg-white/[0.05] hover:text-white"
+      }`}
+    >
+      <span className="truncate">{label}</span>
+      {selected && <IcCheck className="w-3.5 h-3.5 shrink-0" />}
+    </button>
+  );
+}
 
 /* ── helpers ────────────────────────────────────────────────────────────── */
 
@@ -284,17 +344,67 @@ export function WatchPage({
   const [started, setStarted] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [nativeFullscreen, setNativeFullscreen] = useState(false);
-  const [touchDevice, setTouchDevice] = useState(false);
   const [cur, setCur] = useState(0);
   const [dur, setDur] = useState(0);
   const [vol, setVol] = useState(1);
+  const [muted, setMuted] = useState(false);
+  const [menu, setMenu] = useState<null | "settings" | "servers">(null);
+  const [sub, setSub] = useState<null | "quality" | "speed" | "aspect" | "ambient" | "subs">(null);
+  const [speed, setSpeed] = useState(1);
+  const [fit, setFit] = useState<"contain" | "cover">("contain");
+  const [qualityIdx, setQualityIdx] = useState(-1);
+  const [levels, setLevels] = useState<{ idx: number; label: string }[]>([]);
+  const [locked, setLocked] = useState(false);
+  const [scrubbing, setScrubbing] = useState(false);
+  const [subLabels, setSubLabels] = useState<string[]>([]);
+  const [subTrack, setSubTrack] = useState<number | null>(null);
+  const [pings, setPings] = useState<Record<number, { ms: number | null; label: string }>>({});
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const pendingTimeRef = useRef(0);
+  const lastSeekTargetRef = useRef(0);
+  const pendingAttemptsRef = useRef(0);
+  const pendingStartedRef = useRef(0);
+  const fallbackDurationRef = useRef(0);
+  const lastTouchSeekRef = useRef(0);
   const lastSavedRef = useRef(0);
   const adRangesRef = useRef<AdRange[]>([]);
   const nativeHlsRef = useRef(false);
+  const hlsRef = useRef<Hls | null>(null);
+  const idleTimerRef = useRef<number | null>(null);
+  const lastPointerRef = useRef<{ x: number; y: number } | null>(null);
+
+  /** Hiện thanh điều khiển rồi tự ẩn sau ~2.8s chuột đứng yên.
+   *  Một số browser (Coc Coc) phát liên tục mousemove dù chuột không nhúc nhích;
+   *  nên chỉ tính là "động tác" khi tọa độ đổi thực sự (> 3px). */
+  const bumpIdle = useCallback((e?: { clientX?: number; clientY?: number }) => {
+    if (e && typeof e.clientX === "number" && typeof e.clientY === "number") {
+      const last = lastPointerRef.current;
+      if (last && Math.abs(last.x - e.clientX) < 3 && Math.abs(last.y - e.clientY) < 3) return;
+      lastPointerRef.current = { x: e.clientX, y: e.clientY };
+    }
+    setHover((prev) => (prev ? prev : true));
+    if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
+    idleTimerRef.current = window.setTimeout(() => {
+      setHover(false);
+      lastPointerRef.current = null;
+    }, 2800);
+  }, []);
+
+  const restIdle = useCallback(() => {
+    if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
+    idleTimerRef.current = null;
+    lastPointerRef.current = null;
+    setHover(false);
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
+    },
+    []
+  );
 
   const sIdx = Math.min(serverIdx, Math.max(movie.servers.length - 1, 0));
   const server = movie.servers[sIdx];
@@ -304,6 +414,17 @@ export function WatchPage({
   const hls = isHlsUrl(url);
   const isEmbed = !!url && !hls;
   const firstPlayable = server?.episodes.findIndex((e) => !!e.url) ?? -1;
+
+  // Đổi nguồn/tập thì <video> cũ bị thay bằng phần tử mới (mặc định có tiếng).
+  // Reset audio state NGAY TRONG render để phần tử mới luôn mount với muted=false,
+  // không phụ thuộc vào thứ tự chạy effect/ref (Coc Coc hay để state cũ sót lại).
+  const audioKeyRef = useRef("");
+  const audioKey = `${sIdx}:${eIdx}:${url ?? ""}`;
+  if (audioKeyRef.current !== audioKey) {
+    audioKeyRef.current = audioKey;
+    setMuted(false);
+    setVol(1);
+  }
 
   // intro_end lấy từ /api/skip-times của chophim. Với desktop QC bị cắt khỏi
   // playlist; với Safari/iOS (native HLS) phát link gốc rồi tự tua qua QC.
@@ -326,6 +447,7 @@ export function WatchPage({
     let hashEpisode: number | null = null;
     let hashServer: number | null = null;
     let explicitTime = 0;
+    let fallbackDuration = 0;
     if (raw) {
       const p = new URLSearchParams(raw);
       const sid = p.get("server_id");
@@ -353,6 +475,10 @@ export function WatchPage({
       }
       const t = Number(p.get("t") ?? "");
       if (Number.isFinite(t) && t > 0) explicitTime = t;
+      // ContinueWatching gửi kèm tổng thời lượng để Safari 15.5 còn dùng được
+      // thanh tua lúc native HLS chưa kịp trả duration (0 hoặc Infinity).
+      const d = Number(p.get("d") ?? "");
+      if (Number.isFinite(d) && d > 0) fallbackDuration = d;
     }
 
     if (explicitTime > 0) {
@@ -368,6 +494,23 @@ export function WatchPage({
       // Chọn tập mới hoặc server khác thì bắt đầu từ đầu.
       resumeTime = 0;
     }
+
+    if (
+      fallbackDuration <= 0 &&
+      explicitTime > 0 &&
+      saved &&
+      (hashEpisode === null || hashEpisode === saved.episode) &&
+      (hashServer === null || hashServer === saved.server) &&
+      Number.isFinite(saved.duration) &&
+      saved.duration > 0
+    ) {
+      fallbackDuration = saved.duration;
+    }
+    fallbackDurationRef.current = fallbackDuration;
+    setDur(fallbackDuration);
+    lastSeekTargetRef.current = 0;
+    pendingAttemptsRef.current = 0;
+    pendingStartedRef.current = Date.now();
 
     ei = Math.max(0, Math.min(ei, (movie.servers[si]?.episodes.length ?? 1) - 1));
     setServerIdx(si);
@@ -391,9 +534,14 @@ export function WatchPage({
       setEpIdx(ei);
       setStarted(false);
       setPlaying(false);
+      setLocked(false);
       setCur(0);
       setDur(0);
       pendingTimeRef.current = 0;
+      lastSeekTargetRef.current = 0;
+      pendingAttemptsRef.current = 0;
+      pendingStartedRef.current = 0;
+      fallbackDurationRef.current = 0;
       writeHash(si, ei);
       document.getElementById("watch-player")?.scrollIntoView({ behavior: "smooth", block: "center" });
     },
@@ -407,6 +555,53 @@ export function WatchPage({
     },
     [epIdx, movie, selectEp]
   );
+
+  /** iOS Safari native HLS có lúc báo duration = 0/Infinity. Ưu tiên duration
+   *  thật, không thì dùng tổng thời lượng gửi từ Xem tiếp / đã lưu. Không dùng
+   *  seekable.end làm tổng thời lượng vì lúc mới buffer nó rất nhỏ, sẽ làm tua
+   *  nhầm về đầu rồi xóa mốc resume. */
+  const getPlayableDuration = useCallback((v: HTMLVideoElement | null) => {
+    if (!v) return 0;
+    if (Number.isFinite(v.duration) && v.duration > 0) return v.duration;
+    return fallbackDurationRef.current;
+  }, []);
+
+  /** Thử áp mốc "Xem tiếp" ở mọi sự kiện media có thể có metadata mới.
+   *  Chỉ xóa pending khi currentTime đã tới gần mốc đó — nếu Safari từ chối
+   *  seek lúc chưa buffer thì sự kiện sau vẫn thử lại. */
+  const applyPendingTime = useCallback(() => {
+    const v = videoRef.current;
+    if (!v || pendingTimeRef.current <= 0) return;
+    // Không thử vô hạn nếu browser không bao giờ seek được (mạng quá chậm).
+    if (
+      pendingAttemptsRef.current >= 120 ||
+      (pendingStartedRef.current > 0 && Date.now() - pendingStartedRef.current > 30000)
+    ) {
+      pendingTimeRef.current = 0;
+      return;
+    }
+    pendingAttemptsRef.current += 1;
+    const total = getPlayableDuration(v);
+    let target = pendingTimeRef.current;
+    if (total > 0) target = Math.min(target, Math.max(0, total - 1));
+    if (target <= 0) return;
+    lastSeekTargetRef.current = target;
+    try {
+      v.currentTime = target;
+      setCur(target);
+    } catch {
+      // Safari có thể chưa cho seek — giữ pending cho lần thử sau.
+    }
+  }, [getPlayableDuration]);
+
+  /** Chỉ xóa mốc khi Safari/HLS bắn `seeked` — `currentTime` có thể đổi ngay
+   *  dù video chưa thật sự tua tới đó, nhất là native HLS trên iOS. */
+  const confirmPendingTime = useCallback(() => {
+    const v = videoRef.current;
+    if (!v || pendingTimeRef.current <= 0) return;
+    const target = lastSeekTargetRef.current;
+    if (target > 0 && v.currentTime >= target - 2) pendingTimeRef.current = 0;
+  }, []);
 
   useEffect(() => {
     setFav(isInList("favorites", movie.slug));
@@ -455,18 +650,22 @@ export function WatchPage({
   );
 
   /** Tua theo vị trí chạm/click trên thanh thời gian. Ghi luôn tiến trình để
-   *  đổi tập/tắt tab ngay sau khi tua vẫn giữ đúng mốc. */
+   *  đổi tập/tắt tab ngay sau khi tua vẫn giữ đúng mốc. Khi kéo (commit=false)
+   *  chỉ tua thật, không ghi — ghi một lần lúc thả chuột. */
   const seekToClientX = useCallback(
-    (clientX: number, rect: DOMRect) => {
+    (clientX: number, rect: DOMRect, commit = true) => {
       const v = videoRef.current;
-      if (!v || !Number.isFinite(v.duration) || v.duration <= 0 || rect.width <= 0) return;
+      const total = getPlayableDuration(v);
+      if (!v || total <= 0 || rect.width <= 0) return;
       const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-      const next = ratio * v.duration;
+      const next = ratio * total;
       v.currentTime = next;
       setCur(next);
-      persist(next, v.duration);
+      // Khi tua bằng tay thì mốc "Xem tiếp" cũ không còn ý nghĩa nữa.
+      pendingTimeRef.current = 0;
+      if (commit) persist(next, total);
     },
-    [persist]
+    [getPlayableDuration, persist]
   );
 
   // Lưu mốc hiện tại khi rời trang / ẩn tab / đổi tập (iOS dùng pagehide).
@@ -474,7 +673,7 @@ export function WatchPage({
     const flush = () => {
       const v = videoRef.current;
       if (v && Number.isFinite(v.currentTime) && v.currentTime >= 1) {
-        persist(v.currentTime, Number.isFinite(v.duration) ? v.duration : dur);
+        persist(v.currentTime, getPlayableDuration(v) || dur);
       }
     };
     const onVisibility = () => {
@@ -489,7 +688,7 @@ export function WatchPage({
       window.removeEventListener("beforeunload", flush);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [dur, persist]);
+  }, [dur, getPlayableDuration, persist]);
 
   /* ── HLS cho link .m3u8 ──
    * Desktop: hls.js cắt hẳn dòng QC khỏi playlist trước khi parse.
@@ -502,6 +701,8 @@ export function WatchPage({
     if (!v || !url || !hls) {
       adRangesRef.current = [];
       nativeHlsRef.current = false;
+      hlsRef.current = null;
+      setLevels((prev) => (prev.length ? [] : prev));
       v?.removeAttribute("src");
       return;
     }
@@ -509,16 +710,51 @@ export function WatchPage({
     if (Hls.isSupported()) {
       adRangesRef.current = [];
       nativeHlsRef.current = false;
-      const inst = new Hls({ loader: makeAdFreeLoader() });
+      // hls.js có cấu hình startPosition riêng — dùng nó thay vì chỉ gán
+      // currentTime, vì hls.js có thể ghi đè currentTime lúc manifest vừa xong.
+      const startPosition =
+        pendingTimeRef.current > 0
+          ? Math.min(
+              pendingTimeRef.current,
+              fallbackDurationRef.current > 0 ? Math.max(0, fallbackDurationRef.current - 1) : pendingTimeRef.current
+            )
+          : -1;
+      const inst = new Hls({ loader: makeAdFreeLoader(), startPosition });
       inst.loadSource(url);
       inst.attachMedia(v);
-      return () => inst.destroy();
+      // Ép DOM theo state đã reset ở render: nguồn mới luôn có tiếng, kể cả
+      // khi browser cũ giữ lại thuộc tính muted của phần tử video cũ.
+      v.muted = false;
+      v.volume = 1;
+      hlsRef.current = inst;
+      // Level chỉ có sau khi manifest được parse — nghe MANIFEST_PARSED.
+      const applyLevels = (list: { bitrate?: number; height?: number }[]) =>
+        setLevels(
+          list
+            .map((lv, i) => ({ idx: i, bitrate: lv.bitrate || 0, h: lv.height || 0 }))
+            .sort((a, b) => b.bitrate - a.bitrate)
+            .map((lv, i) => ({ idx: lv.idx, label: `Luồng ${i + 1}${lv.h ? ` (${lv.h}p)` : ""}` }))
+        );
+      inst.on(Hls.Events.MANIFEST_PARSED, (_e, data) => {
+        applyLevels(data.levels);
+        applyPendingTime();
+      });
+      if (inst.levels.length) applyLevels(inst.levels);
+      return () => {
+        inst.destroy();
+        hlsRef.current = null;
+        setLevels((prev) => (prev.length ? [] : prev));
+      };
     }
 
     const controller = new AbortController();
     adRangesRef.current = [];
     nativeHlsRef.current = true;
+    hlsRef.current = null;
+    setLevels((prev) => (prev.length ? [] : prev));
     v.src = url;
+    v.muted = false;
+    v.volume = 1;
     void loadKkAdRanges(url, controller.signal)
       .then((ranges) => {
         if (!controller.signal.aborted) adRangesRef.current = ranges;
@@ -533,7 +769,33 @@ export function WatchPage({
       nativeHlsRef.current = false;
       v.removeAttribute("src");
     };
+  }, [url, hls, applyPendingTime]);
+
+  // Giữ volume của DOM khớp state (React type không có prop `volume` cho <video>).
+  useEffect(() => {
+    const v = videoRef.current;
+    if (v && v.volume !== vol) v.volume = vol;
+  }, [vol]);
+
+  // Đổi nguồn HLS <-> iframe làm <video> bị tạo lại: đồng bộ nút mute/thanh âm
+  // lượng với phần tử mới, nếu không nút hiện "đã tắt" nhưng video mới vẫn có tiếng.
+  useEffect(() => {
+    const v = videoRef.current;
+    setMuted(v ? v.muted : false);
+    setVol(v ? v.volume : 1);
   }, [url, hls]);
+
+  // Áp tốc độ phát đã chọn trong popover Cài đặt.
+  useEffect(() => {
+    const v = videoRef.current;
+    if (v) v.playbackRate = speed;
+  }, [speed, url]);
+
+  // Áp chất lượng (hls.currentLevel; -1 = Auto).
+  useEffect(() => {
+    const h = hlsRef.current;
+    if (h) h.currentLevel = qualityIdx;
+  }, [qualityIdx, url]);
 
   // iPhone mở fullscreen native qua webkitEnterFullscreen(): cần controls=true
   // và ẩn lớp điều khiển tự vẽ trong lúc native player chiếm màn hình.
@@ -558,17 +820,25 @@ export function WatchPage({
   }, [url, hls]);
 
   /* ── điều khiển video ── */
-  const togglePlay = () => {
+  const togglePlay = useCallback(() => {
     const v = videoRef.current;
     if (!v) return;
     if (v.paused) void v.play();
     else v.pause();
-  };
-  const seekBy = (delta: number) => {
+  }, []);
+  const seekBy = useCallback((delta: number) => {
     const v = videoRef.current;
     if (!v) return;
-    v.currentTime = Math.max(0, Math.min(v.duration || 0, v.currentTime + delta));
-  };
+    const total = getPlayableDuration(v);
+    v.currentTime = Math.max(0, Math.min(total > 0 ? total : v.currentTime + delta, v.currentTime + delta));
+  }, [getPlayableDuration]);
+  const adjustVolume = useCallback((delta: number) => {
+    const v = videoRef.current;
+    if (!v) return;
+    const next = Math.min(1, Math.max(0, (v.muted ? 0 : v.volume) + delta));
+    v.volume = next;
+    if (next > 0 && v.muted) v.muted = false;
+  }, []);
   const nextEpisode = useCallback(() => {
     if (server && eIdx < server.episodes.length - 1) selectEp(sIdx, eIdx + 1);
   }, [eIdx, selectEp, server, sIdx]);
@@ -617,17 +887,7 @@ export function WatchPage({
     if (v.currentTime > 0 && v.currentTime < introEnd) skipIntro();
   }, [autoSkip, cur, hls, introEnd, skipIntro]);
 
-  // Phím tắt chuyển tập, đúng với nhãn "Tập kế tiếp (N)".
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      const tag = (e.target as HTMLElement | null)?.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
-      if (e.key.toLowerCase() === "n") nextEpisode();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [nextEpisode]);
-  const fullscreen = () => {
+  const fullscreen = useCallback(() => {
     // iPhone Safari không có HTMLElement.requestFullscreen(); nó chỉ mở fullscreen
     // qua API riêng của <video>. Giữ requestFullscreen cho desktop/iPad, fallback
     // webkitEnterFullscreen cho iPhone/iOS 15.
@@ -675,9 +935,318 @@ export function WatchPage({
       return;
     }
     enterNativeFullscreen();
+  }, []);
+
+  /** Bàn phím desktop — đúng bảng "Hướng dẫn thao tác" của chophim.fit:
+   *  Space = phát/dừng, F = toàn màn hình, ←/→ = tua 10s, ↑/↓ = âm lượng, N = tập kế tiếp. */
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement | null;
+      const tag = el?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || el?.isContentEditable) return;
+      const k = e.key;
+      if (k === "Escape" && menu) {
+        setMenu(null);
+        setSub(null);
+        bumpIdle();
+        return;
+      }
+      if (k === " " || k === "Spacebar") {
+        e.preventDefault();
+        bumpIdle();
+        togglePlay();
+        return;
+      }
+      if (k === "ArrowRight") {
+        e.preventDefault();
+        bumpIdle();
+        seekBy(10);
+        return;
+      }
+      if (k === "ArrowLeft") {
+        e.preventDefault();
+        bumpIdle();
+        seekBy(-10);
+        return;
+      }
+      if (k === "ArrowUp") {
+        e.preventDefault();
+        bumpIdle();
+        adjustVolume(0.05);
+        return;
+      }
+      if (k === "ArrowDown") {
+        e.preventDefault();
+        bumpIdle();
+        adjustVolume(-0.05);
+        return;
+      }
+      const low = k.toLowerCase();
+      if (low === "f") {
+        bumpIdle();
+        fullscreen();
+        return;
+      }
+      if (low === "m") {
+        bumpIdle();
+        const v = videoRef.current;
+        if (v) v.muted = !v.muted;
+        return;
+      }
+      if (low === "n") {
+        bumpIdle();
+        nextEpisode();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [adjustVolume, bumpIdle, fullscreen, menu, nextEpisode, seekBy, togglePlay]);
+
+  // Đóng popover Cài đặt / Máy chủ khi bấm ra ngoài.
+  useEffect(() => {
+    if (!menu) return;
+    const onDown = (e: PointerEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t && !t.closest("[data-player-menu]")) {
+        setMenu(null);
+        setSub(null);
+        bumpIdle();
+      }
+    };
+    document.addEventListener("pointerdown", onDown);
+    return () => document.removeEventListener("pointerdown", onDown);
+  }, [bumpIdle, menu]);
+
+  // Đo độ trễ từng máy chủ khi mở popover "Máy chủ": Mượt / Ổn / Chậm + ms (giống chophim).
+  useEffect(() => {
+    if (menu !== "servers") return;
+    let alive = true;
+    const results: Record<number, { ms: number | null; label: string }> = {};
+    setPings({});
+    void Promise.all(
+      movie.servers.map(async (s, i) => {
+        const target = s.episodes.find((e) => !!e.url)?.url;
+        if (!target) {
+          results[i] = { ms: null, label: "Chưa có nguồn" };
+          return;
+        }
+        const ctrl = new AbortController();
+        const tid = window.setTimeout(() => ctrl.abort(), 4000);
+        const t0 = performance.now();
+        try {
+          await fetch(target, { mode: "no-cors", cache: "no-store", signal: ctrl.signal });
+        } catch {
+          // Hết hạn hoặc mạng lỗi: vẫn lấy số ms đo được.
+        } finally {
+          window.clearTimeout(tid);
+        }
+        const ms = Math.round(performance.now() - t0);
+        results[i] = { ms, label: ms < 250 ? "Mượt" : ms < 600 ? "Ổn" : "Chậm" };
+      })
+    ).then(() => {
+      if (alive) setPings(results);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [menu, movie.servers]);
+
+  /** Picture-in-Picture — nút giống chophim; trình duyệt không hỗ trợ thì báo nhẹ. */
+  const togglePiP = useCallback(async () => {
+    const v = videoRef.current;
+    if (!v || typeof v.requestPictureInPicture !== "function") {
+      setNotice("Trình duyệt này không hỗ trợ Picture-in-Picture.");
+      return;
+    }
+    try {
+      if (document.pictureInPictureElement) await document.exitPictureInPicture();
+      else await v.requestPictureInPicture();
+    } catch {
+      setNotice("Không mở được Picture-in-Picture.");
+    }
+  }, []);
+
+  // Shell submenu trong popover Cài đặt: header + nút quay lại (cấu trúc source).
+  const submenu = (title: string, body: React.ReactNode) => (
+    <>
+      <div className="flex items-center gap-1.5 border-b border-white/10 px-2 py-1.5">
+        <button
+          type="button"
+          aria-label="Quay lại cài đặt"
+          onClick={() => setSub(null)}
+          className="flex h-7 w-7 items-center justify-center rounded-md text-white/70 transition-colors hover:bg-white/10 hover:text-white focus:outline-none"
+        >
+          <IcChevronLeft className="w-4 h-4" />
+        </button>
+        <span className="text-[13px] font-semibold text-white">{title}</span>
+      </div>
+      <div className="max-h-[52vh] overflow-y-auto p-1.5">{body}</div>
+    </>
+  );
+
+  const qualityValue = levels.find((l) => l.idx === qualityIdx)?.label ?? "Auto";
+
+  // Popover dùng token motion của skill animate-ui: vào = transition.menu
+  // (0.22s, ease.soft), ra = transition.dismiss (0.2s, ease.away) — viết bằng
+  // Tailwind transition cho khớp motion sẵn có của player (không thêm package).
+  const popBase =
+    "absolute bottom-full right-0 z-50 mb-1 w-[calc(100vw-1.5rem)] origin-bottom-right overflow-hidden rounded-xl border border-white/10 bg-[#1c1c1e]/80 shadow-2xl backdrop-blur-xl ring-1 ring-white/10 transition-all motion-reduce:transition-none";
+  const popState = (open: boolean) =>
+    open
+      ? "opacity-100 scale-100 duration-[220ms] [transition-timing-function:cubic-bezier(0.215,0.61,0.355,1)]"
+      : "pointer-events-none scale-95 opacity-0 duration-200 [transition-timing-function:cubic-bezier(0.33,0.17,0.67,0.5)]";
+
+  const settingsPopover = (
+    <div
+      data-player-menu=""
+      aria-hidden={menu !== "settings"}
+      inert={menu !== "settings"}
+      className={`${popBase} max-w-64 ${popState(menu === "settings")}`}
+    >
+      {sub === null ? (
+        <>
+          <div className="border-b border-white/10 px-3.5 py-2.5 text-[13px] font-semibold text-white">Cài đặt</div>
+          <div className="max-h-[52vh] overflow-y-auto py-1.5">
+            <MenuRow label="Chất lượng" value={qualityValue} onClick={() => setSub("quality")} />
+            <MenuRow label="Tốc độ" value={`${speed}x`} onClick={() => setSub("speed")} />
+            <MenuRow
+              label="Tỉ lệ màn hình"
+              value={fit === "contain" ? "Vừa màn hình" : "Lấp đầy"}
+              onClick={() => setSub("aspect")}
+            />
+            <MenuRow label="Ánh sáng môi trường" value={ambient ? "Bật" : "Tắt"} onClick={() => setSub("ambient")} />
+            <MenuRow
+              label="Phụ đề"
+              value={subLabels.length > 0 ? (subTrack != null ? subLabels[subTrack] : "Tắt") : movie.lang || "Tiếng Việt"}
+              chevron={subLabels.length > 0}
+              onClick={() => {
+                if (subLabels.length > 0) setSub("subs");
+                else setNotice("Nguồn này chưa có phụ đề nhúng để chọn.");
+              }}
+            />
+          </div>
+        </>
+      ) : sub === "quality" ? (
+        submenu(
+          "Chất lượng",
+          <>
+            <MenuOption label="Auto" selected={qualityIdx === -1} onClick={() => setQualityIdx(-1)} />
+            {levels.map((l) => (
+              <MenuOption key={l.idx} label={l.label} selected={qualityIdx === l.idx} onClick={() => setQualityIdx(l.idx)} />
+            ))}
+            {levels.length === 0 && <p className="px-3 py-2 text-[12px] text-white/45">Nguồn này chỉ có một chất lượng.</p>}
+          </>
+        )
+      ) : sub === "speed" ? (
+        submenu(
+          "Tốc độ phát",
+          SPEEDS.map((s) => <MenuOption key={s} label={`${s}x`} selected={speed === s} onClick={() => setSpeed(s)} />)
+        )
+      ) : sub === "aspect" ? (
+        submenu(
+          "Tỉ lệ màn hình",
+          <>
+            <MenuOption label="Vừa màn hình" selected={fit === "contain"} onClick={() => setFit("contain")} />
+            <MenuOption label="Lấp đầy" selected={fit === "cover"} onClick={() => setFit("cover")} />
+          </>
+        )
+      ) : sub === "ambient" ? (
+        submenu(
+          "Ánh sáng môi trường",
+          <>
+            <MenuOption label="Tắt" selected={!ambient} onClick={() => setAmbient(false)} />
+            <MenuOption label="Bật" selected={ambient} onClick={() => setAmbient(true)} />
+          </>
+        )
+      ) : (
+        submenu(
+          "Phụ đề",
+          <>
+            <MenuOption
+              label="Tắt"
+              selected={subTrack === null}
+              onClick={() => {
+                const tracks = videoRef.current?.textTracks;
+                if (tracks) for (let i = 0; i < tracks.length; i++) tracks[i].mode = "disabled";
+                setSubTrack(null);
+              }}
+            />
+            {subLabels.map((lbl, i) => (
+              <MenuOption
+                key={`${lbl}-${i}`}
+                label={lbl}
+                selected={subTrack === i}
+                onClick={() => {
+                  const tracks = videoRef.current?.textTracks;
+                  if (tracks) for (let t = 0; t < tracks.length; t++) tracks[t].mode = t === i ? "showing" : "disabled";
+                  setSubTrack(i);
+                }}
+              />
+            ))}
+          </>
+        )
+      )}
+    </div>
+  );
+
+  const pingPill = (p: { ms: number | null; label: string } | undefined) => {
+    if (!p) return <span className="shrink-0 rounded bg-white/5 px-1.5 py-1 text-[10px] font-bold text-white/40">Đo...</span>;
+    const tone =
+      p.label === "Mượt"
+        ? "bg-[#4ade80]/10 text-[#4ade80]"
+        : p.label === "Ổn"
+          ? "bg-[#FFD166]/10 text-[#FFD166]"
+          : p.label === "Chậm"
+            ? "bg-[#f87171]/10 text-[#f87171]"
+            : "bg-white/5 text-white/40";
+    return (
+      <span className={`shrink-0 rounded px-1.5 py-1 text-[10px] font-bold ${tone}`}>
+        {p.label}
+        {p.ms != null ? ` ${p.ms} ms` : ""}
+      </span>
+    );
   };
 
-  const showCtl = !nativeFullscreen && (hover || (touchDevice && started) || (started && !playing));
+  const serverPopover = (
+    <div
+      data-player-menu=""
+      aria-hidden={menu !== "servers"}
+      inert={menu !== "servers"}
+      className={`${popBase} max-w-[23rem] ${popState(menu === "servers")}`}
+    >
+      <div className="border-b border-white/10 px-3.5 py-2.5 text-[13px] font-semibold text-white">Máy chủ</div>
+      <div className="max-h-[46vh] overflow-y-auto py-1.5">
+        {movie.servers.map((s, i) => (
+          <button
+            key={s.name}
+            type="button"
+            onClick={() => {
+              changeServer(i);
+              setMenu(null);
+              setSub(null);
+              bumpIdle();
+            }}
+            className={`flex w-full items-center justify-between gap-3 px-3.5 py-2.5 text-left transition-colors focus:outline-none ${
+              i === sIdx ? "bg-white/[0.06]" : "hover:bg-white/[0.04]"
+            }`}
+          >
+            <span className="min-w-0 flex-1">
+              <span className={`block truncate text-[13px] font-medium ${i === sIdx ? "text-[#FFD166]" : "text-white/90"}`}>
+                {s.name}
+              </span>
+              <span className="mt-0.5 block text-[11px] text-white/45">{s.episodes.length} tập</span>
+            </span>
+            {pingPill(pings[i])}
+          </button>
+        ))}
+        {movie.servers.length === 0 && <p className="px-3.5 py-3 text-[12px] text-white/50">Chưa có máy chủ nào.</p>}
+      </div>
+    </div>
+  );
+
+  // Luôn tự ẩn sau khi hết idle — kể cả đang phát, đang tạm dừng hay fullscreen.
+  // Chỉ giữ hiện khi đang kéo thanh tua hoặc đang mở popover.
+  const showCtl = !nativeFullscreen && !locked && (hover || scrubbing || menu !== null);
   const curCount = movie.current ?? server?.episodes.length ?? 0;
   const totalCount = movie.total ?? server?.episodes.length ?? 0;
 
@@ -693,10 +1262,13 @@ export function WatchPage({
           <div
             id="watch-player"
             ref={wrapRef}
-            className={`relative w-full aspect-video transition-shadow duration-[350ms] ${ambient ? "shadow-[0_0_70px_rgba(255,209,102,0.18)]" : ""}`}
-            onMouseEnter={() => setHover(true)}
-            onMouseLeave={() => setHover(false)}
-            onTouchStart={() => setTouchDevice(true)}
+            className={`relative w-full aspect-video transition-shadow duration-[350ms] ${ambient ? "shadow-[0_0_70px_rgba(255,209,102,0.18)]" : ""} ${
+              showCtl || locked ? "" : "cursor-none"
+            }`}
+            onMouseEnter={bumpIdle}
+            onMouseMove={bumpIdle}
+            onMouseLeave={restIdle}
+            onTouchStart={() => bumpIdle()}
           >
             <div className="absolute inset-0 w-full h-full">
               <div className="relative flex h-full w-full items-center justify-center overflow-visible font-sans select-none focus:outline-none" tabIndex={0}>
@@ -705,45 +1277,65 @@ export function WatchPage({
                   {url && hls && (
                     <video
                       ref={videoRef}
-                      className="h-full w-full object-contain"
+                      className={`h-full w-full ${fit === "cover" ? "object-cover" : "object-contain"}`}
                       playsInline
                       preload="auto"
+                      muted={muted}
                       poster={movie.backdrop || movie.poster}
-                      onClick={togglePlay}
+                      onClick={() => {
+                        if (!locked) togglePlay();
+                      }}
                       onPlay={() => {
                         setPlaying(true);
                         setStarted(true);
                       }}
                       onPause={(e) => {
                         setPlaying(false);
-                        persist(e.currentTarget.currentTime, e.currentTarget.duration || dur);
+                        persist(e.currentTarget.currentTime, getPlayableDuration(e.currentTarget) || dur);
                       }}
                       onTimeUpdate={(e) => {
-                        skipNativeAds();
                         const v = e.currentTarget;
+                        if (pendingTimeRef.current > 0) applyPendingTime();
+                        skipNativeAds();
                         const t = v.currentTime;
                         setCur(t);
                         if (t - lastSavedRef.current >= 5) {
                           lastSavedRef.current = t;
-                          persist(t, v.duration || dur);
+                          persist(t, getPlayableDuration(v) || dur);
                         }
                       }}
                       onSeeking={skipNativeAds}
+                      onSeeked={confirmPendingTime}
                       onLoadedMetadata={(e) => {
                         const v = e.currentTarget;
-                        const d = v.duration || 0;
+                        const d = getPlayableDuration(v);
                         setDur(d);
-                        if (pendingTimeRef.current > 0 && d > 0) {
-                          v.currentTime = Math.min(pendingTimeRef.current, Math.max(0, d - 5));
-                          pendingTimeRef.current = 0;
-                        }
+                        setMuted(v.muted);
+                        setVol(v.volume);
+                        v.playbackRate = speed;
+                        applyPendingTime();
+                        const tracks = Array.from(v.textTracks);
+                        setSubLabels(tracks.map((t, i) => t.label || t.language || `Phụ đề ${i + 1}`));
+                        const showing = tracks.findIndex((t) => t.mode === "showing");
+                        setSubTrack(showing >= 0 ? showing : null);
                         skipNativeAds();
                       }}
+                      onLoadedData={applyPendingTime}
+                      onCanPlay={applyPendingTime}
+                      onDurationChange={(e) => {
+                        const d = getPlayableDuration(e.currentTarget);
+                        if (d > 0) setDur(d);
+                        applyPendingTime();
+                      }}
+                      onProgress={applyPendingTime}
                       onEnded={() => {
                         persist(dur || 0, dur || 0);
                         onEnded();
                       }}
-                      onVolumeChange={(e) => setVol(e.currentTarget.volume)}
+                      onVolumeChange={(e) => {
+                        setVol(e.currentTarget.volume);
+                        setMuted(e.currentTarget.muted);
+                      }}
                     />
                   )}
                   {url && !hls && (
@@ -773,6 +1365,22 @@ export function WatchPage({
                     </div>
                   )}
                 </div>
+
+                {/* khóa màn hình — chỉ có ý nghĩa với video HLS, ẩn hẳn trên sv embed */}
+                {url && hls && (
+                  <button
+                    type="button"
+                    aria-label={locked ? "Mở khóa màn hình" : "Khóa màn hình"}
+                    aria-pressed={locked}
+                    title={locked ? "Mở khóa màn hình" : "Khóa màn hình"}
+                    onClick={() => setLocked((v) => !v)}
+                    className={`absolute left-2 top-1/2 z-50 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/35 text-white/85 shadow-sm backdrop-blur-sm transition-all duration-200 hover:text-white focus:outline-none motion-reduce:transition-none ${
+                      showCtl || locked ? "opacity-100" : "pointer-events-none opacity-0"
+                    }`}
+                  >
+                    {locked ? <IcLock className="w-5 h-5" /> : <IcLockOpen className="w-5 h-5" />}
+                  </button>
+                )}
 
                 {/* thanh tiêu đề (hiện khi rê chuột) */}
                 <div
@@ -872,20 +1480,72 @@ export function WatchPage({
                         <div
                           className="flex-1 relative flex flex-col justify-center h-7 cursor-pointer group/scrub"
                           style={{ touchAction: "none" }}
-                          onClick={(e) => seekToClientX(e.clientX, e.currentTarget.getBoundingClientRect())}
+                          onClick={(e) => {
+                            // Safari 15.5 có thể phát click giả sau touch với clientX = 0;
+                            // bỏ qua để không tua nhầm về đầu phim.
+                            if (Date.now() - lastTouchSeekRef.current < 800) return;
+                            seekToClientX(e.clientX, e.currentTarget.getBoundingClientRect());
+                          }}
+                          onPointerDown={(e) => {
+                            if (e.pointerType === "touch") return; // dùng touch handler bên dưới
+                            try {
+                              e.currentTarget.setPointerCapture(e.pointerId);
+                            } catch {
+                              // pointer không capture được vẫn kéo bình thường
+                            }
+                            setScrubbing(true);
+                            seekToClientX(e.clientX, e.currentTarget.getBoundingClientRect());
+                          }}
+                          onPointerMove={(e) => {
+                            if (e.pointerType === "touch" || !scrubbing) return;
+                            seekToClientX(e.clientX, e.currentTarget.getBoundingClientRect(), false);
+                          }}
+                          onPointerUp={(e) => {
+                            if (e.pointerType === "touch") return;
+                            setScrubbing(false);
+                            seekToClientX(e.clientX, e.currentTarget.getBoundingClientRect());
+                            try {
+                              if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
+                            } catch {
+                              // đã tự giải phóng
+                            }
+                          }}
+                          onPointerCancel={() => setScrubbing(false)}
                           onTouchStart={(e) => {
                             const touch = e.touches[0];
-                            if (touch) seekToClientX(touch.clientX, e.currentTarget.getBoundingClientRect());
+                            if (!touch) return;
+                            lastTouchSeekRef.current = Date.now();
+                            setScrubbing(true);
+                            seekToClientX(touch.clientX, e.currentTarget.getBoundingClientRect());
                           }}
                           onTouchMove={(e) => {
+                            if (!scrubbing) return;
                             const touch = e.touches[0];
-                            if (touch) seekToClientX(touch.clientX, e.currentTarget.getBoundingClientRect());
+                            if (!touch) return;
+                            lastTouchSeekRef.current = Date.now();
+                            try {
+                              e.preventDefault();
+                            } catch {
+                              // React có thể đăng ký touchmove dạng passive; touchAction:none đã chặn cuộn.
+                            }
+                            seekToClientX(touch.clientX, e.currentTarget.getBoundingClientRect(), false);
                           }}
+                          onTouchEnd={(e) => {
+                            const touch = e.changedTouches[0];
+                            setScrubbing(false);
+                            if (!touch) return;
+                            lastTouchSeekRef.current = Date.now();
+                            seekToClientX(touch.clientX, e.currentTarget.getBoundingClientRect());
+                          }}
+                          onTouchCancel={() => setScrubbing(false)}
                         >
                           <div className="relative w-full h-[6px] rounded-sm bg-white/15 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)] transition-all duration-200 group-hover/scrub:h-2">
                             <div
                               className="absolute top-0 left-0 h-full rounded-sm bg-[#FFD166]"
-                              style={{ width: dur ? `${(cur / dur) * 100}%` : "0%" }}
+                              style={{
+                                width:
+                                  dur > 0 ? `${Math.min(100, Math.max(0, (cur / dur) * 100))}%` : "0%",
+                              }}
                             />
                           </div>
                         </div>
@@ -908,13 +1568,16 @@ export function WatchPage({
                             <div className="flex items-center gap-2 group/volume">
                               <button
                                 type="button"
+                                aria-label={muted ? "Bật âm thanh (M)" : "Tắt âm thanh (M)"}
+                                aria-pressed={muted}
+                                title={muted ? "Bật âm thanh (M)" : "Tắt âm thanh (M)"}
                                 onClick={() => {
                                   const v = videoRef.current;
                                   if (v) v.muted = !v.muted;
                                 }}
                                 className="text-white hover:text-white/80 transition-all focus:outline-none flex items-center justify-center"
                               >
-                                <IcVolume className="w-7 h-7" />
+                                {muted || vol === 0 ? <IcVolumeX className="w-7 h-7" /> : <IcVolume className="w-7 h-7" />}
                               </button>
                               <div className="overflow-hidden transition-all duration-300 ease-out flex items-center h-5 w-0 group-hover/volume:w-24">
                                 <div className="relative w-20 h-1 bg-white/30 rounded-full flex items-center">
@@ -982,23 +1645,51 @@ export function WatchPage({
                             </button>
                           </div>
                           <div className="hidden sm:flex">
-                            <div className="relative flex items-center justify-center">
-                              <button type="button" aria-label="Máy chủ" title="Máy chủ" onClick={scrollToServers} className="group relative flex h-9 sm:h-auto w-9 sm:w-auto items-center justify-center text-white transition-colors hover:text-white/80 active:scale-[0.97] focus:outline-none motion-reduce:transform-none">
+                            <div className="relative flex items-center justify-center" data-player-menu="">
+                              <button
+                                type="button"
+                                aria-label="Máy chủ"
+                                title="Máy chủ"
+                                aria-expanded={menu === "servers"}
+                                onClick={() => {
+                                  setMenu((m) => (m === "servers" ? null : "servers"));
+                                  setSub(null);
+                                  bumpIdle();
+                                }}
+                                className="group relative flex h-9 sm:h-auto w-9 sm:w-auto items-center justify-center text-white transition-colors hover:text-white/80 active:scale-[0.97] focus:outline-none motion-reduce:transform-none"
+                              >
                                 <IcRouter className="h-5 w-5 sm:h-7 sm:w-7 transition-transform duration-300" />
                                 <IcSignalZero className="pointer-events-none absolute -right-3 -top-1.5 h-4 w-4 rounded-sm bg-black/60 p-0.5 shadow-sm text-white/45" />
                               </button>
+                              {serverPopover}
                             </div>
                           </div>
                           <button
                             type="button"
-                            aria-label="Bật/tắt ánh sáng môi trường"
-                            aria-pressed={ambient}
-                            title="Ánh sáng môi trường"
-                            onClick={() => setAmbient((v) => !v)}
-                            className="relative flex h-9 w-9 items-center justify-center text-white transition-colors hover:text-white/80 focus:outline-none sm:h-auto sm:w-auto"
+                            aria-label="Picture-in-Picture"
+                            title="Picture-in-Picture"
+                            onClick={() => void togglePiP()}
+                            className="flex h-9 w-9 items-center justify-center text-white transition-colors hover:text-white/80 active:scale-[0.97] focus:outline-none motion-reduce:transform-none sm:h-auto sm:w-auto"
                           >
-                            <IcSettings className={`w-5 h-5 sm:h-7 sm:w-7 ${ambient ? "text-[#FFD166]" : ""}`} />
+                            <IcPip className="h-5 w-5 sm:h-7 sm:w-7" />
                           </button>
+                          <div className="relative flex items-center justify-center" data-player-menu="">
+                            <button
+                              type="button"
+                              aria-label="Cài đặt"
+                              title="Cài đặt"
+                              aria-expanded={menu === "settings"}
+                              onClick={() => {
+                                setMenu((m) => (m === "settings" ? null : "settings"));
+                                setSub(null);
+                                bumpIdle();
+                              }}
+                              className="relative flex h-9 w-9 items-center justify-center text-white transition-colors hover:text-white/80 focus:outline-none sm:h-auto sm:w-auto"
+                            >
+                              <IcSettings className={`w-5 h-5 sm:h-7 sm:w-7 ${menu === "settings" ? "text-[#FFD166]" : ""}`} />
+                            </button>
+                            {settingsPopover}
+                          </div>
                           <button type="button" onClick={fullscreen} aria-label="Toàn màn hình" className="text-white hover:text-white/80 transition-all focus:outline-none flex h-9 w-9 sm:h-auto sm:w-auto items-center justify-center">
                             <IcMaximize className="w-5 h-5 sm:w-7 sm:w-7 sm:h-7" />
                           </button>
@@ -1120,7 +1811,9 @@ export function WatchPage({
               </button>
               <button
                 type="button"
-                onClick={() => setNotice("Phím tắt: Space = phát/dừng, ←/→ = tua 10s, F = toàn màn hình.")}
+                onClick={() =>
+                  setNotice("Phím tắt: Space = phát/dừng, ←/→ = tua 10s, ↑/↓ = âm lượng, M = tắt/bật âm thanh, F = toàn màn hình, N = tập kế tiếp.")
+                }
                 className="flex items-center justify-center py-1.5 px-2 rounded-lg hover:bg-white/10 transition-colors"
                 aria-label="Hướng dẫn thao tác"
                 title="Hướng dẫn thao tác"
