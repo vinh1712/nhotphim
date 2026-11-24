@@ -604,6 +604,13 @@ export function WatchPage({
       return;
     }
     pendingAttemptsRef.current += 1;
+
+    // iOS Safari drop lệnh seek khi video còn đang pause và chưa có frame
+    // (readyState < HAVE_CURRENT_DATA): currentTime báo đúng mốc đã xin nhưng
+    // phim vẫn phát từ đầu, seeking kẹt và các lần tua sau cũng bị bỏ qua.
+    // Giữ mốc lại, chỉ áp ở onPlay hoặc onLoadedData (khi đã có frame).
+    if (nativeHlsRef.current && v.paused && v.readyState < 2) return;
+
     let target = pendingTimeRef.current;
     // iOS 15.5 native HLS có lúc trả duration = đoạn đã buffer (rất nhỏ) rồi
     // mới đúng sau vài giây. Nếu clamp theo duration đó thì "Xem tiếp" bị kẹt
@@ -1428,6 +1435,9 @@ export function WatchPage({
                       onPlay={() => {
                         setPlaying(true);
                         setStarted(true);
+                        // iOS: mốc "Xem tiếp" có thể đã bị giữ lại vì lúc đó
+                        // video chưa có frame. Áp ngay khi người dùng bấm play.
+                        applyPendingTime();
                       }}
                       onPause={(e) => {
                         setPlaying(false);
