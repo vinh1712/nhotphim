@@ -316,7 +316,7 @@ export function CommentItem({
           <div className="relative shrink-0">
             <div className={c.pinned ? "avatar-ring-premium " : "ring-1 ring-white/15 rounded-full p-[2px] transition-colors"}>
               {c.avatar ? (
-                <img alt="" loading="lazy" width={44} height={44} decoding="async" className="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover relative z-10" style={fillStyle} src={c.avatar} />
+                <img alt="" loading="lazy" width={44} height={44} decoding="async" className="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover relative z-10" src={c.avatar} />
               ) : (
                 <span className="relative z-10 flex w-9 h-9 sm:w-11 sm:h-11 items-center justify-center rounded-full bg-[#FFD166] text-[15px] font-bold text-[#1c1c1c]">
                   {c.name.trim().charAt(0).toUpperCase() || "?"}
