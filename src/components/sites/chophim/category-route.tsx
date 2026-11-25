@@ -2,7 +2,7 @@
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { CategoryPage } from "./CategoryPage";
-import { newestFirst, toCard } from "./movie-filter";
+import { newestFirst, toCard, type CategoryLiveFilter } from "./movie-filter";
 import type { MovieDetail } from "./detail-types";
 import { moviesData } from "@/data";
 
@@ -18,6 +18,7 @@ export function renderCategory(opts: {
   basePath: string;
   filter: (m: MovieDetail) => boolean;
   emptyText?: string;
+  liveFilter?: CategoryLiveFilter;
 }) {
   return (
     <>
@@ -27,6 +28,7 @@ export function renderCategory(opts: {
         movies={cardList(opts.filter)}
         basePath={opts.basePath}
         emptyText={opts.emptyText}
+        liveFilter={opts.liveFilter}
       />
       <Footer />
     </>

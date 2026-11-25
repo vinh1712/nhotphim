@@ -33,6 +33,7 @@ import type {
   MovieServer,
 } from "@/components/sites/chophim/detail-types";
 import { home as staticHomeValue, type HomeData, type Section } from "@/components/sites/chophim/types";
+import { hasVpSource } from "@/components/sites/chophim/movie-filter";
 
 type Row = Record<string, any>;
 type Taxonomy = { type: string; name: string; slug: string };
@@ -444,10 +445,10 @@ function buildHome(
     if (m.current) return `PĐ. ${m.current}`;
     return "PĐ. Full";
   };
-  const makeItem = (m: MovieDetail, t: any): any => {
+  const makeItem = (m: MovieDetail, t: any, topBadge?: string): any => {
     const badges: any[] = [];
     const top = (t?.badges || []).find((b: any) => b.pos === "top");
-    if (top) badges.push({ pos: "top", text: m.lang || "Vietsub", cls: top.cls });
+    if (top) badges.push({ pos: "top", text: topBadge || m.lang || "Vietsub", cls: top.cls });
     const bottom = (t?.badges || []).find((b: any) => b.pos === "bottom");
     if (bottom) badges.push({ pos: "bottom", text: bottomText(m), cls: bottom.cls });
     const portrait = t?.variant === "portrait";
@@ -477,9 +478,9 @@ function buildHome(
       },
     };
   };
-  const fillSection = (section: Section, list: MovieDetail[]): Section => {
+  const fillSection = (section: Section, list: MovieDetail[], topBadge?: string): Section => {
     const tplItems = section.items?.length ? section.items : [sampleItem];
-    const items = list.map((m, i) => makeItem(m, tplItems[i % tplItems.length] || sampleItem));
+    const items = list.map((m, i) => makeItem(m, tplItems[i % tplItems.length] || sampleItem, topBadge));
     return { ...section, items, count: items.length };
   };
 
@@ -498,7 +499,8 @@ function buildHome(
       case "S:7":
         return fillSection(
           s,
-          pick([...movies].sort((a, b) => Number(b.lang === "Vietsub") - Number(a.lang === "Vietsub") || ratingDesc(a, b)), 36)
+          pick([...movies].filter(hasVpSource).sort(ratingDesc), 36),
+          "Song Ngữ"
         );
       case "S:8": return fillSection(s, pick([...movies].sort(releaseDesc), 24));
       case "S:9": return fillSection(s, pick([...series].sort(ratingDesc), 10));

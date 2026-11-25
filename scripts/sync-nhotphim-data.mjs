@@ -428,6 +428,10 @@ function buildComments(rows, db) {
 
 function buildHome(tpl, db, comments, taxonomies, heroIds) {
   const movies = Object.values(db);
+  const hasVpSource = (m) =>
+    (m.servers || []).some(
+      (server) => /\(VP\)|VodPhim/i.test(server.name) && (server.episodes || []).some((ep) => !!ep.url)
+    );
   const createdDesc = (a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || ""));
   // Các tab "mới": năm phát hành giảm dần, cùng năm thì ngày đưa lên admin giảm dần.
   const releaseDesc = (a, b) => (b.year ?? 0) - (a.year ?? 0) || createdDesc(a, b);
@@ -442,10 +446,10 @@ function buildHome(tpl, db, comments, taxonomies, heroIds) {
     if (m.current) return `PĐ. ${m.current}`;
     return "PĐ. Full";
   };
-  const makeItem = (m, t) => {
+  const makeItem = (m, t, topBadge) => {
     const badges = [];
     const top = (t?.badges || []).find((b) => b.pos === "top");
-    if (top) badges.push({ pos: "top", text: m.lang || "Vietsub", cls: top.cls });
+    if (top) badges.push({ pos: "top", text: topBadge || m.lang || "Vietsub", cls: top.cls });
     const bottom = (t?.badges || []).find((b) => b.pos === "bottom");
     if (bottom) badges.push({ pos: "bottom", text: bottomText(m), cls: bottom.cls });
     const portrait = t?.variant === "portrait";
@@ -475,9 +479,9 @@ function buildHome(tpl, db, comments, taxonomies, heroIds) {
       },
     };
   };
-  const fillSection = (section, list) => {
+  const fillSection = (section, list, topBadge) => {
     const tplItems = section.items?.length ? section.items : [sampleItem];
-    const items = list.map((m, i) => makeItem(m, tplItems[i % tplItems.length] || sampleItem));
+    const items = list.map((m, i) => makeItem(m, tplItems[i % tplItems.length] || sampleItem, topBadge));
     return { ...section, items, count: items.length };
   };
 
@@ -494,7 +498,7 @@ function buildHome(tpl, db, comments, taxonomies, heroIds) {
       case "S:3": return fillSection(s, pick(ofCountry("trung-quoc").sort(releaseDesc), 15));
       case "S:4": return fillSection(s, pick(ofCountry("au-my").sort(releaseDesc), 15));
       case "S:7":
-        return fillSection(s, pick([...movies].sort((a, b) => Number(b.lang === "Vietsub") - Number(a.lang === "Vietsub") || ratingDesc(a, b)), 36));
+        return fillSection(s, pick([...movies].filter(hasVpSource).sort(ratingDesc), 36), "Song Ngữ");
       case "S:8": return fillSection(s, pick([...movies].sort(releaseDesc), 24));
       case "S:9": return fillSection(s, pick([...series].sort(ratingDesc), 10));
       case "S:a":

@@ -12,6 +12,10 @@ const bySlug = db;
 const createdDesc = (a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || ""));
 const ratingDesc = (a, b) => (b.rating ?? -1) - (a.rating ?? -1) || createdDesc(a, b);
 const pick = (arr, n) => arr.slice(0, n);
+const hasVpSource = (m) =>
+  (m.servers || []).some(
+    (server) => /\(VP\)|VodPhim/i.test(server.name) && (server.episodes || []).some((ep) => !!ep.url)
+  );
 
 // ── item builder (giữ nguyên class của template, thay nội dung bằng quanli) ──
 function bottomText(m) {
@@ -22,10 +26,10 @@ function bottomText(m) {
   return "PĐ. Full";
 }
 
-function makeItem(m, t) {
+function makeItem(m, t, topBadge) {
   const badges = [];
   const top = t.badges.find((b) => b.pos === "top");
-  if (top) badges.push({ pos: "top", text: m.lang || "Vietsub", cls: top.cls });
+  if (top) badges.push({ pos: "top", text: topBadge || m.lang || "Vietsub", cls: top.cls });
   const bottom = t.badges.find((b) => b.pos === "bottom");
   if (bottom) badges.push({ pos: "bottom", text: bottomText(m), cls: bottom.cls });
 
@@ -57,9 +61,9 @@ function makeItem(m, t) {
   };
 }
 
-function fillSection(section, list) {
+function fillSection(section, list, topBadge) {
   const tplItems = section.items || [];
-  const items = list.map((m, i) => makeItem(m, tplItems[i % tplItems.length] || tplItems[0]));
+  const items = list.map((m, i) => makeItem(m, tplItems[i % tplItems.length] || tplItems[0], topBadge));
   return { ...section, items, count: items.length };
 }
 
@@ -81,13 +85,9 @@ const sections = tpl.sections.map((s) => {
     case "S:4":
       return fillSection(s, pick(ofCountry("au-my").sort(createdDesc), 15));
     case "S:7": {
-      // Phim Song Ngữ: ưu tiên phim có phụ đề đặc biệt (thuyết minh / song ngữ)
-      const dual = [...movies].sort((a, b) => {
-        const da = a.lang === "Vietsub" ? 0 : 1;
-        const db_ = b.lang === "Vietsub" ? 0 : 1;
-        return db_ - da || ratingDesc(a, b);
-      });
-      return fillSection(s, pick(dual, 36));
+      // Phim Song Ngữ: chỉ lấy phim có nguồn Server VP (VodPhim) trong trang quản lý.
+      const vp = [...movies].filter(hasVpSource).sort(ratingDesc);
+      return fillSection(s, pick(vp, 36), "Song Ngữ");
     }
     case "S:8":
       return fillSection(s, pick([...movies].sort(createdDesc), 24));

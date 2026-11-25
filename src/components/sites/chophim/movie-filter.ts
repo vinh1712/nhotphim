@@ -50,6 +50,16 @@ export function toCard(m: MovieDetail): CardMovie {
   };
 }
 
+/** Bộ lọc dữ liệu live được phép truyền qua ranh giới Server/Client. */
+export type CategoryLiveFilter = "vp";
+
+/** Phim có nguồn Server VP (SV3 / VodPhim trong trang quản lý). */
+export function hasVpSource(m: Pick<MovieDetail, "servers">): boolean {
+  return (m.servers || []).some(
+    (server) => /\(VP\)|VodPhim/i.test(server.name) && (server.episodes || []).some((ep) => !!ep.url)
+  );
+}
+
 /** Bỏ dấu tiếng Việt + thường hóa (để tìm kiếm "bac si" khớp "bác sĩ") */
 export function stripVn(s: string): string {
   return String(s || "")

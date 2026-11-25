@@ -14,12 +14,14 @@ import {
   applyFilters,
   bottomBadgeText,
   filtersFromParams,
+  hasVpSource,
   lockedFiltersFromPath,
   newestFirst,
   paginate,
   toCard,
   sortQueryValue,
   type CardMovie,
+  type CategoryLiveFilter,
   type MovieFilters,
 } from "./movie-filter";
 
@@ -250,6 +252,7 @@ export function CategoryPage({
   mainClassName = "flex-1 pt-16",
   banner,
   source = "live",
+  liveFilter,
 }: {
   title: string;
   movies: CardMovie[];
@@ -261,10 +264,17 @@ export function CategoryPage({
   banner?: ReactNode;
   /** "live" lấy danh sách mới nhất từ Supabase; "prop" dùng danh sách cha truyền xuống (tìm kiếm). */
   source?: "live" | "prop";
+  /** Lọc thêm dữ liệu live bằng một giá trị serializable (vd: "vp"). */
+  liveFilter?: CategoryLiveFilter;
 }) {
   const live = useLiveData();
-  const liveCards = useMemo(() => newestFirst(Object.values(live.movies)).map(toCard), [live.movies]);
-  const pool = source === "live" ? liveCards : movies;
+  const liveCards = useMemo(() => {
+    const list = Object.values(live.movies);
+    return newestFirst(liveFilter === "vp" ? list.filter(hasVpSource) : list).map(toCard);
+  }, [live.movies, liveFilter]);
+  // Dùng danh sách build sẵn đã lọc của route cho tới khi dữ liệu live sẵn sàng,
+  // để HTML tĩnh và lần render đầu không lọt phim ngoài bộ lọc của trang.
+  const pool = source === "live" && live.ready ? liveCards : movies;
   const pathname = usePathname() ?? (typeof window !== "undefined" ? window.location.pathname : "/");
   const locked = useMemo<Partial<MovieFilters>>(
     () => ({ ...lockedFiltersFromPath(stripBasePath(pathname)), ...lockedFilters }),
