@@ -6,11 +6,12 @@ import { stripBasePath, withBasePath } from "@/lib/base-path";
 import { Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { detailHref, useLiveData } from "@/lib/live-data";
-import { BottomBadges } from "./Badges";
-import { fillStyle, type MovieItem } from "./types";
+import { BottomBadges, TopBadge } from "./Badges";
+import { fillStyle, type Badge, type MovieItem } from "./types";
 import {
   EMPTY_FILTERS,
   FILTER_GROUPS,
+  SONG_NGU_BADGE_CLS,
   applyFilters,
   bottomBadgeText,
   filtersFromParams,
@@ -29,13 +30,16 @@ const CARD_BOTTOM_CLS =
   "absolute inset-x-0 bottom-0 flex items-end pb-1.5 md:pb-0 pointer-events-none justify-center";
 
 function toItem(m: CardMovie): MovieItem {
+  const badges: Badge[] = [];
+  if (m.topBadge) badges.push({ pos: "top", text: m.topBadge, cls: SONG_NGU_BADGE_CLS });
+  badges.push({ pos: "bottom", text: bottomBadgeText(m), cls: CARD_BOTTOM_CLS });
   return {
     href: detailHref(m.slug),
     img: m.poster || m.backdrop,
     alt: m.title,
     title: m.title,
     sub: m.origin || "",
-    badges: [{ pos: "bottom", text: bottomBadgeText(m), cls: CARD_BOTTOM_CLS }],
+    badges,
     variant: "portrait",
     rank: "",
     itemClass: "",
@@ -66,6 +70,7 @@ export function MovieCard({ m }: { m: CardMovie }) {
             style={fillStyle}
             src={m.poster || m.backdrop}
           />
+          <TopBadge item={item} />
           <BottomBadges item={item} poster />
           <div className="overlay absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
         </div>

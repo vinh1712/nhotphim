@@ -4,6 +4,10 @@ import type { MovieDetail } from "./detail-types";
 
 export const PAGE_SIZE = 16;
 
+/** Badge góc trên dùng chung cho phim có nguồn Song Ngữ (server VP). */
+export const SONG_NGU_BADGE_CLS =
+  "pointer-events-none absolute right-1.5 top-1.5 z-40 flex items-center gap-1 rounded-[4px] px-2 py-0.5 text-[9px] font-bold text-[#141414] shadow-sm md:right-2 md:top-2 md:text-[10px]";
+
 /** Dữ liệu tối thiểu để vẽ 1 card poster (giữ payload tĩnh nhỏ) */
 export type CardMovie = Pick<
   MovieDetail,
@@ -25,7 +29,10 @@ export type CardMovie = Pick<
   | "createdAt"
   | "lang"
   | "director"
->;
+> & {
+  /** Badge đi theo phim, không phụ thuộc vào trang/section đang hiển thị. */
+  topBadge?: string;
+};
 
 export function toCard(m: MovieDetail): CardMovie {
   return {
@@ -47,6 +54,7 @@ export function toCard(m: MovieDetail): CardMovie {
     createdAt: m.createdAt,
     lang: m.lang,
     director: m.director,
+    topBadge: hasVpSource(m) ? "Song Ngữ" : undefined,
   };
 }
 

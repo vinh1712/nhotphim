@@ -435,6 +435,8 @@ function buildHome(tpl, db, comments, taxonomies, heroIds) {
     (m.servers || []).some(
       (server) => /\(VP\)|VodPhim/i.test(server.name) && (server.episodes || []).some((ep) => !!ep.url)
     );
+  const SONG_NGU_TOP_CLS =
+    "pointer-events-none absolute right-1.5 top-1.5 z-40 flex items-center gap-1 rounded-[4px] px-2 py-0.5 text-[9px] font-bold text-[#141414] shadow-sm md:right-2 md:top-2 md:text-[10px]";
   const createdDesc = (a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || ""));
   // Các tab "mới": năm phát hành giảm dần, cùng năm thì ngày đưa lên admin giảm dần.
   const releaseDesc = (a, b) => (b.year ?? 0) - (a.year ?? 0) || createdDesc(a, b);
@@ -452,7 +454,12 @@ function buildHome(tpl, db, comments, taxonomies, heroIds) {
   const makeItem = (m, t, topBadge) => {
     const badges = [];
     const top = (t?.badges || []).find((b) => b.pos === "top");
-    if (top) badges.push({ pos: "top", text: topBadge || m.lang || "Vietsub", cls: top.cls });
+    // Badge đi theo phim: phim có server VP luôn hiện "Song Ngữ" ở mọi section.
+    const songNgu = hasVpSource(m);
+    const topText = songNgu ? "Song Ngữ" : topBadge || m.lang || "Vietsub";
+    if (top || songNgu || topBadge) {
+      badges.push({ pos: "top", text: topText, cls: top?.cls || SONG_NGU_TOP_CLS });
+    }
     const bottom = (t?.badges || []).find((b) => b.pos === "bottom");
     if (bottom) badges.push({ pos: "bottom", text: bottomText(m), cls: bottom.cls });
     const portrait = t?.variant === "portrait";
