@@ -3,7 +3,23 @@
 import { useEffect, useState } from "react";
 import { signOut, updateProfile, useAuthSession } from "@/lib/auth";
 import { withBasePath } from "@/lib/base-path";
+import {
+  LOCAL_COMMENTS_EVENT,
+  readAllLocalComments,
+  readHiddenCommentIds,
+  readLocalComments,
+  unhideComment,
+  writeLocalComments,
+} from "@/lib/local-comments";
 import { detailHref, watchHref } from "@/lib/live-data";
+import {
+  isAdminRole,
+  normalizeTier,
+  redeemCode,
+  TIER_INFO,
+  VISIBLE_REDEEM_CODES,
+  type SubscriptionTier,
+} from "@/lib/subscription";
 import { ACCOUNT_TABS, getAccountTab, type AccountTab, type AccountTabInfo } from "@/lib/account-tabs";
 import { useUserLibrary, type LibraryEntry, type ProgressEntry } from "@/lib/user-library";
 import { timeAgo, useNotifications } from "@/lib/notifications";
@@ -14,7 +30,7 @@ import {
   frameAssetSrc,
   normalizeExternalImageUrl,
 } from "@/lib/avatar-data";
-import { UserAvatar } from "./UserAvatar";
+import { UserAvatar, profileMeta } from "./UserAvatar";
 
 const INVALIDATE = "Nhót Phim";
 
@@ -69,6 +85,13 @@ function Icon({ name, className = "" }: { name: AccountTabInfo["icon"]; classNam
     return (
       <svg {...svgProps} className={className}>
         <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
+      </svg>
+    );
+  if (name === "shield")
+    return (
+      <svg {...svgProps} className={className}>
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
+        <path d="m9 12 2 2 4-4" />
       </svg>
     );
   return (
@@ -466,6 +489,342 @@ function ProfilePanel({
   );
 }
 
+function TierBadges({
+  tier,
+  admin,
+  compact = false,
+}: {
+  tier: SubscriptionTier;
+  admin: boolean;
+  compact?: boolean;
+}) {
+  const cls = compact
+    ? "rounded-[4px] px-1.5 py-[1px] text-[9px] font-black tracking-wider"
+    : "rounded-full px-3 py-1 text-[11px] font-black tracking-wide";
+  return (
+    <span className="inline-flex flex-wrap items-center gap-1.5">
+      {admin ? <span className={`${cls} bg-[#ffd875] text-[#171821]`}>ADMIN</span> : null}
+      {tier === "super-vip" ? (
+        <span className={`${cls} bg-gradient-to-r from-[#ff6b6b] to-[#ffd166] text-[#171821]`}>SUPER VIP</span>
+      ) : tier === "vip" ? (
+        <span className={`${cls} bg-[#ffd166] text-[#171821]`}>VIP</span>
+      ) : null}
+    </span>
+  );
+}
+
+function SubscriptionPanel({
+  tier,
+  admin,
+  busy,
+  message,
+  input,
+  onInput,
+  onRedeem,
+}: {
+  tier: SubscriptionTier;
+  admin: boolean;
+  busy: boolean;
+  message: string;
+  input: string;
+  onInput: (value: string) => void;
+  onRedeem: (code?: string) => void;
+}) {
+  const tiers: SubscriptionTier[] = ["free", "vip", "super-vip"];
+  return (
+    <div className="space-y-6">
+      <div className="rounded-2xl border border-white/5 bg-[#191b24] p-5 lg:p-8">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#FFD166]/15 text-[#FFD166]">
+              <Icon name="crown" className="h-7 w-7" />
+            </span>
+            <div>
+              <p className="text-[12px] uppercase tracking-wide text-white/40">Gói hiện tại</p>
+              <p className="text-2xl font-bold text-white">{TIER_INFO[tier].label}</p>
+              <div className="mt-1">
+                <TierBadges tier={tier} admin={admin} />
+              </div>
+            </div>
+          </div>
+          <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1.5 text-[12px] text-white/55">
+            {tier === "free" ? "Chưa kích hoạt mã" : "Đã kích hoạt"}
+          </span>
+        </div>
+        <p className="mt-6 text-[14px] leading-relaxed text-white/60">{TIER_INFO[tier].note}</p>
+      </div>
+
+      <div className="rounded-2xl border border-white/5 bg-[#191b24] p-5 lg:p-8">
+        <h2 className="text-[17px] font-bold text-white">Nhập mã kích hoạt</h2>
+        <p className="mt-1 text-[13px] text-white/50">Mã áp dụng cho tài khoản đang đăng nhập.</p>
+        <form
+          className="mt-5 flex flex-col gap-3 sm:flex-row"
+          onSubmit={(event) => {
+            event.preventDefault();
+            onRedeem();
+          }}
+        >
+          <input
+            value={input}
+            onChange={(event) => onInput(event.target.value.toUpperCase())}
+            placeholder="Nhập mã (VD: VIP2026)"
+            autoComplete="off"
+            className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/25 px-4 py-3 text-[14px] uppercase tracking-wide text-white outline-none placeholder:normal-case placeholder:tracking-normal placeholder:text-white/25 focus:border-[#FFD166]/60"
+          />
+          <button
+            type="submit"
+            disabled={busy || !input.trim()}
+            className="shrink-0 rounded-full bg-[#FFD166] px-7 py-3 text-[13px] font-bold text-[#171a26] transition-opacity hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {busy ? "Đang kích hoạt..." : "Kích hoạt"}
+          </button>
+        </form>
+        {message ? <p className="mt-3 text-[13px] text-[#FFD166]">{message}</p> : null}
+        <div className="mt-5 flex flex-wrap gap-2">
+          {VISIBLE_REDEEM_CODES.map((code) => (
+            <button
+              key={code.code}
+              type="button"
+              disabled={busy}
+              onClick={() => onRedeem(code.code)}
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[12px] text-white/65 transition-colors hover:border-[#FFD166]/50 hover:text-[#FFD166] disabled:opacity-40"
+            >
+              Dùng mã {code.code} → {TIER_INFO[code.tier].label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        {tiers.map((item) => {
+          const active = item === tier;
+          return (
+            <div
+              key={item}
+              className={`rounded-2xl border p-5 ${
+                active ? "border-[#FFD166]/50 bg-[#FFD166]/[0.06]" : "border-white/5 bg-[#191b24]"
+              }`}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-[17px] font-bold text-white">{TIER_INFO[item].label}</p>
+                <TierBadges tier={item} admin={item === "super-vip"} compact />
+              </div>
+              <ul className="mt-4 space-y-2">
+                {TIER_INFO[item].perks.map((perk) => (
+                  <li key={perk} className="flex items-start gap-2 text-[12px] leading-relaxed text-white/60">
+                    <svg {...svgProps} className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#FFD166]">
+                      <path d="m5 12 4 4L19 6" />
+                    </svg>
+                    {perk}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function AdminPanel({
+  tier,
+  favorites,
+  watchlist,
+  progress,
+  unread,
+}: {
+  tier: SubscriptionTier;
+  favorites: number;
+  watchlist: number;
+  progress: number;
+  unread: number;
+}) {
+  const [rows, setRows] = useState<ReturnType<typeof readAllLocalComments>>([]);
+  const [hidden, setHidden] = useState<string[]>([]);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const sync = () => {
+      setRows(readAllLocalComments());
+      setHidden(readHiddenCommentIds());
+    };
+    sync();
+    window.addEventListener(LOCAL_COMMENTS_EVENT, sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener(LOCAL_COMMENTS_EVENT, sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, []);
+
+  const commitLocal = (slug: string, list: ReturnType<typeof readLocalComments>) => {
+    if (!writeLocalComments(slug, list)) {
+      setMessage("Không lưu được trên thiết bị này.");
+      return;
+    }
+    window.dispatchEvent(new Event(LOCAL_COMMENTS_EVENT));
+    setRows(readAllLocalComments());
+    setMessage("Đã cập nhật bình luận.");
+  };
+
+  const togglePin = (slug: string, id: string) => {
+    const list = readLocalComments(slug);
+    const target = list.find((item) => item.id === id);
+    if (!target) return;
+    commitLocal(
+      slug,
+      list.map((item) => (item.id === id ? { ...item, pinned: !item.pinned } : item))
+    );
+  };
+
+  const removeLocal = (slug: string, id: string) => {
+    commitLocal(
+      slug,
+      readLocalComments(slug).filter((item) => item.id !== id)
+    );
+  };
+
+  const restore = (id: string) => {
+    if (!unhideComment(id)) {
+      setMessage("Không khôi phục được bình luận.");
+      return;
+    }
+    setHidden(readHiddenCommentIds());
+    setMessage("Đã khôi phục bình luận.");
+  };
+
+  const privileges = [
+    "Ghim / bỏ ghim bình luận",
+    "Xóa bình luận trên mọi phim",
+    "Ẩn cả bình luận tĩnh từ DB",
+    "Huy hiệu ADMIN + SUPER VIP",
+    "Vành avatar phát sáng",
+    "Mở tab quản trị riêng",
+  ];
+  const stats = [
+    { label: "Bình luận local", value: rows.length },
+    { label: "Đã ẩn", value: hidden.length },
+    { label: "Yêu thích", value: favorites },
+    { label: "Danh sách", value: watchlist },
+    { label: "Xem tiếp", value: progress },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-2xl border border-[#ffd875]/20 bg-gradient-to-br from-[#FFD166]/[0.12] to-transparent p-5 lg:p-8">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#FFD166]/15 text-[#FFD166]">
+            <Icon name="shield" className="h-6 w-6" />
+          </span>
+          <div>
+            <p className="text-[12px] uppercase tracking-wide text-white/45">Quyền quản trị</p>
+            <h2 className="text-xl font-bold text-white">Super VIP · Admin</h2>
+          </div>
+          <div className="ml-auto">
+            <TierBadges tier={tier} admin />
+          </div>
+        </div>
+        <p className="mt-4 text-[13px] leading-relaxed text-white/55">
+          Các thao tác quản trị dưới đây áp dụng trên thiết bị này, đồng bộ ngay với trang phim và trang chủ.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+        {stats.map((stat) => (
+          <div key={stat.label} className="rounded-xl border border-white/5 bg-[#191b24] p-4">
+            <p className="text-[11px] text-white/40">{stat.label}</p>
+            <p className="mt-1 text-2xl font-bold text-white">{stat.value}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="rounded-2xl border border-white/5 bg-[#191b24] p-5 lg:p-8">
+        <h3 className="text-[16px] font-bold text-white">Quyền năng của Admin</h3>
+        <div className="mt-4 grid gap-2 sm:grid-cols-2">
+          {privileges.map((perk) => (
+            <div key={perk} className="flex items-center gap-2 rounded-lg bg-black/20 px-3 py-2.5 text-[12px] text-white/65">
+              <svg {...svgProps} className="h-3.5 w-3.5 shrink-0 text-[#FFD166]">
+                <path d="m5 12 4 4L19 6" />
+              </svg>
+              {perk}
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 flex flex-wrap gap-2">
+          <a href={withBasePath("/users/tai-khoan")} className="rounded-full border border-white/10 px-4 py-2 text-[12px] text-white/65 hover:text-[#FFD166]">
+            Hồ sơ & avatar
+          </a>
+          <a href={withBasePath("/users/thong-bao")} className="rounded-full border border-white/10 px-4 py-2 text-[12px] text-white/65 hover:text-[#FFD166]">
+            Thông báo {unread > 0 ? `(${unread})` : ""}
+          </a>
+          <a href={withBasePath("/phim")} className="rounded-full border border-white/10 px-4 py-2 text-[12px] text-white/65 hover:text-[#FFD166]">
+            Danh sách phim
+          </a>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-white/5 bg-[#191b24] p-5 lg:p-8">
+        <h3 className="text-[16px] font-bold text-white">Duyệt bình luận</h3>
+        <p className="mt-1 text-[12px] text-white/45">Bình luận đã gửi từ trình duyệt này.</p>
+        {message ? <p className="mt-3 text-[12px] text-[#FFD166]">{message}</p> : null}
+        {rows.length === 0 ? (
+          <p className="mt-5 rounded-xl bg-black/20 p-4 text-[13px] text-white/45">Chưa có bình luận local để duyệt.</p>
+        ) : (
+          <div className="mt-5 space-y-2">
+            {rows.slice(0, 30).map(({ slug, comment }) => (
+              <div key={`${slug}-${comment.id}`} className="rounded-xl border border-white/5 bg-black/20 p-4">
+                <div className="flex flex-wrap items-center gap-2 text-[11px] text-white/40">
+                  <a href={detailHref(slug)} className="font-semibold text-white/70 hover:text-[#FFD166]">
+                    {comment.name}
+                  </a>
+                  <span>· {comment.time}</span>
+                  {comment.pinned ? <span className="rounded bg-[#FFD166]/15 px-1.5 py-0.5 text-[#FFD166]">Đã ghim</span> : null}
+                </div>
+                <p className="mt-2 line-clamp-2 text-[13px] text-white/70">{comment.content}</p>
+                <div className="mt-3 flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => togglePin(slug, comment.id)}
+                    className="rounded-full border border-white/10 px-3 py-1.5 text-[11px] text-white/60 hover:text-[#FFD166]"
+                  >
+                    {comment.pinned ? "Bỏ ghim" : "Ghim"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeLocal(slug, comment.id)}
+                    className="rounded-full border border-[#ff6b6b]/25 px-3 py-1.5 text-[11px] text-[#ff8f8f] hover:bg-[#ff6b6b]/10"
+                  >
+                    Xóa
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {hidden.length > 0 ? (
+        <div className="rounded-2xl border border-white/5 bg-[#191b24] p-5 lg:p-8">
+          <h3 className="text-[16px] font-bold text-white">Bình luận đã ẩn</h3>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {hidden.map((id) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => restore(id)}
+                className="rounded-full border border-white/10 px-3 py-1.5 text-[11px] text-white/60 hover:text-[#FFD166]"
+              >
+                Khôi phục #{id}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export function AccountPage({ tab }: { tab: AccountTab }) {
   const { user, loading, reload: reloadSession } = useAuthSession();
   const { favorites, watchlist, progress, hydrated, toggle, remove } = useUserLibrary();
@@ -479,10 +838,16 @@ export function AccountPage({ tab }: { tab: AccountTab }) {
   const [frameUrl, setFrameUrl] = useState("");
   const [profileBusy, setProfileBusy] = useState(false);
   const [profileMessage, setProfileMessage] = useState("");
+  const [redeemInput, setRedeemInput] = useState("");
+  const [redeemBusy, setRedeemBusy] = useState(false);
+  const [redeemMessage, setRedeemMessage] = useState("");
   const [noticeFilter, setNoticeFilter] = useState("Tất cả");
   const notices = useNotifications();
 
   const info = getAccountTab(tab);
+  const meta = user ? profileMeta(user) : null;
+  const tier = normalizeTier(meta?.subscriptionTier);
+  const admin = isAdminRole(meta?.role, meta?.subscriptionTier);
   const email = user?.email ?? "";
   const profileName = String(user?.user_metadata?.display_name ?? user?.user_metadata?.full_name ?? "");
 
@@ -536,6 +901,21 @@ export function AccountPage({ tab }: { tab: AccountTab }) {
     setProfileBusy(false);
   };
 
+  const doRedeemCode = async (rawCode?: string) => {
+    const result = redeemCode(rawCode ?? redeemInput, tier);
+    setRedeemMessage(result.message);
+    if (!result.ok || !result.patch) return;
+    setRedeemBusy(true);
+    const updated = await updateProfile(result.patch);
+    if (updated.ok) {
+      setRedeemInput("");
+      reloadSession();
+    } else {
+      setRedeemMessage(updated.message);
+    }
+    setRedeemBusy(false);
+  };
+
   // Chọn ảnh/khung lưu ngay như chophim, không cần bấm "Cập nhật".
   const pickAvatar = async (src: string) => {
     setAvatarUrl(src);
@@ -557,7 +937,7 @@ export function AccountPage({ tab }: { tab: AccountTab }) {
 
   const nav = (
     <nav className="flex flex-row gap-2 overflow-x-auto pb-2 lg:flex-1 lg:min-h-0 lg:flex-col lg:gap-0 lg:overflow-y-auto lg:pb-1 lg:pr-1">
-      {ACCOUNT_TABS.map((item: AccountTabInfo) => (
+      {ACCOUNT_TABS.filter((item) => item.key !== "admin" || admin).map((item: AccountTabInfo) => (
         <a
           key={item.key}
           href={withBasePath(`/users/${item.key}`)}
@@ -801,6 +1181,37 @@ export function AccountPage({ tab }: { tab: AccountTab }) {
       );
     }
 
+    if (tab === "admin") {
+      if (!admin) {
+        return (
+          <div className="mx-auto flex max-w-[560px] flex-col items-center rounded-2xl border border-white/5 bg-[#191b24] px-6 py-20 text-center">
+            <span className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-[#FFD166]/10 text-[#FFD166]">
+              <Icon name="shield" className="h-8 w-8" />
+            </span>
+            <h2 className="text-lg font-bold text-white">Chưa có quyền quản trị</h2>
+            <p className="mt-2 text-[13px] leading-relaxed text-white/50">
+              Kích hoạt mã SVIP2026 hoặc ADMIN2026 trong Gói đăng ký để mở tab Admin.
+            </p>
+            <a
+              href={withBasePath("/users/goi-dang-ky")}
+              className="mt-6 rounded-full bg-[#FFD166] px-6 py-2.5 text-[13px] font-bold text-[#171a26]"
+            >
+              Đến Gói đăng ký
+            </a>
+          </div>
+        );
+      }
+      return (
+        <AdminPanel
+          tier={tier}
+          favorites={favorites.length}
+          watchlist={watchlist.length}
+          progress={progress.length}
+          unread={notices.unreadCount}
+        />
+      );
+    }
+
     if (tab === "tai-khoan") {
       return (
         <ProfilePanel
@@ -823,30 +1234,18 @@ export function AccountPage({ tab }: { tab: AccountTab }) {
     }
 
     return (
-      <div className="max-w-[640px] rounded-2xl border border-white/5 bg-[#191b24] p-5 lg:p-8">
-        <div className="flex items-center gap-4">
-          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#FFD166]/15 text-[#FFD166]">
-            <Icon name="crown" className="h-7 w-7" />
-          </span>
-          <div>
-            <p className="text-[12px] uppercase tracking-wide text-white/40">Gói hiện tại</p>
-            <p className="text-2xl font-bold text-white">Free</p>
-          </div>
-        </div>
-        <p className="mt-6 text-[14px] leading-relaxed text-white/60">
-          Tài khoản Nhót Phim miễn phí đã có đủ mọi đặc quyền để xem phim: không quảng cáo, không thẻ cào, không nạp coin.
-        </p>
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
-          {["Xem phim không giới hạn", "Lưu yêu thích & xem tiếp", "Đồng bộ trên thiết bị", "Không quảng cáo"].map((line) => (
-            <div key={line} className="flex items-center gap-2 rounded-xl bg-black/20 px-4 py-3 text-[13px] text-white/70">
-              <svg {...svgProps} className="h-4 w-4 text-[#FFD166]">
-                <path d="m5 12 4 4L19 6" />
-              </svg>
-              {line}
-            </div>
-          ))}
-        </div>
-      </div>
+      <SubscriptionPanel
+        tier={tier}
+        admin={admin}
+        busy={redeemBusy}
+        message={redeemMessage}
+        input={redeemInput}
+        onInput={(value) => {
+          setRedeemInput(value);
+          setRedeemMessage("");
+        }}
+        onRedeem={(code) => void doRedeemCode(code)}
+      />
     );
   };
 
@@ -867,6 +1266,11 @@ export function AccountPage({ tab }: { tab: AccountTab }) {
                 <div className="min-w-0">
                   <p className="truncate text-[13px] font-semibold text-white">{displayName || email.split("@")[0]}</p>
                   <p className="truncate text-[12px] text-white/45">{email}</p>
+                  {tier !== "free" || admin ? (
+                    <span className="mt-1 block">
+                      <TierBadges tier={tier} admin={admin} compact />
+                    </span>
+                  ) : null}
                 </div>
               </div>
               <button

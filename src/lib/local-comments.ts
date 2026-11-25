@@ -2,8 +2,40 @@ import type { DetailComment } from "@/components/sites/chophim/detail-types";
 
 export const LOCAL_COMMENTS_EVENT = "nhotphim:local-comments-change";
 export const LOCAL_COMMENTS_PREFIX = "nhotphim:local-comments:";
+export const HIDDEN_COMMENTS_KEY = "nhotphim:hidden-comments:v1";
 
 export const localCommentsKey = (slug: string) => `${LOCAL_COMMENTS_PREFIX}${slug}`;
+
+/** Admin ẩn bình luận (kể cả bình luận tĩnh từ DB) — chỉ trên thiết bị này. */
+export function readHiddenCommentIds(): string[] {
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(HIDDEN_COMMENTS_KEY) || "[]");
+    return Array.isArray(parsed) ? parsed.map(String) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeHiddenCommentIds(ids: string[]): boolean {
+  try {
+    window.localStorage.setItem(HIDDEN_COMMENTS_KEY, JSON.stringify(ids));
+    window.dispatchEvent(new Event(LOCAL_COMMENTS_EVENT));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function hideComment(id: string): boolean {
+  const key = String(id);
+  const ids = readHiddenCommentIds();
+  if (ids.includes(key)) return true;
+  return writeHiddenCommentIds([...ids, key]);
+}
+
+export function unhideComment(id: string): boolean {
+  return writeHiddenCommentIds(readHiddenCommentIds().filter((x) => x !== String(id)));
+}
 
 export function readLocalComments(slug: string): DetailComment[] {
   try {

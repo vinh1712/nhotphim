@@ -1,6 +1,6 @@
 /** Các mục trong khu vực "Quản lý tài khoản" của chophim.wtf.
- *  Nhót Phim giữ lại nhóm chức năng phim + hồ sơ, bỏ CP Coin / gift code /
- *  thẻ cào (cá độ) theo yêu cầu. */
+ *  Nhót Phim giữ nhóm chức năng phim + hồ sơ, thêm mã kích hoạt VIP / Super VIP
+ *  và tab Admin (chỉ hiện khi tài khoản có quyền quản trị). */
 
 export type AccountTab =
   | "goi-dang-ky"
@@ -9,7 +9,8 @@ export type AccountTab =
   | "xem-tiep"
   | "dang-nhap-tv"
   | "thong-bao"
-  | "tai-khoan";
+  | "tai-khoan"
+  | "admin";
 
 export type AccountTabInfo = {
   key: AccountTab;
@@ -24,7 +25,8 @@ export type AccountTabInfo = {
     | "history"
     | "tv"
     | "bell"
-    | "user";
+    | "user"
+    | "shield";
 };
 
 export const ACCOUNT_TABS: AccountTabInfo[] = [
@@ -76,6 +78,13 @@ export const ACCOUNT_TABS: AccountTabInfo[] = [
     title: "Tài khoản",
     subtitle: "Cập nhật thông tin tài khoản",
     icon: "user",
+  },
+  {
+    key: "admin",
+    label: "Admin",
+    title: "Trung tâm quản trị",
+    subtitle: "Công cụ quản lý bình luận dành cho Super VIP / Admin",
+    icon: "shield",
   },
 ];
 

@@ -23,6 +23,7 @@ import {
   type ReactNode,
 } from "react";
 import { commentsData, moviesData, notificationsData, taxonomiesData } from "@/data";
+import { VN_FLAG_AVATAR } from "./avatar-fallback";
 import { stripBasePath, withBasePath } from "./base-path";
 import { SHOW_LOADING_EVENT, SKIP_OVERLAY_KEY, WAKE_REFRESH_MS } from "./overlay";
 import { SB_KEY, SB_URL, sbFetch, sbTable } from "./supabase";
@@ -366,11 +367,8 @@ function buildMovieDb(rows: Row[], normalize: (row: Row) => MovieDetail) {
   return db;
 }
 
-const FALLBACK_AVATAR =
-  "data:image/svg+xml;utf8," +
-  encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" width="88" height="88"><rect width="88" height="88" fill="#2a2d3a"/><circle cx="44" cy="34" r="16" fill="#5b6072"/><ellipse cx="44" cy="76" rx="26" ry="18" fill="#5b6072"/></svg>'
-  );
+/** Comment cũ bị mất ảnh dùng lá cờ VN thay cho silhouette xám. */
+const FALLBACK_AVATAR = VN_FLAG_AVATAR;
 
 function buildComments(rows: Row[], db: Record<string, MovieDetail>): Record<string, DetailComment[]> {
   const slugById = new Map<string, string>();
@@ -402,6 +400,8 @@ function buildComments(rows: Row[], db: Record<string, MovieDetail>): Record<str
       avatar: c.author_avatar || FALLBACK_AVATAR,
       frame: null,
       emoji: null,
+      role: str(c.role) || null,
+      subscriptionTier: str(c.subscription_tier) || null,
     } as DetailComment & { createdAt?: string; parentId?: string | null; isSpoiler?: boolean });
     const entry = bySlug[slug][bySlug[slug].length - 1] as DetailComment & { createdAt: string };
     entry.createdAt = str(c.created_at);
@@ -587,7 +587,7 @@ function buildHome(
           displayName: c.name,
           avatarUrl: c.avatar,
           avatarFrame: null,
-          subscriptionTier: "free",
+          subscriptionTier: str((c as any).subscription_tier) || "free",
           role: c.admin ? "admin" : "user",
           gender: c.gender,
           selectedEmoji: null,

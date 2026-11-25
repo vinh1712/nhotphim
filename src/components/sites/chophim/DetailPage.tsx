@@ -2,10 +2,14 @@
 
 import { withBasePath } from "@/lib/base-path";
 import { frameAssetSrc } from "@/lib/avatar-data";
+import { checkVnFallback, fallbackToVnFlag } from "@/lib/avatar-fallback";
 import { useAuthSession } from "@/lib/auth";
+import { isAdminRole, normalizeTier } from "@/lib/subscription";
 import {
   LOCAL_COMMENTS_EVENT,
+  hideComment,
   localCommentsKey,
+  readHiddenCommentIds,
   readLocalComments,
   writeLocalComments,
 } from "@/lib/local-comments";
@@ -264,11 +268,13 @@ export function CommentItem({
   c,
   currentUserId = null,
   currentUserRole = null,
+  currentUserTier = null,
   onDelete,
 }: {
   c: DetailComment;
   currentUserId?: string | null;
   currentUserRole?: string | null;
+  currentUserTier?: string | null;
   onDelete?: (id: string) => boolean | Promise<boolean>;
 }) {
   const [vote, setVote] = useState<"up" | "down" | null>(null);
@@ -297,9 +303,14 @@ export function CommentItem({
 
   const likes = c.likes + (vote === "up" ? 1 : 0);
   const dislikes = c.dislikes + (vote === "down" ? 1 : 0);
+  const commentTier = normalizeTier(c.subscriptionTier);
+  const isSuperVip = commentTier === "super-vip";
+  const isVip = commentTier === "vip";
+  const isAdmin = isAdminRole(c.role, c.subscriptionTier) || !!c.admin || isSuperVip;
+  const canDeleteByViewer = isAdminRole(currentUserRole, currentUserTier);
   // Giống chophim: hiện Xóa cho comment của mình hoặc khi đang là admin.
   const canDelete =
-    !!onDelete && ((!!currentUserId && currentUserId === c.userId) || currentUserRole === "admin");
+    !!onDelete && ((!!currentUserId && currentUserId === c.userId) || canDeleteByViewer);
   const deleteOwn = async () => {
     setConfirmDelete(false);
     await onDelete?.(c.id);
@@ -314,9 +325,9 @@ export function CommentItem({
       <div className="relative z-[1] flex items-start gap-2.5 sm:gap-3">
         <div className="shrink-0 mt-0.5">
           <div className="relative shrink-0">
-            <div className={c.pinned ? "avatar-ring-premium " : "ring-1 ring-white/15 rounded-full p-[2px] transition-colors"}>
+            <div className={c.pinned || isVip || isSuperVip ? "avatar-ring-premium " : "ring-1 ring-white/15 rounded-full p-[2px] transition-colors"}>
               {c.avatar ? (
-                <img alt="" loading="lazy" width={44} height={44} decoding="async" className="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover relative z-10" src={c.avatar} />
+                <img alt="" loading="lazy" width={44} height={44} decoding="async" className="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover relative z-10" src={c.avatar} ref={checkVnFallback} onError={fallbackToVnFlag} />
               ) : (
                 <span className="relative z-10 flex w-9 h-9 sm:w-11 sm:h-11 items-center justify-center rounded-full bg-[#FFD166] text-[15px] font-bold text-[#1c1c1c]">
                   {c.name.trim().charAt(0).toUpperCase() || "?"}
@@ -339,12 +350,17 @@ export function CommentItem({
             </div>
           )}
           <div className="flex items-center gap-1.5 flex-wrap">
-            {c.admin && (
+            {isAdmin && (
               <span className="inline-flex items-center px-1.5 py-[1px] rounded bg-[#FFD166] text-[#0f111a] text-[9px] font-black tracking-wider shrink-0">ADMIN</span>
             )}
+            {isSuperVip ? (
+              <span className="inline-flex items-center px-1.5 py-[1px] rounded bg-gradient-to-r from-[#ff6b6b] to-[#ffd166] text-[#0f111a] text-[9px] font-black tracking-wider shrink-0">SUPER VIP</span>
+            ) : isVip ? (
+              <span className="inline-flex items-center px-1.5 py-[1px] rounded bg-[#FFD166] text-[#0f111a] text-[9px] font-black tracking-wider shrink-0">VIP</span>
+            ) : null}
             <span
-              className={c.admin ? "font-bold text-[12px] sm:text-[13px]" : "font-bold text-[12px] sm:text-[13px] text-white"}
-              style={c.admin ? { background: "linear-gradient(rgb(255, 255, 255), rgb(255, 209, 102)) text", WebkitTextFillColor: "transparent" } : undefined}
+              className={isVip || isSuperVip ? "font-bold text-[12px] sm:text-[13px]" : "font-bold text-[12px] sm:text-[13px] text-white"}
+              style={isVip || isSuperVip ? { background: "linear-gradient(rgb(255, 255, 255), rgb(255, 209, 102)) text", WebkitTextFillColor: "transparent" } : undefined}
             >
               {c.name}
             </span>
@@ -491,12 +507,24 @@ export function CommentsSection({
     ? viewerMeta.displayName || viewerMeta.emoji || user?.email?.split("@")[0] || "Bạn"
     : "";
   const { comments: localComments, addComment, removeComment } = useLocalComments(slug);
+  const viewerIsAdmin = !!viewerMeta && isAdminRole(viewerMeta.role, viewerMeta.subscriptionTier);
+  const [hiddenIds, setHiddenIds] = useState<string[]>([]);
   const [draft, setDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [sort, setSort] = useState<"new" | "top">("new");
   const [showMore, setShowMore] = useState(false);
 
-  const allComments = useMemo(() => [...localComments, ...comments], [localComments, comments]);
+  useEffect(() => {
+    const sync = () => setHiddenIds(readHiddenCommentIds());
+    sync();
+    window.addEventListener(LOCAL_COMMENTS_EVENT, sync);
+    return () => window.removeEventListener(LOCAL_COMMENTS_EVENT, sync);
+  }, []);
+
+  const allComments = useMemo(
+    () => [...localComments, ...comments].filter((c) => !hiddenIds.includes(String(c.id))),
+    [localComments, comments, hiddenIds]
+  );
   const sorted = useMemo(() => sortComments(allComments, sort), [allComments, sort]);
   const visible = showMore ? sorted : sorted.slice(0, 5);
   const allShown = sorted.length <= 5;
@@ -522,6 +550,7 @@ export function CommentsSection({
       createdAt: now.toISOString(),
       userId: user.id,
       role: viewerMeta.role || null,
+      subscriptionTier: viewerMeta.subscriptionTier || null,
     };
     if (!addComment(entry)) {
       setError("Không thể gửi bình luận");
@@ -535,7 +564,8 @@ export function CommentsSection({
 
   const deleteOwn = useCallback(
     (id: string) => {
-      if (!removeComment(id)) {
+      // Xóa bản local rồi ẩn luôn ID để admin có thể gỡ cả comment tĩnh từ DB.
+      if (!removeComment(id) || !hideComment(id)) {
         setError("Không thể xóa bình luận");
         return false;
       }
@@ -635,7 +665,8 @@ export function CommentsSection({
               c={c}
               currentUserId={user?.id ?? null}
               currentUserRole={viewerMeta?.role ?? null}
-              onDelete={c.userId ? deleteOwn : undefined}
+              currentUserTier={viewerMeta?.subscriptionTier ?? null}
+              onDelete={viewerIsAdmin || c.userId ? deleteOwn : undefined}
             />
           ))}
         </div>

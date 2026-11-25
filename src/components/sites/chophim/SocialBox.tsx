@@ -8,6 +8,8 @@ import {
 } from "@/lib/local-comments";
 import { detailHref, useLiveData, useLiveHome } from "@/lib/live-data";
 import { frameAssetSrc } from "@/lib/avatar-data";
+import { checkVnFallback, fallbackToVnFlag } from "@/lib/avatar-fallback";
+import { normalizeTier } from "@/lib/subscription";
 import { fillStyle, type CommentItem, type RankRow } from "./types";
 import type { DetailComment, MovieDetail } from "./detail-types";
 import { SliderArrows } from "./SliderArrows";
@@ -101,7 +103,7 @@ function localToHomeComment(
       displayName: c.name,
       avatarUrl: c.avatar || "",
       avatarFrame: c.frame,
-      subscriptionTier: "free",
+      subscriptionTier: c.subscriptionTier || "free",
       role,
       gender: c.gender,
       selectedEmoji: c.emoji,
@@ -114,8 +116,9 @@ function localToHomeComment(
 }
 
 function CommentCard({ c }: { c: CommentItem }) {
-  const premium = c.user.subscriptionTier === "premium";
-  const admin = c.user.role === "admin";
+  const tier = normalizeTier(c.user.subscriptionTier);
+  const premium = tier !== "free";
+  const admin = c.user.role === "admin" || tier === "super-vip";
   const commentId = c.parentId ? `${c.parentId}-reply-${c.id}` : c.id;
   const href = `${detailHref(c.movieSlug)}#comment-${commentId}`;
 
@@ -171,6 +174,8 @@ function CommentCard({ c }: { c: CommentItem }) {
                       decoding="async"
                       className="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover relative z-10"
                       src={c.user.avatarUrl}
+                      ref={checkVnFallback}
+                      onError={fallbackToVnFlag}
                     />
                   ) : (
                     <span className="relative z-10 flex w-9 h-9 sm:w-11 sm:h-11 items-center justify-center rounded-full bg-[#FFD166] text-[15px] font-bold text-[#1c1c1c]">
@@ -196,6 +201,15 @@ function CommentCard({ c }: { c: CommentItem }) {
                   ADMIN
                 </span>
               )}
+              {tier === "super-vip" ? (
+                <span className="rounded-[4px] bg-gradient-to-r from-[#ff6b6b] to-[#ffd166] px-1.5 py-0.5 text-[9px] font-black leading-none text-[#171821]">
+                  SUPER VIP
+                </span>
+              ) : tier === "vip" ? (
+                <span className="rounded-[4px] bg-[#ffd166] px-1.5 py-0.5 text-[9px] font-black leading-none text-[#171821]">
+                  VIP
+                </span>
+              ) : null}
               <span className="truncate text-[14px] font-bold text-white">{c.user.displayName}</span>
               <span className="shrink-0 scale-90 origin-left">
                 <GenderIcon gender={c.user.gender} />

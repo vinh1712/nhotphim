@@ -65,6 +65,7 @@ export type DetailComment = {
   /** Bình luận gửi từ browser có userId để hiện nút xóa như chophim. */
   userId?: string;
   role?: string | null;
+  subscriptionTier?: string | null;
 };
 
 /** Chophim luôn đưa bình luận được ghim lên đầu, sau đó mới đến Mới nhất / Nổi bật. */
