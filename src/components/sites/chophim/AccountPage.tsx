@@ -227,98 +227,108 @@ function ProfilePanel({
         className="flex max-h-[86vh] w-full max-w-[720px] flex-col overflow-hidden rounded-2xl bg-[#191b24]"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-white/5 px-5 py-4">
-          <p className="text-[15px] font-bold text-white">
-            {picker === "avatar" ? "Chọn ảnh đại diện" : "Chọn khung avatar"}
-          </p>
-          <button type="button" onClick={() => setPicker(null)} aria-label="Đóng" className="text-white/60 hover:text-white">
+        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/5 px-5 py-4">
+          <div className="min-w-0">
+            <p className="text-[15px] font-bold text-white">
+              {picker === "avatar" ? "Chọn ảnh đại diện" : "Chọn khung avatar"}
+            </p>
+            {picker === "frame" ? <p className="mt-1 text-[12px] text-white/50">Tất cả khung đều miễn phí</p> : null}
+          </div>
+          <button
+            type="button"
+            onClick={() => setPicker(null)}
+            aria-label="Đóng"
+            className="shrink-0 text-white/60 hover:text-white"
+          >
             <svg {...svgProps} className="h-5 w-5"><path d="M18 6 6 18M6 6l12 12" /></svg>
           </button>
         </div>
         {picker === "avatar" ? (
-          <div className="border-b border-white/5 px-5 py-3">
-            <label className="block">
-              <span className="mb-2 block text-[12px] text-white/50">Ảnh từ link</span>
-              <div className="flex gap-2">
-                <input
-                  type="url"
-                  inputMode="url"
-                  autoComplete="off"
-                  value={customAvatar}
-                  onChange={(event) => {
-                    setCustomAvatar(event.target.value);
-                    setCustomAvatarError("");
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      event.preventDefault();
-                      applyCustomAvatar();
-                    }
-                  }}
-                  placeholder="https://example.com/avatar.png"
-                  className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-[13px] text-white outline-none placeholder:text-white/25 focus:border-[#FFD166]/60"
-                />
-                <button
-                  type="button"
-                  onClick={applyCustomAvatar}
-                  className="shrink-0 rounded-lg bg-[#FFD166] px-4 py-2 text-[12px] font-bold text-[#171a26] transition-opacity hover:opacity-85"
-                >
-                  Dùng ảnh
-                </button>
+          <>
+            <div className="shrink-0 border-b border-white/5 px-5 py-3">
+              <label className="block">
+                <span className="mb-2 block text-[12px] text-white/50">Ảnh từ link</span>
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    inputMode="url"
+                    autoComplete="off"
+                    value={customAvatar}
+                    onChange={(event) => {
+                      setCustomAvatar(event.target.value);
+                      setCustomAvatarError("");
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        applyCustomAvatar();
+                      }
+                    }}
+                    placeholder="https://example.com/avatar.png"
+                    className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-[13px] text-white outline-none placeholder:text-white/25 focus:border-[#FFD166]/60"
+                  />
+                  <button
+                    type="button"
+                    onClick={applyCustomAvatar}
+                    className="shrink-0 rounded-lg bg-[#FFD166] px-4 py-2 text-[12px] font-bold text-[#171a26] transition-opacity hover:opacity-85"
+                  >
+                    Dùng ảnh
+                  </button>
+                </div>
+                {customAvatarError ? <span className="mt-2 block text-[12px] text-[#FF6B6B]">{customAvatarError}</span> : null}
+              </label>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {AVATAR_CATEGORIES.map((item) => (
+                  <button
+                    key={item.key}
+                    type="button"
+                    onClick={() => setCategory(item.key)}
+                    className={`rounded-full px-3 py-1.5 text-[12px] ${
+                      category === item.key ? "bg-[#FFD166] font-semibold text-[#171a26]" : "bg-white/5 text-white/60"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
               </div>
-              {customAvatarError ? <span className="mt-2 block text-[12px] text-[#FF6B6B]">{customAvatarError}</span> : null}
-            </label>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {AVATAR_CATEGORIES.map((item) => (
-                <button
-                  key={item.key}
-                  type="button"
-                  onClick={() => setCategory(item.key)}
-                  className={`rounded-full px-3 py-1.5 text-[12px] ${
-                    category === item.key ? "bg-[#FFD166] font-semibold text-[#171a26]" : "bg-white/5 text-white/60"
-                  }`}
-                >
-                  {item.label}
-                </button>
-              ))}
             </div>
-          </div>
+            <div className="min-h-0 flex-1 overflow-y-auto p-5">
+              <div className="grid grid-cols-4 gap-3 sm:grid-cols-5">
+                {Array.from(
+                  { length: AVATAR_CATEGORIES.find((c) => c.key === category)?.count ?? 0 },
+                  (_, i) => avatarSrc(category, i + 1)
+                ).map((src) => (
+                  <button
+                    key={src}
+                    type="button"
+                    onClick={() => {
+                      onPickAvatar(src);
+                      setPicker(null);
+                    }}
+                    className={`aspect-square overflow-hidden rounded-full ring-2 transition-all ${
+                      src === avatarUrl ? "ring-[#FFD166]" : "ring-transparent hover:ring-white/30"
+                    }`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img alt="" src={src} loading="lazy" className="h-full w-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </>
         ) : (
-          <p className="px-5 pt-3 text-[12px] text-white/50">Tất cả khung đều miễn phí</p>
-        )}
-        <div className="grid flex-1 grid-cols-4 gap-3 overflow-y-auto p-5 sm:grid-cols-6 md:grid-cols-8">
-          {picker === "avatar" ? (
-            Array.from(
-              { length: AVATAR_CATEGORIES.find((c) => c.key === category)?.count ?? 0 },
-              (_, i) => avatarSrc(category, i + 1)
-            ).map((src) => (
-              <button
-                key={src}
-                type="button"
-                onClick={() => {
-                  onPickAvatar(src);
-                  setPicker(null);
-                }}
-                className={`aspect-square overflow-hidden rounded-full ring-2 transition-all ${
-                  src === avatarUrl ? "ring-[#FFD166] scale-105" : "ring-transparent hover:ring-white/30"
-                }`}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img alt="" src={src} loading="lazy" className="h-full w-full object-cover" />
-              </button>
-            ))
-          ) : (
-            <>
-              <button
-                type="button"
-                onClick={() => {
-                  onPickFrame("");
-                  setPicker(null);
-                }}
-                className="flex aspect-square items-center justify-center rounded-xl border border-white/10 text-[11px] text-white/60"
-              >
-                Không dùng khung
-              </button>
+          <div className="min-h-0 flex-1 overflow-y-auto p-5">
+            <button
+              type="button"
+              onClick={() => {
+                onPickFrame("");
+                setPicker(null);
+              }}
+              className="mb-4 w-full rounded-xl border border-white/10 px-4 py-2.5 text-[13px] font-semibold text-white/60 transition-colors hover:bg-white/5 hover:text-white"
+            >
+              Không dùng khung
+            </button>
+            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
               {allFrameSrc().map((src, i) => (
                 <button
                   key={src}
@@ -329,16 +339,16 @@ function ProfilePanel({
                     setPicker(null);
                   }}
                   className={`aspect-square overflow-hidden rounded-xl ring-2 transition-all ${
-                    src === frameUrl ? "ring-[#FFD166] scale-105" : "ring-transparent hover:ring-white/30"
+                    src === frameUrl ? "ring-[#FFD166]" : "ring-transparent hover:ring-white/30"
                   }`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img alt="" src={src} loading="lazy" className="h-full w-full object-contain" />
                 </button>
               ))}
-            </>
-          )}
-        </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   ) : null;
