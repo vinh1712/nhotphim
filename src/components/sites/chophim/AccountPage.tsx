@@ -11,7 +11,7 @@ import {
   AVATAR_CATEGORIES,
   allFrameSrc,
   avatarSrc,
-  frameSrc,
+  frameAssetSrc,
   normalizeExternalImageUrl,
 } from "@/lib/avatar-data";
 import { UserAvatar } from "./UserAvatar";
@@ -482,7 +482,7 @@ export function AccountPage({ tab }: { tab: AccountTab }) {
     setGender(String(user.user_metadata?.gender ?? ""));
     setEmoji(String(user.user_metadata?.chat_emoji ?? ""));
     setAvatarUrl(String(user.user_metadata?.avatar_url ?? ""));
-    setFrameUrl(String(user.user_metadata?.avatar_frame ?? ""));
+    setFrameUrl(frameAssetSrc(String(user.user_metadata?.avatar_frame ?? "")) ?? "");
   }, [user, profileName]);
 
   if (loading) return null;

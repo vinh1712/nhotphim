@@ -7,6 +7,7 @@ import {
   readAllLocalComments,
 } from "@/lib/local-comments";
 import { detailHref, useLiveData, useLiveHome } from "@/lib/live-data";
+import { frameAssetSrc } from "@/lib/avatar-data";
 import { fillStyle, type CommentItem, type RankRow } from "./types";
 import type { DetailComment, MovieDetail } from "./detail-types";
 import { SliderArrows } from "./SliderArrows";
@@ -155,7 +156,7 @@ function CommentCard({ c }: { c: CommentItem }) {
               <div className="relative shrink-0">
                 <div
                   className={
-                    premium && !c.user.avatarFrame
+                    premium
                       ? "avatar-ring-premium group-hover:ring-white"
                       : "ring-1 ring-white/15 rounded-full p-[2px] transition-colors group-hover:ring-white"
                   }
@@ -178,17 +179,14 @@ function CommentCard({ c }: { c: CommentItem }) {
                   )}
                 </div>
                 {c.user.avatarFrame && (
-                  <>
-                    <span aria-hidden="true" className="avatar-ring-premium avatar-frame-ring" />
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      alt=""
-                      loading="lazy"
-                      decoding="async"
-                      className="avatar-frame pointer-events-none absolute inset-0 z-10 h-full w-full object-contain"
-                      src={c.user.avatarFrame}
-                    />
-                  </>
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    className="avatar-frame pointer-events-none absolute inset-0 z-10 h-full w-full object-contain"
+                    src={frameAssetSrc(c.user.avatarFrame)}
+                  />
                 )}
               </div>
             </div>

@@ -1,6 +1,6 @@
 import { withBasePath } from "./base-path";
 
-/** Bộ ảnh/khung chụp từ chophim.wtf, tối ưu về webp để tải nhanh. */
+/** Bộ ảnh/khung chụp từ chophim.fit. Khung là APNG có chuyển động như bản gốc. */
 export const AVATAR_CATEGORIES: { key: string; label: string; count: number }[] = [
   { key: "hoat-hinh", label: "Hoạt hình", count: 39 },
   { key: "meme", label: "Meme", count: 8 },
@@ -17,7 +17,23 @@ export function avatarSrc(category: string, index: number): string {
 }
 
 export function frameSrc(index: number): string {
-  return withBasePath(`/avt_frames/frame_${index}.webp`);
+  return withBasePath(`/avt_frames/frame_${index}.png`);
+}
+
+/** Chophim lưu khung dưới dạng `frame_N.png`; bản repo cũ từng lưu `.webp`. */
+export function normalizeFrameSrc(src?: string): string | undefined {
+  if (!src) return undefined;
+  const value = src.trim();
+  if (!value || /^(?:https?:\/\/|data:|blob:)/i.test(value)) return value || undefined;
+  return value.replace(/^(.*\/)?(frame_\d+)\.webp$/i, "$1$2.png");
+}
+
+/** Đưa cả tên file lẫn đường dẫn cũ về APNG có hiệu ứng, giữ nguyên link ngoài. */
+export function frameAssetSrc(src?: string): string | undefined {
+  const value = normalizeFrameSrc(src);
+  if (!value) return undefined;
+  if (/^(?:https?:\/\/|data:|blob:)/i.test(value)) return value;
+  return withBasePath(value.startsWith("/") ? value : `/avt_frames/${value}`);
 }
 
 export function allAvatarSrc(): string[] {

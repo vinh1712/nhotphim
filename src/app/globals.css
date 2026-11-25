@@ -77,8 +77,8 @@ html[data-nhot-skip-overlay="1"] .nhot-loading-overlay {
   }
 }
 
-/* Chophim không xoay ảnh khung: khung chỉ được phóng cố định bọc ngoài avatar.
-   Chuyển động duy nhất là premiumRingGlow của viền premium bên dưới. */
+/* Chophim không xoay ảnh khung bằng CSS: ảnh khung APNG tự chạy, còn mình chỉ
+   phóng cố định để nó bọc ngoài avatar như bản gốc. */
 .avatar-frame {
   transform: scale(var(--avatar-frame-scale, 1.25));
   transform-origin: center;
@@ -222,23 +222,6 @@ body {
   50% {
     background-position: 100%;
   }
-}
-
-/* Chophim cho viền premium chạy dưới ảnh khung. Với avatar có khung mình dùng
-   cùng keyframes premiumRingGlow nhưng cắt mask để chỉ phần viền 2px chuyển động. */
-.avatar-frame-ring {
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  pointer-events: none;
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
 }
 
 .anime-banner-wrap-mobile {

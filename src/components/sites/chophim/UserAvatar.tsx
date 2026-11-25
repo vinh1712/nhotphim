@@ -2,18 +2,12 @@
 
 import { useState, type CSSProperties } from "react";
 import { withBasePath } from "@/lib/base-path";
+import { frameAssetSrc } from "@/lib/avatar-data";
 
 function asset(src?: string): string | undefined {
   if (!src) return undefined;
   if (/^https?:\/\//i.test(src)) return src;
   return withBasePath(src);
-}
-
-/** Khung có thể lưu dưới dạng tên file (chophim) hoặc đường dẫn đầy đủ (repo quản lí). */
-function frameAsset(src?: string): string | undefined {
-  if (!src) return undefined;
-  if (/^(?:https?:\/\/|data:|blob:)/i.test(src) || src.startsWith("/")) return withBasePath(src);
-  return withBasePath(`/avt_frames/${src}`);
 }
 
 /** Avatar dùng chung: header, mobile menu, trang tài khoản.
@@ -43,7 +37,7 @@ export function UserAvatar({
   const [failedFrame, setFailedFrame] = useState<string | undefined>();
 
   const src = asset(avatarUrl);
-  const frame = frameAsset(frameUrl);
+  const frame = frameAssetSrc(frameUrl);
   const label = (name || email || "N").trim().charAt(0).toUpperCase() || "N";
   const showAvatar = Boolean(src) && failedAvatar !== src;
   const showFrame = Boolean(frame) && failedFrame !== frame;
@@ -59,7 +53,6 @@ export function UserAvatar({
       className={`relative inline-flex shrink-0 items-center justify-center ${sizeClassName} ${className}`}
       style={style}
     >
-      {showFrame ? <span aria-hidden="true" className="avatar-ring-premium avatar-frame-ring" /> : null}
       <span
         className="relative inline-flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-[#FFD166]/15 text-[#FFD166] ring-1 ring-[#FFD166]/30"
         style={{ fontSize: Math.round(size * 0.4) }}
@@ -121,7 +114,7 @@ export function profileMeta(
     gender: pick("gender"),
     emoji,
     avatarUrl: pick("avatarUrl", "avatar_url"),
-    frameUrl: frameAsset(avatarFrame || legacyFrameUrl),
+    frameUrl: frameAssetSrc(avatarFrame || legacyFrameUrl),
     avatarFrame,
     role: pick("role"),
     subscriptionTier: pick("subscriptionTier", "subscription_tier", "tier"),
