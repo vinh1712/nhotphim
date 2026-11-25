@@ -149,6 +149,8 @@ function errorText(data: TokenData, fallback: string): string {
   if (/email not confirmed/i.test(msg)) return "Vui lòng xác nhận email trước khi đăng nhập.";
   if (/already registered|user already exists/i.test(msg)) return "Email này đã được đăng ký.";
   if (/rate limit|too many requests/i.test(msg)) return "Thử lại sau ít phút nhé.";
+  if (/jwt|token/i.test(msg) && /expired|invalid|signature/i.test(msg))
+    return "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
   if (/password.*(weak|short|6)/i.test(msg)) return "Mật khẩu phải có ít nhất 6 ký tự.";
   if (/valid email|invalid format/i.test(msg)) return "Email không hợp lệ.";
   return msg || fallback;
@@ -205,7 +207,12 @@ export async function getSession(): Promise<AuthSession | null> {
         return null;
       }
       const session = toSession(await parseData(res), stored.remember);
-      if (!session) clearStored();
+      if (!session) {
+        clearStored();
+        return null;
+      }
+      // Lưu access_token mới, nếu không lần gọi sau lại dùng token cũ đã hết hạn.
+      writeStored(session, stored.remember);
       return session;
     } catch {
       return stored.session.expires_at > Date.now() ? stored.session : null;
@@ -283,21 +290,29 @@ export async function recoverPassword(email: string): Promise<AuthResult> {
 export async function updateProfile(
   patch: Record<string, string>
 ): Promise<AuthResult> {
-  const stored = readStored();
-  if (!stored) return { ok: false, message: "Vui lòng đăng nhập lại." };
+  // Phải dùng getSession() (tự refresh token hết hạn), không đọc access_token cũ trong storage.
+  const session = await getSession();
+  if (!session) return { ok: false, message: "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại." };
   try {
     const res = await authFetch("/auth/v1/user", {
       method: "PUT",
-      headers: { Authorization: `Bearer ${stored.session.access_token}` },
+      headers: { Authorization: `Bearer ${session.access_token}` },
       body: JSON.stringify({ data: patch }),
     });
     const data = await parseData(res);
-    if (!res.ok) return { ok: false, message: errorText(data, "Không thể cập nhật tài khoản.") };
+    if (!res.ok) {
+      const msg = String(data.msg ?? data.message ?? data.error ?? "");
+      if (/jwt|token/i.test(msg) && /expired|invalid|signature/i.test(msg)) {
+        clearStored();
+        return { ok: false, message: "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại." };
+      }
+      return { ok: false, message: errorText(data, "Không thể cập nhật tài khoản.") };
+    }
     // Supabase PUT /auth/v1/user trả thẳng object user (không nằm trong `user`).
     const raw = (data as TokenData & { user_metadata?: unknown }).user_metadata ? data : data.user;
     const user = toUser(raw);
     if (!user) return { ok: false, message: "Không đọc được thông tin tài khoản." };
-    writeStored({ ...stored.session, user }, stored.remember);
+    writeStored({ ...session, user }, readStored()?.remember ?? true);
     return { ok: true, message: "Cập nhật tài khoản thành công!" };
   } catch {
     return { ok: false, message: "Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại." };
@@ -305,12 +320,12 @@ export async function updateProfile(
 }
 
 export async function signOut(): Promise<void> {
-  const stored = readStored();
-  if (stored) {
+  const session = await getSession();
+  if (session) {
     try {
       await authFetch("/auth/v1/logout", {
         method: "POST",
-        headers: { Authorization: `Bearer ${stored.session.access_token}` },
+        headers: { Authorization: `Bearer ${session.access_token}` },
       });
     } catch {
       /* vẫn xóa session local */
