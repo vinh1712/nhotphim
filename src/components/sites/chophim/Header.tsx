@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { signOut, useAuthSession } from "@/lib/auth";
+import { useCommentSync } from "@/lib/comment-sync";
 import { useLibrarySync } from "@/lib/user-library";
 import { stripBasePath, withBasePath } from "@/lib/base-path";
 import { useLiveData } from "@/lib/live-data";
@@ -33,6 +34,7 @@ export function Header() {
   // Header có mặt ở mọi trang nên cũng là nơi kéo thư viện từ Supabase về.
   // Chỉ giữ tác dụng đồng bộ — không hiển thị trạng thái "đã đồng bộ lúc...".
   useLibrarySync();
+  useCommentSync();
   const accountLabel = user?.email ? user.email.split("@")[0] : "Thành viên";
   const meta = profileMeta(user);
   const accountName = meta.displayName || accountLabel;

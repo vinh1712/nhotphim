@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { signOut, updateProfile, useAuthSession } from "@/lib/auth";
 import { withBasePath } from "@/lib/base-path";
+import { markCommentDeleted, pushLocalComments } from "@/lib/comment-sync";
 import {
   LOCAL_COMMENTS_EVENT,
   hideComment,
@@ -669,6 +670,7 @@ function AdminPanel({
       return;
     }
     window.dispatchEvent(new Event(LOCAL_COMMENTS_EVENT));
+    pushLocalComments();
     setRows(readAllLocalComments());
     setMessage("Đã cập nhật bình luận.");
   };
@@ -688,6 +690,7 @@ function AdminPanel({
   };
 
   const removeLocal = (slug: string, id: string) => {
+    markCommentDeleted(id);
     commitLocal(
       slug,
       readLocalComments(slug).filter((item) => item.id !== id)

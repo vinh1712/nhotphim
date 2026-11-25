@@ -224,6 +224,50 @@ export async function getSession(): Promise<AuthSession | null> {
   return refreshing;
 }
 
+let profileRefreshing: Promise<AuthSession | null> | null = null;
+let lastProfileRefreshAt = 0;
+
+/** Kéo user_metadata mới từ Supabase (avatar, tên, role...) xuống các thiết bị đang mở.
+ *  getSession() với cache cũ nên cần gọi riêng khi quay lại tab /focus. */
+export async function refreshUserProfile(force = false): Promise<AuthSession | null> {
+  const stored = readStored();
+  if (!stored) return null;
+  const now = Date.now();
+  if (!force && now - lastProfileRefreshAt < 5_000) return stored.session;
+  if (profileRefreshing) return profileRefreshing;
+  lastProfileRefreshAt = now;
+
+  profileRefreshing = (async () => {
+    try {
+      const res = await authFetch("/auth/v1/user", {
+        headers: { Authorization: `Bearer ${stored.session.access_token}` },
+      });
+      if (!res.ok) {
+        // Token hết hạn: để getSession() refresh rồi trả session mới.
+        if (res.status === 401 || res.status === 403) return getSession();
+        return stored.session;
+      }
+      const data = (await parseData(res)) as TokenData & { user_metadata?: unknown };
+      const user = toUser(data.user ?? data);
+      if (!user) return stored.session;
+      if (
+        JSON.stringify(user.user_metadata) !== JSON.stringify(stored.session.user.user_metadata)
+      ) {
+        const next = { ...stored.session, user };
+        writeStored(next, stored.remember);
+        return next;
+      }
+      return stored.session;
+    } catch {
+      return stored.session;
+    }
+  })().finally(() => {
+    profileRefreshing = null;
+  });
+
+  return profileRefreshing;
+}
+
 export async function signIn(email: string, password: string, remember = true): Promise<AuthResult> {
   try {
     const res = await authFetch("/auth/v1/token?grant_type=password", {
@@ -354,23 +398,29 @@ export function useAuthSession() {
     let alive = true;
     // Đọc lại cả khi quay lại tab: sessionStorage (không ghi nhớ) không bắn
     // storage event sang tab khác, nên watch page có thể vẫn tưởng chưa đăng nhập.
-    const sync = () =>
-      void getSession().then((s) => {
+    const sync = (force = false) =>
+      void refreshUserProfile(force).then((s) => {
         if (!alive) return;
         setSession(s);
         setLoading(false);
       });
+    const onAuth = () => sync(true);
+    const onStorage = () => sync(true);
+    const onFocus = () => sync(true);
+    const onVisible = () => {
+      if (!document.hidden) sync(true);
+    };
     sync();
-    window.addEventListener(AUTH_EVENT, sync);
-    window.addEventListener("storage", sync);
-    window.addEventListener("focus", sync);
-    document.addEventListener("visibilitychange", sync);
+    window.addEventListener(AUTH_EVENT, onAuth);
+    window.addEventListener("storage", onStorage);
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisible);
     return () => {
       alive = false;
-      window.removeEventListener(AUTH_EVENT, sync);
-      window.removeEventListener("storage", sync);
-      window.removeEventListener("focus", sync);
-      document.removeEventListener("visibilitychange", sync);
+      window.removeEventListener(AUTH_EVENT, onAuth);
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, []);
 

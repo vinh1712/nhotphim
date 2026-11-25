@@ -4,6 +4,7 @@ import { withBasePath } from "@/lib/base-path";
 import { frameAssetSrc } from "@/lib/avatar-data";
 import { checkVnFallback, fallbackToVnFlag } from "@/lib/avatar-fallback";
 import { useAuthSession } from "@/lib/auth";
+import { markCommentDeleted, pushLocalComments } from "@/lib/comment-sync";
 import { isAdminRole, normalizeTier } from "@/lib/subscription";
 import {
   LOCAL_COMMENTS_EVENT,
@@ -512,6 +513,7 @@ function useLocalComments(slug: string) {
       ref.current = next;
       setComments(next);
       window.dispatchEvent(new Event(LOCAL_COMMENTS_EVENT));
+      pushLocalComments();
       return true;
     },
     [slug]
@@ -522,9 +524,11 @@ function useLocalComments(slug: string) {
       const next = ref.current.filter((c) => c.id !== id);
       if (next.length === ref.current.length) return true;
       if (!writeLocalComments(slug, next)) return false;
+      markCommentDeleted(id);
       ref.current = next;
       setComments(next);
       window.dispatchEvent(new Event(LOCAL_COMMENTS_EVENT));
+      pushLocalComments();
       return true;
     },
     [slug]
