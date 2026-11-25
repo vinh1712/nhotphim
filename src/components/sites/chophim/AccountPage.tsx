@@ -5,6 +5,7 @@ import { signOut, updateProfile, useAuthSession } from "@/lib/auth";
 import { withBasePath } from "@/lib/base-path";
 import {
   LOCAL_COMMENTS_EVENT,
+  hideComment,
   readAllLocalComments,
   readHiddenCommentIds,
   readLocalComments,
@@ -677,6 +678,15 @@ function AdminPanel({
     setMessage("Đã cập nhật trạng thái ghim.");
   };
 
+  const hideOne = (id: string) => {
+    if (!hideComment(id)) {
+      setMessage("Không ẩn được bình luận.");
+      return;
+    }
+    setHidden(readHiddenCommentIds());
+    setMessage("Đã ẩn bình luận.");
+  };
+
   const removeLocal = (slug: string, id: string) => {
     commitLocal(
       slug,
@@ -781,15 +791,26 @@ function AdminPanel({
                   {comment.pinned || pinnedIds.includes(comment.id) ? (
                     <span className="rounded bg-[#FFD166]/15 px-1.5 py-0.5 text-[#FFD166]">Đã ghim</span>
                   ) : null}
+                  {hidden.includes(comment.id) ? (
+                    <span className="rounded bg-[#ffb86b]/15 px-1.5 py-0.5 text-[#ffb86b]">Đã ẩn</span>
+                  ) : null}
                 </div>
                 <p className="mt-2 line-clamp-2 text-[13px] text-white/70">{comment.content}</p>
-                <div className="mt-3 flex gap-2">
+                <div className="mt-3 flex flex-wrap gap-2">
                   <button
                     type="button"
                     onClick={() => togglePin(comment.id)}
                     className="rounded-full border border-white/10 px-3 py-1.5 text-[11px] text-white/60 hover:text-[#FFD166]"
                   >
                     {comment.pinned || pinnedIds.includes(comment.id) ? "Bỏ ghim" : "Ghim"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => hideOne(comment.id)}
+                    aria-label="Ẩn bình luận"
+                    className="rounded-full border border-[#ffb86b]/25 px-3 py-1.5 text-[11px] text-[#ffb86b] hover:bg-[#ffb86b]/10"
+                  >
+                    Ẩn
                   </button>
                   <button
                     type="button"

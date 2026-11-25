@@ -274,6 +274,7 @@ export function CommentItem({
   currentUserTier = null,
   onDelete,
   onTogglePin,
+  onHide,
 }: {
   c: DetailComment;
   currentUserId?: string | null;
@@ -281,6 +282,7 @@ export function CommentItem({
   currentUserTier?: string | null;
   onDelete?: (id: string) => boolean | Promise<boolean>;
   onTogglePin?: (id: string) => void;
+  onHide?: (id: string) => void;
 }) {
   const [vote, setVote] = useState<"up" | "down" | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -317,6 +319,7 @@ export function CommentItem({
   const canDelete =
     !!onDelete && ((!!currentUserId && currentUserId === c.userId) || canDeleteByViewer);
   const canPin = canDeleteByViewer && !!onTogglePin;
+  const canHide = canDeleteByViewer && !!onHide;
   const deleteOwn = async () => {
     setConfirmDelete(false);
     await onDelete?.(c.id);
@@ -429,6 +432,22 @@ export function CommentItem({
                   <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z" />
                 </svg>
                 <span>{c.pinned ? "Bỏ ghim" : "Ghim"}</span>
+              </button>
+            )}
+            {canHide && (
+              <button
+                type="button"
+                onClick={() => onHide?.(c.id)}
+                aria-label="Ẩn bình luận"
+                className="flex items-center gap-1 text-xs text-text-muted hover:text-[#ffb86b] transition-colors ml-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-eye-off w-3.5 h-3.5" aria-hidden="true">
+                  <path d="M10.6 5.1A10.9 10.9 0 0 1 12 5c7 0 10 7 10 7a13.2 13.2 0 0 1-1.7 2.6" />
+                  <path d="M6.6 6.6A13.2 13.2 0 0 0 2 12s3 7 10 7a10.9 10.9 0 0 0 5.4-1.4" />
+                  <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+                  <path d="m2 2 20 20" />
+                </svg>
+                <span>Ẩn</span>
               </button>
             )}
             {canDelete &&
@@ -717,6 +736,7 @@ export function CommentsSection({
               currentUserTier={viewerMeta?.subscriptionTier ?? null}
               onDelete={viewerIsAdmin || c.userId ? deleteOwn : undefined}
               onTogglePin={viewerIsAdmin ? () => togglePinnedComment(c.id) : undefined}
+              onHide={viewerIsAdmin ? (id) => hideComment(id) : undefined}
             />
           ))}
         </div>
