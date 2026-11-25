@@ -8,6 +8,8 @@ type Props = {
   group: "slider" | "section";
   /** Luôn hiện mũi tên (kể cả mobile / bản ngang), không cần hover. */
   mobileVisible?: boolean;
+  /** Đặt mũi tên ngay mép ngoài để không che thẻ đầu/cuối (dùng cho Bình Luận Mới). */
+  edge?: boolean;
   /** Nhãn cho trình đọc màn hình; mặc định dùng nhãn cuộn chung. */
   prevLabel?: string;
   nextLabel?: string;
@@ -20,10 +22,13 @@ export function SliderArrows({
   z,
   group,
   mobileVisible = false,
+  edge = false,
   prevLabel = "Cuộn trái",
   nextLabel = "Cuộn phải",
 }: Props) {
   const hover = group === "section" ? "group-hover/section:opacity-100" : "group-hover/slider:opacity-100";
+  const leftEdge = edge ? "left-0 -translate-x-1/2" : "left-2";
+  const rightEdge = edge ? "right-0 translate-x-1/2" : "right-2";
   // Theo feedback: 2 carousel Bình Luận Mới / Song Ngữ phải thấy <> ngay cả khi xem ngang trên điện thoại.
   const visibility = mobileVisible
     ? `flex opacity-100`
@@ -53,7 +58,7 @@ export function SliderArrows({
         type="button"
         onClick={() => scroll(-1)}
         aria-label={prevLabel}
-        className={`absolute left-2 ${pos} -translate-y-1/2 ${z} w-8 h-8 md:w-10 md:h-10 bg-white/90 text-bg-primary hover:scale-110 shadow-xl rounded-full items-center justify-center transition-all ${visibility}`}
+        className={`absolute ${leftEdge} ${pos} -translate-y-1/2 ${z} w-8 h-8 md:w-10 md:h-10 bg-white/90 text-bg-primary hover:scale-110 shadow-xl rounded-full items-center justify-center transition-all ${visibility}`}
       >
         <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
@@ -63,7 +68,7 @@ export function SliderArrows({
         type="button"
         onClick={() => scroll(1)}
         aria-label={nextLabel}
-        className={`absolute right-2 ${pos} -translate-y-1/2 ${z} w-8 h-8 md:w-10 md:h-10 bg-white/90 text-bg-primary hover:scale-110 shadow-xl rounded-full items-center justify-center transition-all ${visibility}`}
+        className={`absolute ${rightEdge} ${pos} -translate-y-1/2 ${z} w-8 h-8 md:w-10 md:h-10 bg-white/90 text-bg-primary hover:scale-110 shadow-xl rounded-full items-center justify-center transition-all ${visibility}`}
       >
         <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />

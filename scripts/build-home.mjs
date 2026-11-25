@@ -169,8 +169,8 @@ for (const [slug, list] of Object.entries(comments)) {
   const m = bySlug[slug];
   if (!m) continue;
   for (const c of list) {
-    if (c.parentId) continue; // card hiển thị bình luận gốc, replies tính riêng
-    const replies = list.filter((x) => x.parentId === c.id).length;
+    const parentId = c.parentId ? String(c.parentId) : null;
+    const replies = parentId ? 0 : list.filter((x) => x.parentId && String(x.parentId) === String(c.id)).length;
     homeComments.push({
       id: c.id,
       movieSlug: slug,
@@ -192,10 +192,14 @@ for (const [slug, list] of Object.entries(comments)) {
         showPremiumBadge: false,
       },
       createdAt: c.createdAt,
+      parentId,
+      isSpoiler: !!c.isSpoiler,
     });
   }
 }
-homeComments.sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+homeComments.sort(
+  (a, b) => Date.parse(String(b.createdAt || "")) - Date.parse(String(a.createdAt || ""))
+);
 
 // ── bảng xếp hạng ─────────────────────────────────────────────────────────
 const trend = ["up", "down", "same", "up", "down"];

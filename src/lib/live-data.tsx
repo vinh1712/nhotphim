@@ -27,6 +27,7 @@ import { VN_FLAG_AVATAR } from "./avatar-fallback";
 import { stripBasePath, withBasePath } from "./base-path";
 import { SHOW_LOADING_EVENT, SKIP_OVERLAY_KEY, WAKE_REFRESH_MS } from "./overlay";
 import { SB_KEY, SB_URL, sbFetch, sbTable } from "./supabase";
+import { commentTimestamp } from "@/components/sites/chophim/detail-types";
 import type {
   DetailComment,
   MovieDetail,
@@ -406,16 +407,14 @@ function buildComments(rows: Row[], db: Record<string, MovieDetail>): Record<str
     } as DetailComment & { createdAt?: string; parentId?: string | null; isSpoiler?: boolean });
     const entry = bySlug[slug][bySlug[slug].length - 1] as DetailComment & { createdAt: string };
     entry.createdAt = str(c.created_at);
-    (entry as any).parentId = c.parent_id ?? null;
+    entry.parentId = c.parent_id ? String(c.parent_id) : null;
+    entry.replyToName = str(c.reply_to_name) || null;
     (entry as any).isSpoiler = !!c.is_spoiler;
     (entry as any).movieTitle = db[slug].title;
   }
   for (const list of Object.values(bySlug)) {
     // "Mới nhất" của chophim là mặc định: mới trước, cùng thời giữ thứ tự gốc.
-    list.sort((a, b) => {
-      const byDate = String((b as any).createdAt || "").localeCompare(String((a as any).createdAt || ""));
-      return byDate;
-    });
+    list.sort((a, b) => commentTimestamp(b) - commentTimestamp(a));
   }
   return bySlug;
 }
@@ -573,8 +572,8 @@ function buildHome(
     const m = db[slug];
     if (!m) continue;
     for (const c of list) {
-      const raw = c as any;
-      if (raw.parentId) continue;
+      const raw = c as DetailComment & { isSpoiler?: boolean };
+      const parentId = raw.parentId ? String(raw.parentId) : null;
       homeComments.push({
         id: c.id,
         movieSlug: slug,
@@ -584,24 +583,26 @@ function buildHome(
         content: c.content,
         likes: c.likes,
         dislikes: c.dislikes,
-        replies: list.filter((x) => (x as any).parentId === c.id).length,
+        replies: parentId ? 0 : list.filter((x) => x.parentId && String(x.parentId) === c.id).length,
         user: {
           displayName: c.name,
           avatarUrl: c.avatar,
           avatarFrame: null,
-          subscriptionTier: str((c as any).subscription_tier) || "free",
-          role: c.admin ? "admin" : "user",
+          subscriptionTier: str(c.subscriptionTier) || "free",
+          role: c.admin || c.role === "admin" ? "admin" : "user",
           gender: c.gender,
           selectedEmoji: null,
           showPremiumBadge: false,
         },
         createdAt: raw.createdAt,
-        parentId: raw.parentId ?? null,
+        parentId,
         isSpoiler: !!raw.isSpoiler,
       });
     }
   }
-  homeComments.sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+  homeComments.sort(
+    (a, b) => Date.parse(String(b.createdAt || "")) - Date.parse(String(a.createdAt || ""))
+  );
 
   const trend = ["up", "down", "same", "up", "down", "same", "up", "down", "same", "up"];
   const hot = pick([...movies].sort(ratingDesc), 10).map((m, i) => ({

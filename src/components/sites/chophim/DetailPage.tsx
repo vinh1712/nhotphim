@@ -30,7 +30,7 @@ import {
   IconInfinity,
 } from "./icons";
 import type { DetailComment, MovieDetail, Suggestion } from "./detail-types";
-import { enc, sortComments } from "./detail-types";
+import { commentTimestamp, enc, sortComments } from "./detail-types";
 
 const TABS = ["Tập phim", "Gallery", "Diễn viên", "Đề xuất"] as const;
 
@@ -276,6 +276,7 @@ export function CommentItem({
   onDelete,
   onTogglePin,
   onHide,
+  onReply,
 }: {
   c: DetailComment;
   currentUserId?: string | null;
@@ -284,6 +285,7 @@ export function CommentItem({
   onDelete?: (id: string) => boolean | Promise<boolean>;
   onTogglePin?: (id: string) => void;
   onHide?: (id: string) => void;
+  onReply?: (c: DetailComment) => void;
 }) {
   const [vote, setVote] = useState<"up" | "down" | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -327,7 +329,7 @@ export function CommentItem({
   };
   return (
     <div
-      id={`comment-${c.id}`}
+      id={c.parentId ? `comment-${c.parentId}-reply-${c.id}` : `comment-${c.id}`}
       className={`relative py-3 sm:py-5 transition-all duration-1000 ${
         c.pinned ? "bg-[#FFD166]/[0.04] border border-[#FFD166]/15 rounded-xl px-3 sm:px-4 my-1.5" : ""
       }`}
@@ -392,6 +394,11 @@ export function CommentItem({
             <span className="text-[11px] sm:text-[12px] text-text-muted ml-3">{c.time}</span>
           </div>
           <div className="mt-1.5">
+            {c.replyToName && !c.content.startsWith(`@${c.replyToName}`) && (
+              <div className="mb-1 text-[11px] font-semibold text-[#FFD166]/85">
+                ↩ <span className="text-white/75">@{c.replyToName}</span>
+              </div>
+            )}
             <div className="relative text-[#AAAAAA] leading-[1.7] whitespace-pre-wrap break-words mb-2 sm:mb-2.5 text-[12px] sm:text-[13px] ">
               <div className=" transition-all duration-300 relative z-0">
                 <span>{c.content}</span>
@@ -419,6 +426,19 @@ export function CommentItem({
               <IconThumbsDown className="w-4 h-4" />
               {dislikes > 0 && <span className="font-semibold">{dislikes}</span>}
             </button>
+            {!c.parentId && onReply && (
+              <button
+                type="button"
+                onClick={() => onReply(c)}
+                className="flex items-center gap-1 text-xs text-text-muted hover:text-[#FFD166] transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-corner-up-left w-3.5 h-3.5" aria-hidden="true">
+                  <polyline points="9 14 4 9 9 4" />
+                  <path d="M20 20v-7a4 4 0 0 0-4-4H4" />
+                </svg>
+                <span>Trả lời</span>
+              </button>
+            )}
             {canPin && (
               <button
                 type="button"
@@ -559,6 +579,9 @@ export function CommentsSection({
   const [error, setError] = useState<string | null>(null);
   const [sort, setSort] = useState<"new" | "top">("new");
   const [showMore, setShowMore] = useState(false);
+  const [replyTo, setReplyTo] = useState<DetailComment | null>(null);
+  const [replyDraft, setReplyDraft] = useState("");
+  const [replyError, setReplyError] = useState<string | null>(null);
 
   useEffect(() => {
     const sync = () => {
@@ -578,8 +601,29 @@ export function CommentsSection({
     [localComments, comments, hiddenIds, pinnedIds]
   );
   const sorted = useMemo(() => sortComments(allComments, sort), [allComments, sort]);
-  const visible = showMore ? sorted : sorted.slice(0, 5);
-  const allShown = sorted.length <= 5;
+  const presentIds = useMemo(
+    () => new Set(allComments.map((c) => String(c.id))),
+    [allComments]
+  );
+  const roots = useMemo(
+    () => sorted.filter((c) => !c.parentId || !presentIds.has(String(c.parentId))),
+    [sorted, presentIds]
+  );
+  const repliesByParent = useMemo(() => {
+    const map = new Map<string, DetailComment[]>();
+    for (const c of sorted) {
+      if (!c.parentId || !presentIds.has(String(c.parentId))) continue;
+      const key = String(c.parentId);
+      const list = map.get(key) || [];
+      list.push(c);
+      map.set(key, list);
+    }
+    // Giống chophim: reply cũ nhất đứng trên để giữ thứ tự hội thoại.
+    for (const list of map.values()) list.sort((a, b) => commentTimestamp(a) - commentTimestamp(b));
+    return map;
+  }, [sorted, presentIds]);
+  const visibleRoots = showMore ? roots : roots.slice(0, 5);
+  const allShown = roots.length <= 5;
   const restoreComment = useCallback((id: string) => {
     unhideComment(id);
     setHiddenIds(readHiddenCommentIds());
@@ -617,6 +661,61 @@ export function CommentsSection({
     setSort("new");
     setShowMore(true);
   }, [addComment, draft, user, viewerMeta, viewerName]);
+
+  const openReply = useCallback(
+    (target: DetailComment) => {
+      if (!user) {
+        setError("Đăng nhập để trả lời bình luận.");
+        return;
+      }
+      setReplyTo(target);
+      setReplyDraft("");
+      setReplyError(null);
+    },
+    [user]
+  );
+
+  const cancelReply = useCallback(() => {
+    setReplyTo(null);
+    setReplyDraft("");
+    setReplyError(null);
+  }, []);
+
+  const submitReply = useCallback(() => {
+    const text = replyDraft.trim();
+    if (!text || !replyTo || !user || !viewerMeta) return;
+    const now = new Date();
+    const entry: DetailComment = {
+      id: `local-${now.getTime()}`,
+      pinned: false,
+      admin: viewerMeta.role === "admin",
+      name: viewerName,
+      gender: viewerMeta.gender === "male" || viewerMeta.gender === "female" ? viewerMeta.gender : null,
+      time: now.toLocaleDateString("vi-VN"),
+      content: text,
+      likes: 0,
+      dislikes: 0,
+      avatar: viewerMeta.avatarUrl || "",
+      frame: viewerMeta.frameUrl || null,
+      emoji: viewerMeta.selectedEmoji || viewerMeta.emoji || null,
+      createdAt: now.toISOString(),
+      userId: user.id,
+      role: viewerMeta.role || null,
+      subscriptionTier: viewerMeta.subscriptionTier || null,
+      parentId: String(replyTo.id),
+      replyToName: replyTo.name,
+    };
+    if (!addComment(entry)) {
+      setReplyError("Không thể gửi trả lời");
+      return;
+    }
+    setReplyDraft("");
+    setReplyTo(null);
+    setReplyError(null);
+    setError(null);
+    setSort("new");
+    setShowMore(true);
+  }, [addComment, replyDraft, replyTo, user, viewerMeta, viewerName]);
 
   const deleteOwn = useCallback(
     (id: string) => {
@@ -713,6 +812,50 @@ export function CommentsSection({
         </div>
       )}
 
+      {replyTo && user && viewerMeta ? (
+        <div className="mb-8 p-3 sm:p-4 rounded-xl border border-[#FFD166]/20 bg-[#FFD166]/[0.06]">
+          <div className="mb-2 text-[12px] font-semibold text-[#FFD166]">
+            ↩ Trả lời @{replyTo.name}:
+          </div>
+          <textarea
+            value={replyDraft}
+            onChange={(e) => setReplyDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                submitReply();
+              }
+            }}
+            placeholder="Viết trả lời..."
+            maxLength={1000}
+            rows={3}
+            className="w-full bg-[#0f111a] border-none rounded-lg px-4 py-3 text-[14px] text-white placeholder:text-text-muted resize-none focus:outline-none focus:ring-1 transition-shadow focus:ring-[#FFD166]/30 block"
+          />
+          <div className="mt-2 flex items-center justify-end gap-3">
+            <span className={`text-[11px] ${replyDraft.length > 950 ? "text-red-400 font-bold" : "text-text-muted"}`}>
+              {replyDraft.length} / 1000
+            </span>
+            <button
+              type="button"
+              onClick={cancelReply}
+              className="rounded-lg px-3 py-1.5 text-[13px] text-text-muted hover:text-white transition-colors"
+            >
+              Hủy
+            </button>
+            <button
+              type="button"
+              disabled={!replyDraft.trim()}
+              onClick={submitReply}
+              className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[#F5C518] hover:bg-white/5 disabled:opacity-40 transition-opacity"
+            >
+              <span className="font-bold text-[14px]">Gửi</span>
+              <IconSend className="w-4 h-4 text-[#F5C518]" />
+            </button>
+          </div>
+          {replyError && <p className="text-red-400 text-xs mt-2 px-1">{replyError}</p>}
+        </div>
+      ) : null}
+
       {viewerIsAdmin && hiddenIds.length > 0 ? (
         <div className="mb-5 flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-[#191b24] px-4 py-3">
           <span className="text-[12px] font-semibold text-white/70">Đã ẩn {hiddenIds.length} bình luận</span>
@@ -731,17 +874,35 @@ export function CommentsSection({
 
       {allComments.length > 0 ? (
         <div className="divide-y divide-white/5">
-          {visible.map((c) => (
-            <CommentItem
-              key={c.id}
-              c={c}
-              currentUserId={user?.id ?? null}
-              currentUserRole={viewerMeta?.role ?? null}
-              currentUserTier={viewerMeta?.subscriptionTier ?? null}
-              onDelete={viewerIsAdmin || c.userId ? deleteOwn : undefined}
-              onTogglePin={viewerIsAdmin ? () => togglePinnedComment(c.id) : undefined}
-              onHide={viewerIsAdmin ? (id) => hideComment(id) : undefined}
-            />
+          {visibleRoots.map((c) => (
+            <div key={c.id}>
+              <CommentItem
+                c={c}
+                currentUserId={user?.id ?? null}
+                currentUserRole={viewerMeta?.role ?? null}
+                currentUserTier={viewerMeta?.subscriptionTier ?? null}
+                onDelete={viewerIsAdmin || c.userId ? deleteOwn : undefined}
+                onTogglePin={viewerIsAdmin ? () => togglePinnedComment(c.id) : undefined}
+                onHide={viewerIsAdmin ? (id) => hideComment(id) : undefined}
+                onReply={openReply}
+              />
+              {(repliesByParent.get(String(c.id)) || []).length > 0 && (
+                <div className="ml-8 sm:ml-[52px] border-l border-white/10 pl-3 sm:pl-4 divide-y divide-white/5">
+                  {(repliesByParent.get(String(c.id)) || []).map((reply) => (
+                    <CommentItem
+                      key={reply.id}
+                      c={reply}
+                      currentUserId={user?.id ?? null}
+                      currentUserRole={viewerMeta?.role ?? null}
+                      currentUserTier={viewerMeta?.subscriptionTier ?? null}
+                      onDelete={viewerIsAdmin || reply.userId ? deleteOwn : undefined}
+                      onTogglePin={viewerIsAdmin ? () => togglePinnedComment(reply.id) : undefined}
+                      onHide={viewerIsAdmin ? (id) => hideComment(id) : undefined}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
         </div>
       ) : (

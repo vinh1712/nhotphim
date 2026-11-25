@@ -66,7 +66,16 @@ export type DetailComment = {
   userId?: string;
   role?: string | null;
   subscriptionTier?: string | null;
+  /** Reply nằm dưới bình luận gốc; id luôn là string kể cả dữ liệu DB trả số. */
+  parentId?: string | null;
+  replyToName?: string | null;
 };
+
+/** So thời gian thật, không so chuỗi: local dùng `...Z`, DB dùng `...+00:00`. */
+export function commentTimestamp(c: { createdAt?: string }): number {
+  const value = Date.parse(String(c.createdAt || ""));
+  return Number.isFinite(value) ? value : 0;
+}
 
 /** Chophim luôn đưa bình luận được ghim lên đầu, sau đó mới đến Mới nhất / Nổi bật. */
 export function sortComments(comments: DetailComment[], sort: "new" | "top"): DetailComment[] {
@@ -74,7 +83,7 @@ export function sortComments(comments: DetailComment[], sort: "new" | "top"): De
     const pinned = Number(!!b.pinned) - Number(!!a.pinned);
     if (pinned !== 0) return pinned;
     if (sort === "top" && b.likes !== a.likes) return b.likes - a.likes;
-    return String(b.createdAt || "").localeCompare(String(a.createdAt || ""));
+    return commentTimestamp(b) - commentTimestamp(a);
   });
 }
 

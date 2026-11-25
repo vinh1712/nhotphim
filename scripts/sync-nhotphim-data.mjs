@@ -416,12 +416,15 @@ function buildComments(rows, db) {
       emoji: null,
       movieTitle: db[slug].title,
       createdAt: c.created_at,
-      parentId: c.parent_id ?? null,
+      parentId: c.parent_id ? String(c.parent_id) : null,
+      replyToName: c.reply_to_name || null,
       isSpoiler: !!c.is_spoiler,
     });
   }
   for (const list of Object.values(bySlug)) {
-    list.sort((a, b) => String(a.createdAt || "").localeCompare(String(b.createdAt || "")));
+    list.sort(
+      (a, b) => Date.parse(String(b.createdAt || "")) - Date.parse(String(a.createdAt || ""))
+    );
   }
   return bySlug;
 }
@@ -566,8 +569,8 @@ function buildHome(tpl, db, comments, taxonomies, heroIds) {
     const m = db[slug];
     if (!m) continue;
     for (const c of list) {
-      if (c.parentId) continue;
-      const replies = list.filter((x) => x.parentId === c.id).length;
+      const parentId = c.parentId ? String(c.parentId) : null;
+      const replies = parentId ? 0 : list.filter((x) => x.parentId && String(x.parentId) === String(c.id)).length;
       homeComments.push({
         id: c.id,
         movieSlug: slug,
@@ -589,12 +592,14 @@ function buildHome(tpl, db, comments, taxonomies, heroIds) {
           showPremiumBadge: false,
         },
         createdAt: c.createdAt,
-        parentId: c.parentId ?? null,
+        parentId,
         isSpoiler: !!c.isSpoiler,
       });
     }
   }
-  homeComments.sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+  homeComments.sort(
+    (a, b) => Date.parse(String(b.createdAt || "")) - Date.parse(String(a.createdAt || ""))
+  );
 
   const trend = ["up", "down", "same", "up", "down", "same", "up", "down", "same", "up"];
   const hot = pick([...movies].sort(ratingDesc), 10).map((m, i) => ({

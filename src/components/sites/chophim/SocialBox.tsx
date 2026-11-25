@@ -11,7 +11,7 @@ import { frameAssetSrc } from "@/lib/avatar-data";
 import { checkVnFallback, fallbackToVnFlag } from "@/lib/avatar-fallback";
 import { normalizeTier } from "@/lib/subscription";
 import { fillStyle, type CommentItem, type RankRow } from "./types";
-import type { DetailComment, MovieDetail } from "./detail-types";
+import { commentTimestamp, type DetailComment, type MovieDetail } from "./detail-types";
 import { SliderArrows } from "./SliderArrows";
 import {
   FlameCustom,
@@ -86,7 +86,8 @@ function cleanContent(content: string, isSpoiler?: boolean): string {
 function localToHomeComment(
   slug: string,
   c: DetailComment,
-  movie: MovieDetail
+  movie: MovieDetail,
+  replyCount = 0
 ): CommentItem {
   const role = c.role || (c.admin ? "admin" : "user");
   return {
@@ -98,7 +99,7 @@ function localToHomeComment(
     content: c.content,
     likes: c.likes,
     dislikes: c.dislikes,
-    replies: 0,
+    replies: replyCount,
     user: {
       displayName: c.name,
       avatarUrl: c.avatar || "",
@@ -110,7 +111,7 @@ function localToHomeComment(
       showPremiumBadge: false,
     },
     createdAt: c.createdAt,
-    parentId: null,
+    parentId: c.parentId ? String(c.parentId) : null,
     isSpoiler: false,
   };
 }
@@ -424,13 +425,20 @@ export function SocialBox() {
   useEffect(() => {
     let alive = true;
     const load = () => {
-      const cards = readAllLocalComments()
+      const all = readAllLocalComments();
+      const replyCounts = new Map<string, number>();
+      for (const { comment } of all) {
+        if (!comment.parentId) continue;
+        const key = String(comment.parentId);
+        replyCounts.set(key, (replyCounts.get(key) || 0) + 1);
+      }
+      const cards = all
         .map(({ slug, comment }) => {
           const movie = movies[slug];
-          return movie ? localToHomeComment(slug, comment, movie) : null;
+          return movie ? localToHomeComment(slug, comment, movie, replyCounts.get(comment.id) || 0) : null;
         })
         .filter((card): card is CommentItem => card !== null)
-        .sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+        .sort((a, b) => commentTimestamp(b) - commentTimestamp(a));
       if (alive) setLocalCards(cards);
     };
     load();
@@ -450,8 +458,8 @@ export function SocialBox() {
 
   const comments = useMemo(
     () =>
-      [...localCards, ...home.comments].sort((a, b) =>
-        String(b.createdAt || "").localeCompare(String(a.createdAt || ""))
+      [...localCards, ...home.comments].sort(
+        (a, b) => commentTimestamp(b) - commentTimestamp(a)
       ),
     [home.comments, localCards]
   );
@@ -473,12 +481,13 @@ export function SocialBox() {
             z="z-10"
             group="section"
             mobileVisible
+            edge
             prevLabel="Bình luận trước"
             nextLabel="Bình luận tiếp theo"
           />
           <div
             id="row-comments"
-            className="-mx-1 px-1 pb-1 overflow-x-auto scrollbar-hide snap-x"
+            className="px-5 sm:px-6 pb-1 overflow-x-auto scrollbar-hide snap-x scroll-pl-5 sm:scroll-pl-6"
           >
             <div className="flex gap-4 w-max">
               {comments.map((c) => (
