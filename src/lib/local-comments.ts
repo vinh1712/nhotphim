@@ -3,8 +3,32 @@ import type { DetailComment } from "@/components/sites/chophim/detail-types";
 export const LOCAL_COMMENTS_EVENT = "nhotphim:local-comments-change";
 export const LOCAL_COMMENTS_PREFIX = "nhotphim:local-comments:";
 export const HIDDEN_COMMENTS_KEY = "nhotphim:hidden-comments:v1";
+export const PINNED_COMMENTS_KEY = "nhotphim:pinned-comments:v1";
 
 export const localCommentsKey = (slug: string) => `${LOCAL_COMMENTS_PREFIX}${slug}`;
+
+/** Admin ghim bình luận — dùng chung cho comment local và comment tĩnh từ DB. */
+export function readPinnedCommentIds(): string[] {
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(PINNED_COMMENTS_KEY) || "[]");
+    return Array.isArray(parsed) ? parsed.map(String) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function togglePinnedComment(id: string): string[] {
+  const key = String(id);
+  const ids = readPinnedCommentIds();
+  const next = ids.includes(key) ? ids.filter((x) => x !== key) : [...ids, key];
+  try {
+    window.localStorage.setItem(PINNED_COMMENTS_KEY, JSON.stringify(next));
+    window.dispatchEvent(new Event(LOCAL_COMMENTS_EVENT));
+  } catch {
+    /* private mode — vẫn trả về trạng thái mới cho UI */
+  }
+  return next;
+}
 
 /** Admin ẩn bình luận (kể cả bình luận tĩnh từ DB) — chỉ trên thiết bị này. */
 export function readHiddenCommentIds(): string[] {

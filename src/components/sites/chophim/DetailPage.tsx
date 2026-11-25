@@ -11,6 +11,9 @@ import {
   localCommentsKey,
   readHiddenCommentIds,
   readLocalComments,
+  readPinnedCommentIds,
+  togglePinnedComment,
+  unhideComment,
   writeLocalComments,
 } from "@/lib/local-comments";
 import { detailHref, useMovieDuration, watchHref } from "@/lib/live-data";
@@ -270,12 +273,14 @@ export function CommentItem({
   currentUserRole = null,
   currentUserTier = null,
   onDelete,
+  onTogglePin,
 }: {
   c: DetailComment;
   currentUserId?: string | null;
   currentUserRole?: string | null;
   currentUserTier?: string | null;
   onDelete?: (id: string) => boolean | Promise<boolean>;
+  onTogglePin?: (id: string) => void;
 }) {
   const [vote, setVote] = useState<"up" | "down" | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -311,6 +316,7 @@ export function CommentItem({
   // Giống chophim: hiện Xóa cho comment của mình hoặc khi đang là admin.
   const canDelete =
     !!onDelete && ((!!currentUserId && currentUserId === c.userId) || canDeleteByViewer);
+  const canPin = canDeleteByViewer && !!onTogglePin;
   const deleteOwn = async () => {
     setConfirmDelete(false);
     await onDelete?.(c.id);
@@ -409,6 +415,22 @@ export function CommentItem({
               <IconThumbsDown className="w-4 h-4" />
               {dislikes > 0 && <span className="font-semibold">{dislikes}</span>}
             </button>
+            {canPin && (
+              <button
+                type="button"
+                onClick={() => onTogglePin?.(c.id)}
+                aria-pressed={!!c.pinned}
+                className={`flex items-center gap-1 text-xs transition-colors ml-2 ${
+                  c.pinned ? "text-[#FFD166]" : "text-text-muted hover:text-[#FFD166]"
+                }`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-pin w-3.5 h-3.5" aria-hidden="true">
+                  <path d="M12 17v5" />
+                  <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z" />
+                </svg>
+                <span>{c.pinned ? "Bỏ ghim" : "Ghim"}</span>
+              </button>
+            )}
             {canDelete &&
               (confirmDelete ? (
                 <div className="flex items-center gap-2 ml-2 animate-fade-in">
@@ -509,25 +531,36 @@ export function CommentsSection({
   const { comments: localComments, addComment, removeComment } = useLocalComments(slug);
   const viewerIsAdmin = !!viewerMeta && isAdminRole(viewerMeta.role, viewerMeta.subscriptionTier);
   const [hiddenIds, setHiddenIds] = useState<string[]>([]);
+  const [pinnedIds, setPinnedIds] = useState<string[]>([]);
   const [draft, setDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [sort, setSort] = useState<"new" | "top">("new");
   const [showMore, setShowMore] = useState(false);
 
   useEffect(() => {
-    const sync = () => setHiddenIds(readHiddenCommentIds());
+    const sync = () => {
+      setHiddenIds(readHiddenCommentIds());
+      setPinnedIds(readPinnedCommentIds());
+    };
     sync();
     window.addEventListener(LOCAL_COMMENTS_EVENT, sync);
     return () => window.removeEventListener(LOCAL_COMMENTS_EVENT, sync);
   }, []);
 
   const allComments = useMemo(
-    () => [...localComments, ...comments].filter((c) => !hiddenIds.includes(String(c.id))),
-    [localComments, comments, hiddenIds]
+    () =>
+      [...localComments, ...comments]
+        .filter((c) => !hiddenIds.includes(String(c.id)))
+        .map((c) => ({ ...c, pinned: c.pinned || pinnedIds.includes(String(c.id)) })),
+    [localComments, comments, hiddenIds, pinnedIds]
   );
   const sorted = useMemo(() => sortComments(allComments, sort), [allComments, sort]);
   const visible = showMore ? sorted : sorted.slice(0, 5);
   const allShown = sorted.length <= 5;
+  const restoreComment = useCallback((id: string) => {
+    unhideComment(id);
+    setHiddenIds(readHiddenCommentIds());
+  }, []);
 
   const submit = useCallback(() => {
     const text = draft.trim();
@@ -657,6 +690,22 @@ export function CommentsSection({
         </div>
       )}
 
+      {viewerIsAdmin && hiddenIds.length > 0 ? (
+        <div className="mb-5 flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-[#191b24] px-4 py-3">
+          <span className="text-[12px] font-semibold text-white/70">Đã ẩn {hiddenIds.length} bình luận</span>
+          {hiddenIds.map((id) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => restoreComment(id)}
+              className="rounded-full border border-white/10 px-3 py-1 text-[11px] text-white/55 hover:border-[#FFD166]/40 hover:text-[#FFD166]"
+            >
+              Khôi phục #{id}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
       {allComments.length > 0 ? (
         <div className="divide-y divide-white/5">
           {visible.map((c) => (
@@ -667,6 +716,7 @@ export function CommentsSection({
               currentUserRole={viewerMeta?.role ?? null}
               currentUserTier={viewerMeta?.subscriptionTier ?? null}
               onDelete={viewerIsAdmin || c.userId ? deleteOwn : undefined}
+              onTogglePin={viewerIsAdmin ? () => togglePinnedComment(c.id) : undefined}
             />
           ))}
         </div>

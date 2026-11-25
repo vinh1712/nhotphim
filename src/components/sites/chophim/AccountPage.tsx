@@ -8,6 +8,8 @@ import {
   readAllLocalComments,
   readHiddenCommentIds,
   readLocalComments,
+  readPinnedCommentIds,
+  togglePinnedComment,
   unhideComment,
   writeLocalComments,
 } from "@/lib/local-comments";
@@ -642,12 +644,14 @@ function AdminPanel({
 }) {
   const [rows, setRows] = useState<ReturnType<typeof readAllLocalComments>>([]);
   const [hidden, setHidden] = useState<string[]>([]);
+  const [pinnedIds, setPinnedIds] = useState<string[]>([]);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
     const sync = () => {
       setRows(readAllLocalComments());
       setHidden(readHiddenCommentIds());
+      setPinnedIds(readPinnedCommentIds());
     };
     sync();
     window.addEventListener(LOCAL_COMMENTS_EVENT, sync);
@@ -668,14 +672,9 @@ function AdminPanel({
     setMessage("Đã cập nhật bình luận.");
   };
 
-  const togglePin = (slug: string, id: string) => {
-    const list = readLocalComments(slug);
-    const target = list.find((item) => item.id === id);
-    if (!target) return;
-    commitLocal(
-      slug,
-      list.map((item) => (item.id === id ? { ...item, pinned: !item.pinned } : item))
-    );
+  const togglePin = (id: string) => {
+    setPinnedIds(togglePinnedComment(id));
+    setMessage("Đã cập nhật trạng thái ghim.");
   };
 
   const removeLocal = (slug: string, id: string) => {
@@ -779,16 +778,18 @@ function AdminPanel({
                     {comment.name}
                   </a>
                   <span>· {comment.time}</span>
-                  {comment.pinned ? <span className="rounded bg-[#FFD166]/15 px-1.5 py-0.5 text-[#FFD166]">Đã ghim</span> : null}
+                  {comment.pinned || pinnedIds.includes(comment.id) ? (
+                    <span className="rounded bg-[#FFD166]/15 px-1.5 py-0.5 text-[#FFD166]">Đã ghim</span>
+                  ) : null}
                 </div>
                 <p className="mt-2 line-clamp-2 text-[13px] text-white/70">{comment.content}</p>
                 <div className="mt-3 flex gap-2">
                   <button
                     type="button"
-                    onClick={() => togglePin(slug, comment.id)}
+                    onClick={() => togglePin(comment.id)}
                     className="rounded-full border border-white/10 px-3 py-1.5 text-[11px] text-white/60 hover:text-[#FFD166]"
                   >
-                    {comment.pinned ? "Bỏ ghim" : "Ghim"}
+                    {comment.pinned || pinnedIds.includes(comment.id) ? "Bỏ ghim" : "Ghim"}
                   </button>
                   <button
                     type="button"
