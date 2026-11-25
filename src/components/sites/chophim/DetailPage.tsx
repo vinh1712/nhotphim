@@ -313,7 +313,7 @@ export function CommentItem({
       <div className="relative z-[1] flex items-start gap-2.5 sm:gap-3">
         <div className="shrink-0 mt-0.5">
           <div className="relative shrink-0">
-            <div className={c.pinned ? "avatar-ring-premium " : "ring-1 ring-white/15 rounded-full p-[2px] transition-colors"}>
+            <div className={c.pinned && !c.frame ? "avatar-ring-premium " : "ring-1 ring-white/15 rounded-full p-[2px] transition-colors"}>
               {c.avatar ? (
                 <img alt="" loading="lazy" width={44} height={44} decoding="async" className="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover relative z-10" style={fillStyle} src={c.avatar} />
               ) : (
@@ -323,7 +323,10 @@ export function CommentItem({
               )}
             </div>
             {c.frame && (
-              <img alt="" loading="lazy" decoding="async" className="avatar-frame pointer-events-none absolute inset-0 z-10 h-full w-full object-contain" src={c.frame} />
+              <>
+                <span aria-hidden="true" className="avatar-ring-premium avatar-frame-ring" />
+                <img alt="" loading="lazy" decoding="async" className="avatar-frame pointer-events-none absolute inset-0 z-10 h-full w-full object-contain" src={c.frame} />
+              </>
             )}
           </div>
         </div>

@@ -155,7 +155,7 @@ function CommentCard({ c }: { c: CommentItem }) {
               <div className="relative shrink-0">
                 <div
                   className={
-                    premium
+                    premium && !c.user.avatarFrame
                       ? "avatar-ring-premium group-hover:ring-white"
                       : "ring-1 ring-white/15 rounded-full p-[2px] transition-colors group-hover:ring-white"
                   }
@@ -178,14 +178,17 @@ function CommentCard({ c }: { c: CommentItem }) {
                   )}
                 </div>
                 {c.user.avatarFrame && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                    className="avatar-frame pointer-events-none absolute inset-0 z-10 h-full w-full object-contain"
-                    src={c.user.avatarFrame}
-                  />
+                  <>
+                    <span aria-hidden="true" className="avatar-ring-premium avatar-frame-ring" />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      className="avatar-frame pointer-events-none absolute inset-0 z-10 h-full w-full object-contain"
+                      src={c.user.avatarFrame}
+                    />
+                  </>
                 )}
               </div>
             </div>

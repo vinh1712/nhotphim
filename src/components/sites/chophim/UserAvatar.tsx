@@ -59,6 +59,7 @@ export function UserAvatar({
       className={`relative inline-flex shrink-0 items-center justify-center ${sizeClassName} ${className}`}
       style={style}
     >
+      {showFrame ? <span aria-hidden="true" className="avatar-ring-premium avatar-frame-ring" /> : null}
       <span
         className="relative inline-flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-[#FFD166]/15 text-[#FFD166] ring-1 ring-[#FFD166]/30"
         style={{ fontSize: Math.round(size * 0.4) }}
