@@ -109,11 +109,11 @@ export function bottomBadgeText(m: CardMovie): string {
   return "PĐ. Full";
 }
 
-/** Alias slug thể loại cũ (trang chủ) -> slug taxonomy hiện tại */
+/** Alias slug thể loại cũ (đường dẫn cũ) -> slug taxonomy chuẩn hiện tại.
+ *  Từ khi đồng bộ danh mục với web, "khoa-hoc" / "hoat-hinh" / "lang-man" là slug thật. */
 export const GENRE_ALIAS: Record<string, string> = {
-  "khoa-hoc": "khoa-hoc-vt",
-  "hoat-hinh": "anime-hoat-hinh",
-  "lang-man": "tinh-cam",
+  "khoa-hoc-vt": "khoa-hoc",
+  "anime-hoat-hinh": "hoat-hinh",
 };
 
 export const resolveGenreSlug = (slug: string) => GENRE_ALIAS[slug] ?? slug;

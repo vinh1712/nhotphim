@@ -43,6 +43,8 @@ export async function pushRemoteLibrary(userId: string, kind: SyncKind, value: u
   try {
     const res = await supabaseRest("/rest/v1/user_data", {
       method: "POST",
+      // Giữ request sống khi tab bị đóng ngay sau khi lưu mốc cuối.
+      keepalive: true,
       headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
       body: JSON.stringify({ user_id: userId, key: REMOTE_KEY[kind], value }),
     });

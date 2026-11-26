@@ -124,6 +124,21 @@ const COUNTRY_CODE: Record<string, string> = {
   in: "an-do",
   vn: "viet-nam",
   th: "thai-lan",
+  // 14 mã mới từ admin, khớp slug bộ lọc Quốc gia trên web
+  gb: "anh",
+  fr: "phap",
+  ca: "canada",
+  ru: "nga",
+  ph: "philippines",
+  au: "uc",
+  de: "duc",
+  es: "tay-ban-nha",
+  it: "y",
+  tr: "tho-nhi-ky",
+  id: "indonesia",
+  mal: "malaysia",
+  br: "brazil",
+  nl: "ha-lan",
 };
 
 const FALLBACK_GENRE_MAP: Record<string, string> = {
@@ -137,11 +152,13 @@ const FALLBACK_GENRE_MAP: Record<string, string> = {
   crime: "Hình Sự",
   war: "Chiến Tranh",
   adventure: "Phiêu Lưu",
-  scifi: "Khoa Học VT",
+  scifi: "Khoa Học",
   fantasy: "Viễn Tưởng",
   family: "Gia Đình",
   costumes: "Cổ Trang",
-  anime: "Anime & Hoạt Hình",
+  anime: "Hoạt Hình",
+  hoatHinh: "Hoạt Hình",
+  langMan: "Lãng Mạn",
   school: "Học Đường",
   sport: "Thể Thao",
   sports: "Thể Thao",
@@ -177,15 +194,24 @@ const episodeLabel = (value: unknown, type: "series" | "movie"): string => {
 
 function buildServers(row: Row, sub: string): MovieServer[] {
   const episodes = parseJson(row.episodes);
+  const extra = parseJson(row.extra) || {};
+  const dubEmbeds: Record<string, any> = (extra.dubEmbeds && typeof extra.dubEmbeds === "object") ? extra.dubEmbeds : {};
+  const m3u8Dub: any[] = Array.isArray(extra.m3u8Dub) ? extra.m3u8Dub : [];
+  // Phim cũ có thể lưu sub = "Thuyết minh"; ô Vietsub vẫn phải hiện là Vietsub để không trùng tên server dub.
+  const vs = /thuy[eế]t|lồng|long/i.test(sub) ? "Vietsub" : (sub || "Vietsub");
   const fields = [
-    { key: "link", name: `${sub} (NC)` },
-    { key: "link3", name: `${sub} (VP)` },
+    { key: "link", name: `${vs} (NC)` },
+    { key: "link3", name: `${vs} (VP)` },
+  ];
+  const dubFields = [
+    { key: "linkDub", name: "Thuyết minh (NC)" },
+    { key: "link3Dub", name: "Thuyết minh (VP)" },
   ];
   const labelOf = (ep: any): string => episodeLabel(ep?.name, row.type === "movie" ? "movie" : "series");
   const servers: MovieServer[] = [];
 
   if (Array.isArray(episodes) && episodes.length) {
-    for (const field of fields) {
+    for (const field of fields.concat(dubFields)) {
       const eps = episodes.map((ep: any) => {
         const raw = str(ep?.[field.key]);
         return { label: labelOf(ep), url: isKkEmbed(raw) ? null : raw || null };
@@ -195,17 +221,27 @@ function buildServers(row: Row, sub: string): MovieServer[] {
     const m3 = episodes.map((ep: any) => directM3u8(ep?.link2) || directM3u8(ep?.m3u8_2));
     if (m3.some(Boolean)) {
       servers.push({
-        name: `${sub} (KK)`,
+        name: `${vs} (KK)`,
         episodes: episodes.map((ep: any, i: number) => ({ label: labelOf(ep), url: m3[i] })),
+      });
+    }
+    const kkDub = episodes.map((ep: any) => directM3u8(ep?.link2Dub) || directM3u8(ep?.m3u8_2Dub));
+    if (kkDub.some(Boolean)) {
+      servers.push({
+        name: "Thuyết minh (KK)",
+        episodes: episodes.map((ep: any, i: number) => ({ label: labelOf(ep), url: kkDub[i] })),
       });
     }
   }
 
   if (servers.length === 0) {
     const single = [
-      { url: isKkEmbed(row.embedurl) ? null : str(row.embedurl), name: `${sub} (NC)` },
-      { url: isKkEmbed(row.embedurl3) ? null : str(row.embedurl3), name: `${sub} (VP)` },
-      { url: directM3u8(row.embedurl2) || directM3u8(row.m3u8url), name: `${sub} (KK)` },
+      { url: isKkEmbed(row.embedurl) ? null : str(row.embedurl), name: `${vs} (NC)` },
+      { url: isKkEmbed(row.embedurl3) ? null : str(row.embedurl3), name: `${vs} (VP)` },
+      { url: directM3u8(row.embedurl2) || directM3u8(row.m3u8url), name: `${vs} (KK)` },
+      { url: str(dubEmbeds.nc) || str(row.nguonc_embed_lt), name: "Thuyết minh (NC)" },
+      { url: directM3u8(dubEmbeds.kk) || directM3u8(m3u8Dub[1]), name: "Thuyết minh (KK)" },
+      { url: str(dubEmbeds.vp), name: "Thuyết minh (VP)" },
     ].filter((x) => x.url);
     if (single.length) {
       const label = episodeLabel(row.currentep, row.type === "movie" ? "movie" : "series");
@@ -232,6 +268,11 @@ function makeNormalizer(ctx: {
   return (row: Row): MovieDetail => {
     const slug = primarySlug(row);
     const extra = parseJson(row.extra) || {};
+    const stillsRaw = extra.episodeStills;
+    const episodeStills =
+      stillsRaw && typeof stillsRaw === "object" && !Array.isArray(stillsRaw)
+        ? (stillsRaw as Record<string, string>)
+        : null;
     const sub = str(row.sub) || "Vietsub";
     const genreCodes = str(row.genre)
       .split(",")
@@ -244,12 +285,25 @@ function makeNormalizer(ctx: {
     const countries = countrySlug
       ? [ctx.taxonomies.find((t) => t.type === "country" && t.slug === countrySlug)?.name || countryCode]
       : [];
-    const current = num(row.currentep);
-    const total = num(row.totalep);
+    const servers = buildServers(row, sub);
+    // Admin có khi lưu currentep/totalep theo số tập dự kiến của nguồn (vd 16)
+    // trong khi thực tế mới chỉ có 1-2 tập. Luôn hiển thị theo số tập có thật.
+    const available = servers.reduce((max, s) => Math.max(max, s.episodes.length), 0);
+    const rawCurrent = num(row.currentep);
+    const rawTotal = num(row.totalep);
+    const current = available && rawCurrent != null && rawCurrent > available ? available : rawCurrent;
+    const total = available && rawTotal != null && rawTotal > available ? available : rawTotal;
     const epstatus = str(row.epstatus);
     const ratingRaw = row.rating && row.rating !== "N/A" ? parseFloat(row.rating) : null;
     const imdbScore = extra.imdbScore ? parseFloat(extra.imdbScore) : null;
-    const rating = Number.isFinite(ratingRaw) ? ratingRaw : Number.isFinite(imdbScore) ? imdbScore : null;
+    const tmdbScore = extra.tmdbScore ? parseFloat(extra.tmdbScore) : null;
+    const rating = Number.isFinite(ratingRaw)
+      ? ratingRaw
+      : Number.isFinite(imdbScore)
+        ? imdbScore
+        : Number.isFinite(tmdbScore)
+          ? tmdbScore
+          : null;
 
     let status: string;
     if (epstatus === "Hoàn thành") status = current && total ? `Hoàn Tất (${current}/${total})` : "Hoàn Tất";
@@ -272,6 +326,7 @@ function makeNormalizer(ctx: {
       quality: str(row.quality) || "FHD",
       lang: sub,
       episodeLabel,
+      episodeStills,
       status,
       current,
       total,
@@ -300,7 +355,7 @@ function makeNormalizer(ctx: {
       views: num(extra.views) ?? 0,
       likes: num(extra.likes) ?? 0,
       theater: !!extra.theater,
-      servers: buildServers(row, sub),
+      servers,
     } as MovieDetail;
   };
 }

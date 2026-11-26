@@ -4,7 +4,7 @@ import { withBasePath } from "@/lib/base-path";
 import { detailHref } from "@/lib/live-data";
 import { PartSelector } from "./PartSelector";
 import { getProgress, isInList, removeProgress, saveProgress, toggleList } from "@/lib/user-library";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Hls, {
   type LoaderCallbacks,
   type LoaderConfiguration,
@@ -309,6 +309,58 @@ function preferredServer(movie: MovieDetail): number {
   return playable >= 0 ? playable : 0;
 }
 
+/** still lưu theo số tập ("1" / "01" đều được) */
+function stillFor(stills: Record<string, string> | null, label: string): string | null {
+  if (!stills) return null;
+  const digits = label.match(/\d+/)?.[0];
+  if (!digits) return null;
+  return stills[digits] || stills[String(Number(digits))] || null;
+}
+
+type ServerChannel = {
+  /** chỉ số trong movie.servers (giữ nguyên cho hash/tiến trình) */
+  idx: number;
+  name: string;
+  kind: "vs" | "dub" | "other";
+  count: number;
+};
+type ServerHost = { key: string; name: string; channels: ServerChannel[] };
+
+/**
+ * chophim.fit chia làm 2 cấp: "Chọn Server" là nhóm máy chủ (OP/NC…),
+ * còn chip bên trong danh sách tập là kênh/phên bản (Vietsub / Thuyết minh).
+ * Nhóm 6 link của mình theo nguồn NC → KK → VP cho khớp SV1/SV2/SV3.
+ */
+function serverHosts(movie: MovieDetail): ServerHost[] {
+  const order = ["NC", "KK", "VP"];
+  const hosts: ServerHost[] = [];
+  movie.servers.forEach((s, idx) => {
+    const tag = (s.name.match(/\((NC|KK|VP)\)\s*$/i)?.[1] || "NC").toUpperCase();
+    let host = hosts.find((h) => h.key === tag);
+    if (!host) {
+      host = { key: tag, name: "", channels: [] };
+      hosts.push(host);
+    }
+    const kind: ServerChannel["kind"] = /thuy[eế]t|lồng|long/i.test(s.name)
+      ? "dub"
+      : /vietsub/i.test(s.name)
+        ? "vs"
+        : "other";
+    host.channels.push({
+      idx,
+      name: kind === "dub" ? "Thuyết minh" : kind === "vs" ? "Vietsub" : s.name,
+      kind,
+      count: s.episodes.length,
+    });
+  });
+  hosts.sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
+  hosts.forEach((h) => {
+    h.name = `Máy chủ ${order.indexOf(h.key) + 1} (${h.key})`;
+    h.channels.sort((a, b) => (a.kind === "dub" ? 1 : 0) - (b.kind === "dub" ? 1 : 0));
+  });
+  return hosts;
+}
+
 /* ── component chính ────────────────────────────────────────────────────── */
 
 export function WatchPage({
@@ -327,7 +379,7 @@ export function WatchPage({
   const [autoSkip, setAutoSkip] = useState(false);
   const [fav, setFav] = useState(false);
   const [added, setAdded] = useState(false);
-  const [hideImg, setHideImg] = useState(false);
+  const [hideImg, setHideImg] = useState(true);
   const [ambient, setAmbient] = useState(false);
   const [notice, setNotice] = useState("");
   const [descOpen, setDescOpen] = useState(false);
@@ -361,6 +413,8 @@ export function WatchPage({
   const fallbackDurationRef = useRef(0);
   const lastTouchSeekRef = useRef(0);
   const lastSavedRef = useRef(0);
+  /** Mốc phát thật gần nhất, dùng khi rời trang mà <video> đã bị gỡ. */
+  const lastTimeRef = useRef(0);
   const adRangesRef = useRef<AdRange[]>([]);
   const nativeHlsRef = useRef(false);
   const hlsRef = useRef<Hls | null>(null);
@@ -398,8 +452,13 @@ export function WatchPage({
     []
   );
 
+  const hosts = useMemo(() => serverHosts(movie), [movie]);
   const sIdx = Math.min(serverIdx, Math.max(movie.servers.length - 1, 0));
+  const activeHostIdx = Math.max(0, hosts.findIndex((h) => h.channels.some((c) => c.idx === sIdx)));
+  const channels = hosts[activeHostIdx]?.channels ?? [];
   const server = movie.servers[sIdx];
+  const hasStills = !!movie.episodeStills && Object.keys(movie.episodeStills).length > 0;
+  const showThumb = hasStills && !hideImg;
   const eIdx = server ? Math.min(epIdx, Math.max(server.episodes.length - 1, 0)) : 0;
   const episode = server?.episodes[eIdx] ?? null;
   const url = episode?.url ?? null;
@@ -477,7 +536,10 @@ export function WatchPage({
     }
 
     if (explicitTime > 0) {
-      resumeTime = explicitTime;
+      // Link "Xem tiếp" có thể được render trước khi mốc mới kịp lưu. Bản trong
+      // localStorage là bản cuối cùng, nên thắng hash khi hai bên lệch nhau.
+      resumeTime =
+        saved && saved.time > 0 && saved.time > explicitTime + 2 ? saved.time : explicitTime;
     } else if (
       saved &&
       (hashEpisode === null || hashEpisode === saved.episode) &&
@@ -512,6 +574,8 @@ export function WatchPage({
     setServerIdx(si);
     setEpIdx(ei);
     pendingTimeRef.current = Number.isFinite(resumeTime) && resumeTime > 0 ? resumeTime : 0;
+    lastTimeRef.current = pendingTimeRef.current;
+    lastSavedRef.current = pendingTimeRef.current;
   }, [movie]);
 
   const writeHash = useCallback(
@@ -552,6 +616,18 @@ export function WatchPage({
       selectEp(si, ei);
     },
     [epIdx, movie, selectEp]
+  );
+
+  /** Chọn máy chủ (nhóm nguồn): giữ nguyên phên bản Vietsub/Thuyết minh nếu có. */
+  const changeHost = useCallback(
+    (hi: number) => {
+      const host = hosts[hi];
+      if (!host) return;
+      const current = host.channels.find((c) => c.idx === sIdx);
+      const next = current || host.channels.find((c) => c.kind === "vs") || host.channels[0];
+      if (next) changeServer(next.idx);
+    },
+    [changeServer, hosts, sIdx]
   );
 
   /** iOS Safari native HLS có lúc báo duration = 0/Infinity. Ưu tiên duration
@@ -690,6 +766,10 @@ export function WatchPage({
         time,
         duration: total ?? dur,
       });
+      // Ghi ngay vào ref để flush lúc đóng tab không đọc lại mốc cũ nếu <video>
+      // đã bị gỡ trước khi sự kiện pagehide/visibilitychange chạy.
+      lastSavedRef.current = time;
+      lastTimeRef.current = time;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [dur, eIdx, movie, sIdx, server?.name]
@@ -715,26 +795,35 @@ export function WatchPage({
   );
 
   // Lưu mốc hiện tại khi rời trang / ẩn tab / đổi tập (iOS dùng pagehide).
+  // Gọi cả lúc tab hiện lại: vài browser không bắn visibilitychange lúc ẩn,
+  // hoặc khôi phục từ bfcache mà chỉ có pageshow.
   useEffect(() => {
     const flush = () => {
+      const pending = pendingTimeRef.current;
       const v = videoRef.current;
-      // Đang chờ "Xem tiếp" áp mốc thì currentTime có thể là vị trí tạm/sai;
-      // ghi đè vào storage lúc này sẽ làm mất mốc đã lưu.
-      if (pendingTimeRef.current > 0) return;
-      if (v && Number.isFinite(v.currentTime) && v.currentTime >= 1) {
-        persist(v.currentTime, getPlayableDuration(v) || dur);
+      let time = lastTimeRef.current;
+      let total = dur;
+      if (v && Number.isFinite(v.currentTime)) {
+        // Đang chờ "Xem tiếp" áp mốc thì currentTime có thể là vị trí tạm/sai.
+        // Chỉ bỏ qua khi video vẫn đứng trước mốc đó; nếu đã tua tới/xem quá
+        // mốc thì currentTime là mốc thật và phải ghi dù pending chưa kịp xóa.
+        if (pending > 0 && v.currentTime < pending - 2) return;
+        time = v.currentTime;
+        total = getPlayableDuration(v) || dur;
       }
+      if (Number.isFinite(time) && time >= 1) persist(time, total);
     };
-    const onVisibility = () => {
-      if (document.visibilityState === "hidden") flush();
-    };
+    const onVisibility = () => flush();
+    const onPageShow = () => flush();
     window.addEventListener("pagehide", flush);
     window.addEventListener("beforeunload", flush);
+    window.addEventListener("pageshow", onPageShow);
     document.addEventListener("visibilitychange", onVisibility);
     return () => {
       flush();
       window.removeEventListener("pagehide", flush);
       window.removeEventListener("beforeunload", flush);
+      window.removeEventListener("pageshow", onPageShow);
       document.removeEventListener("visibilitychange", onVisibility);
     };
   }, [dur, getPlayableDuration, persist]);
@@ -1296,30 +1385,35 @@ export function WatchPage({
     >
       <div className="border-b border-white/10 px-3.5 py-2.5 text-[13px] font-semibold text-white">Máy chủ</div>
       <div className="max-h-[46vh] overflow-y-auto py-1.5">
-        {movie.servers.map((s, i) => (
-          <button
-            key={s.name}
-            type="button"
-            onClick={() => {
-              changeServer(i);
-              setMenu(null);
-              setSub(null);
-              bumpIdle();
-            }}
-            className={`flex w-full items-center justify-between gap-3 px-3.5 py-2.5 text-left transition-colors focus:outline-none ${
-              i === sIdx ? "bg-white/[0.06]" : "hover:bg-white/[0.04]"
-            }`}
-          >
-            <span className="min-w-0 flex-1">
-              <span className={`block truncate text-[13px] font-medium ${i === sIdx ? "text-[#FFD166]" : "text-white/90"}`}>
-                {s.name}
-              </span>
-              <span className="mt-0.5 block text-[11px] text-white/45">{s.episodes.length} tập</span>
-            </span>
-            {pingPill(pings[i])}
-          </button>
+        {hosts.map((h) => (
+          <div key={h.key} className="border-b border-white/5 pb-1 last:border-b-0">
+            <div className="px-3.5 pt-2 text-[10px] font-bold uppercase tracking-wide text-white/40">{h.name}</div>
+            {h.channels.map((c) => (
+              <button
+                key={c.idx}
+                type="button"
+                onClick={() => {
+                  changeServer(c.idx);
+                  setMenu(null);
+                  setSub(null);
+                  bumpIdle();
+                }}
+                className={`flex w-full items-center justify-between gap-3 px-3.5 py-2 text-left transition-colors focus:outline-none ${
+                  c.idx === sIdx ? "bg-white/[0.06]" : "hover:bg-white/[0.04]"
+                }`}
+              >
+                <span className="min-w-0 flex-1">
+                  <span className={`block truncate text-[13px] font-medium ${c.idx === sIdx ? "text-[#FFD166]" : "text-white/90"}`}>
+                    {c.name}
+                  </span>
+                  <span className="mt-0.5 block text-[11px] text-white/45">{c.count} tập</span>
+                </span>
+                {pingPill(pings[c.idx])}
+              </button>
+            ))}
+          </div>
         ))}
-        {movie.servers.length === 0 && <p className="px-3.5 py-3 text-[12px] text-white/50">Chưa có máy chủ nào.</p>}
+        {hosts.length === 0 && <p className="px-3.5 py-3 text-[12px] text-white/50">Chưa có máy chủ nào.</p>}
       </div>
     </div>
   );
@@ -1385,6 +1479,7 @@ export function WatchPage({
                         skipNativeAds();
                         const t = v.currentTime;
                         setCur(t);
+                        lastTimeRef.current = t;
                         if (t - lastSavedRef.current >= 5) {
                           lastSavedRef.current = t;
                           persist(t, getPlayableDuration(v) || dur);
@@ -1530,15 +1625,12 @@ export function WatchPage({
                               active ? "bg-white/10" : "bg-transparent hover:bg-white/5 text-white/80 hover:text-white"
                             }`}
                           >
+                            {/* Ngăn kéo nổi trên player luôn có ảnh tập (giống chophim), không bị Ẩn ảnh của lưới bên dưới ảnh hưởng. */}
                             <div
                               className={`relative w-[90px] sm:w-[100px] aspect-[16/9] rounded shrink-0 overflow-hidden bg-black/50 bg-cover bg-center ${
                                 active ? "ring-2 ring-[#eab308] ring-offset-[2px] ring-offset-[#1f2025]" : ""
                               }`}
-                              style={
-                                hideImg
-                                  ? { backgroundColor: "#10121b" }
-                                  : { backgroundImage: `url("${movie.backdrop || movie.poster}")` }
-                              }
+                              style={{ backgroundImage: `url("${stillFor(movie.episodeStills, ep.label) || movie.backdrop || movie.poster}")` }}
                               aria-label={ep.label}
                             />
                             <div className="flex-1 min-w-0">
@@ -2070,13 +2162,13 @@ export function WatchPage({
                   <span className="text-[13px] text-white/60 font-medium hidden sm:inline-block shrink-0">Chọn Server:</span>
                   <div className="relative min-w-0 sm:w-auto">
                     <select
-                      value={sIdx}
-                      onChange={(e) => changeServer(Number(e.target.value))}
+                      value={activeHostIdx}
+                      onChange={(e) => changeHost(Number(e.target.value))}
                       className="appearance-none w-full sm:w-auto sm:min-w-[180px] bg-[#12121a] hover:bg-[#15151f] border border-white/10 text-white text-[13px] md:text-sm font-medium rounded-lg px-3.5 sm:px-4 py-2 pr-8 focus:outline-none focus:border-[#eab308]/50 transition-colors cursor-pointer"
                     >
-                      {movie.servers.map((s, i) => (
-                        <option key={s.name} value={i}>
-                          {s.name}
+                      {hosts.map((h, i) => (
+                        <option key={h.key} value={i}>
+                          {h.name}
                         </option>
                       ))}
                     </select>
@@ -2089,60 +2181,91 @@ export function WatchPage({
                 <h3 className="text-sm font-bold text-white/80">
                   Danh sách tập <span className="text-white/60">( {curCount} / <span className="text-[#FFD166]">{totalCount}</span> )</span>
                 </h3>
-                <button
-                  type="button"
-                  aria-pressed={hideImg}
-                  onClick={() => setHideImg((v) => !v)}
-                  className="inline-flex items-center gap-1.5 px-1 py-0.5 text-xs font-normal text-white/65 transition-colors hover:text-white"
-                >
-                  <span>Ẩn ảnh</span>
-                  <span className={`relative h-6 w-10 rounded-full transition-colors ${hideImg ? "bg-[#FFD166]/70" : "bg-white/20"}`}>
-                    <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-[left] ${hideImg ? "left-[18px]" : "left-0.5"}`} />
-                  </span>
-                </button>
+                {hasStills && (
+                  <button
+                    type="button"
+                    aria-pressed={!hideImg}
+                    onClick={() => setHideImg((v) => !v)}
+                    className="inline-flex items-center gap-1.5 px-1 py-0.5 text-xs font-normal text-white/65 transition-colors hover:text-white"
+                  >
+                    <span>{hideImg ? "Ẩn ảnh" : "Hiện ảnh"}</span>
+                    <span className={`relative h-6 w-10 rounded-full transition-colors ${!hideImg ? "bg-[#FFD166]/70" : "bg-white/20"}`}>
+                      <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-[left] ${!hideImg ? "left-[18px]" : "left-0.5"}`} />
+                    </span>
+                  </button>
+                )}
               </div>
 
-              {/* chip máy chủ / ngôn ngữ */}
+              {/* chip phên bản (kênh) trong máy chủ đang chọn */}
               <div className="mb-6 flex flex-wrap gap-2">
-                {movie.servers.map((s, i) => {
-                  const active = i === sIdx;
+                {channels.map((c) => {
+                  const active = c.idx === sIdx;
                   return (
                     <button
-                      key={s.name}
+                      key={c.idx}
                       type="button"
-                      onClick={() => changeServer(i)}
+                      onClick={() => changeServer(c.idx)}
                       className={`group flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs transition-colors ${
                         active ? "border border-white/30 text-white bg-white/5 font-medium" : "text-white/60 hover:text-white border border-transparent bg-white/5"
                       }`}
                     >
-                      {i % 2 === 0 ? <IconLanguages className="h-3.5 w-3.5" /> : <IcCaptions className="h-3.5 w-3.5" />}
-                      <span>{s.name}</span>
+                      {c.kind === "dub" ? <IcCaptions className="h-3.5 w-3.5" /> : <IconLanguages className="h-3.5 w-3.5" />}
+                      <span>{c.name}</span>
                       <span
                         className={`ml-1 flex h-[16px] w-[16px] shrink-0 items-center justify-center rounded-full text-[9px] font-bold transition-colors ${
                           active ? "bg-white text-black" : "bg-white/10 text-white/50 group-hover:text-white/80"
                         }`}
                       >
-                        {s.episodes.length}
+                        {c.count}
                       </span>
                     </button>
                   );
                 })}
-                {movie.servers.length === 0 && <span className="text-sm text-white/50">Chưa có máy chủ nào.</span>}
+                {channels.length === 0 && <span className="text-sm text-white/50">Chưa có máy chủ nào.</span>}
               </div>
 
               {/* lưới tập */}
-              <div className="grid grid-cols-3 gap-x-2.5 gap-y-2.5 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
+              <div className={showThumb ? "grid grid-cols-2 items-start gap-3 lg:grid-cols-4" : "grid grid-cols-3 gap-x-2.5 gap-y-2.5 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8"}>
                 {(server?.episodes ?? []).map((ep, i) => {
                   const active = i === eIdx;
+                  const disabled = !ep.url && firstPlayable >= 0;
+                  const still = showThumb ? stillFor(movie.episodeStills, ep.label) : null;
+                  if (still) {
+                    return (
+                      <button
+                        key={`${server?.name}-grid-${i}`}
+                        type="button"
+                        onClick={() => selectEp(sIdx, i)}
+                        disabled={disabled}
+                        title={disabled ? "Tập này chưa có nguồn" : ep.label}
+                        className={`group isolate overflow-hidden rounded-lg border bg-[#191b24] shadow-sm transition-shadow hover:ring-2 hover:ring-[#FFD166] ${
+                          active ? "border-[#FFD166]" : "border-white/[0.08]"
+                        } ${disabled ? "cursor-not-allowed opacity-45" : ""}`}
+                      >
+                        <div className="relative z-0 aspect-video overflow-hidden">
+                          <img
+                            src={still}
+                            alt=""
+                            loading="lazy"
+                            decoding="async"
+                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transform-none"
+                          />
+                          <span className="absolute inset-x-0 bottom-0 text-left bg-gradient-to-t from-black/90 via-black/45 to-transparent px-2.5 pb-2 pt-6 text-xs font-bold text-white sm:text-sm">
+                            {ep.label}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  }
                   return (
                     <button
                       key={`${server?.name}-grid-${i}`}
                       type="button"
                       onClick={() => selectEp(sIdx, i)}
-                      disabled={!ep.url && firstPlayable >= 0}
-                      title={!ep.url ? "Tập này chưa có nguồn" : ep.label}
+                      disabled={disabled}
+                      title={disabled ? "Tập này chưa có nguồn" : ep.label}
                       className={`group flex items-center justify-center gap-1.5 rounded-lg border-2 border-transparent px-2 py-2 text-[13px] transition-colors ${
-                        !ep.url && firstPlayable >= 0
+                        disabled
                           ? "cursor-not-allowed bg-[#191b24] text-white/35"
                           : active
                             ? "bg-[#FFD166] text-[#1c1c1c] font-semibold shadow-[0_4px_20px_rgba(255,209,102,0.2)]"

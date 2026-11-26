@@ -34,6 +34,14 @@ import { commentTimestamp, enc, sortComments } from "./detail-types";
 
 const TABS = ["Tập phim", "Gallery", "Diễn viên", "Đề xuất"] as const;
 
+/** still lưu theo số tập ("1" / "01" đều được) */
+function stillFor(stills: Record<string, string> | null, label: string): string | null {
+  if (!stills) return null;
+  const digits = label.match(/\d+/)?.[0];
+  if (!digits) return null;
+  return stills[digits] || stills[String(Number(digits))] || null;
+}
+
 /* ── icon cần thêm (path lấy từ lucide như trang gốc) ─────────────────── */
 
 function IconServer({ className }: { className?: string }) {
@@ -939,12 +947,14 @@ export function DetailPage({
   const [tab, setTab] = useState<(typeof TABS)[number]>("Tập phim");
   const [sv, setSv] = useState(0);
   const [infoOpen, setInfoOpen] = useState(false);
-  const [hideImg, setHideImg] = useState(false);
+  const [hideImg, setHideImg] = useState(true);
   const duration = useMovieDuration(movie);
 
   const serverIdx = Math.min(sv, Math.max(movie.servers.length - 1, 0));
   const server = movie.servers[serverIdx];
   const backdrop = movie.backdrop || movie.poster;
+  const hasStills = !!movie.episodeStills && Object.keys(movie.episodeStills).length > 0;
+  const showThumb = hasStills && !hideImg;
 
   const cur = movie.current ?? server?.episodes.length ?? 0;
   const total = movie.total ?? server?.episodes.length ?? 0;
@@ -1113,30 +1123,58 @@ export function DetailPage({
                           <h3 className="text-sm font-bold text-white/80">
                             Danh sách tập <span className="text-white/60">( {cur} / <span className="text-[#FFD166]">{total}</span> )</span>
                           </h3>
-                          <button
-                            type="button"
-                            aria-pressed={hideImg}
-                            onClick={() => setHideImg((v) => !v)}
-                            className="inline-flex items-center gap-1.5 px-1 py-0.5 text-xs font-normal text-white/65 transition-colors hover:text-white"
-                          >
-                            <span>Ẩn ảnh</span>
-                            <span className={`relative h-6 w-10 rounded-full transition-colors ${hideImg ? "bg-[#FFD166]/70" : "bg-white/20"}`}>
-                              <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-[left] ${hideImg ? "left-[18px]" : "left-0.5"}`} />
-                            </span>
-                          </button>
+                          {hasStills && (
+                            <button
+                              type="button"
+                              aria-pressed={!hideImg}
+                              onClick={() => setHideImg((v) => !v)}
+                              className="inline-flex items-center gap-1.5 px-1 py-0.5 text-xs font-normal text-white/65 transition-colors hover:text-white"
+                            >
+                              <span>{hideImg ? "Ẩn ảnh" : "Hiện ảnh"}</span>
+                              <span className={`relative h-6 w-10 rounded-full transition-colors ${!hideImg ? "bg-[#FFD166]/70" : "bg-white/20"}`}>
+                                <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-[left] ${!hideImg ? "left-[18px]" : "left-0.5"}`} />
+                              </span>
+                            </button>
+                          )}
                         </div>
 
-                        <div className="grid grid-cols-3 gap-x-2.5 gap-y-2.5 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
-                          {server?.episodes.map((ep, i) => (
-                            <a
-                              key={`${server.name}-${i}`}
-                              className="group flex items-center justify-center gap-1.5 rounded-lg border-2 border-transparent bg-[#191b24] px-2 py-2 text-[13px] text-white/90 shadow-sm transition-colors hover:border-[#FFD166] hover:text-[#FFD166]"
-                              href={watchHref(movie.slug, `#tap=tap-${i + 1}&sv=${enc(server.name)}&channel=0&server_id=${serverIdx}`)}
-                            >
-                              <IconPlaySmall className="h-3 w-3 shrink-0 fill-white/80 group-hover:fill-[#FFD166]" />
-                              {ep.label}
-                            </a>
-                          ))}
+                        <div className={showThumb ? "grid grid-cols-2 items-start gap-3 lg:grid-cols-4" : "grid grid-cols-3 gap-x-2.5 gap-y-2.5 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8"}>
+                          {server?.episodes.map((ep, i) => {
+                            const href = watchHref(movie.slug, `#tap=tap-${i + 1}&sv=${enc(server.name)}&channel=0&server_id=${serverIdx}`);
+                            const still = showThumb ? stillFor(movie.episodeStills, ep.label) : null;
+                            if (still) {
+                              return (
+                                <a
+                                  key={`${server.name}-${i}`}
+                                  className="group isolate overflow-hidden rounded-lg border border-white/[0.08] bg-[#191b24] shadow-sm transition-shadow hover:ring-2 hover:ring-[#FFD166]"
+                                  href={href}
+                                >
+                                  <div className="relative z-0 aspect-video overflow-hidden">
+                                    <img
+                                      src={still}
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transform-none"
+                                    />
+                                    <span className="absolute inset-x-0 bottom-0 text-left bg-gradient-to-t from-black/90 via-black/45 to-transparent px-2.5 pb-2 pt-6 text-xs font-bold text-white sm:text-sm">
+                                      {ep.label}
+                                    </span>
+                                  </div>
+                                </a>
+                              );
+                            }
+                            return (
+                              <a
+                                key={`${server.name}-${i}`}
+                                className="group flex items-center justify-center gap-1.5 rounded-lg border-2 border-transparent bg-[#191b24] px-2 py-2 text-[13px] text-white/90 shadow-sm transition-colors hover:border-[#FFD166] hover:text-[#FFD166]"
+                                href={href}
+                              >
+                                <IconPlaySmall className="h-3 w-3 shrink-0 fill-white/80 group-hover:fill-[#FFD166]" />
+                                {ep.label}
+                              </a>
+                            );
+                          })}
                         </div>
                       </>
                     )}

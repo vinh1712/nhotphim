@@ -25,7 +25,7 @@ import {
   type SubscriptionTier,
 } from "@/lib/subscription";
 import { ACCOUNT_TABS, getAccountTab, type AccountTab, type AccountTabInfo } from "@/lib/account-tabs";
-import { useUserLibrary, type LibraryEntry, type ProgressEntry } from "@/lib/user-library";
+import { getProgress, useUserLibrary, type LibraryEntry, type ProgressEntry } from "@/lib/user-library";
 import { timeAgo, useNotifications } from "@/lib/notifications";
 import {
   AVATAR_CATEGORIES,
@@ -1020,10 +1020,12 @@ export function AccountPage({ tab }: { tab: AccountTab }) {
       return progress.length ? (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
           {progress.map((item) => {
-            const percent = item.duration > 0 ? Math.min(100, Math.round((item.time / item.duration) * 100)) : 0;
+            // state có thể cũ hơn localStorage sau khi ẩn tab; đọc lại mốc mới nhất.
+            const saved = getProgress(item.slug)[0] || item;
+            const percent = saved.duration > 0 ? Math.min(100, Math.round((saved.time / saved.duration) * 100)) : 0;
             // Gửi cả tổng thời lượng để iOS 15.5 native HLS vẫn tua đúng mốc
             // dù video chưa trả duration thật lúc mới mở.
-            const hash = `#tap=tap-${item.episode + 1}&sv=${encodeURIComponent(item.serverName || "")}&server_id=${item.server}&t=${Math.floor(item.time)}&d=${Math.floor(item.duration)}`;
+            const hash = `#tap=tap-${saved.episode + 1}&sv=${encodeURIComponent(saved.serverName || "")}&server_id=${saved.server}&t=${Math.floor(saved.time)}&d=${Math.floor(saved.duration)}`;
             return (
               <div key={item.slug} className="group relative">
                 <a href={watchHref(item.slug, hash)}>

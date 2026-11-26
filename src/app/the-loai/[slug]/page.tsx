@@ -9,11 +9,10 @@ type Taxonomy = { type: string; slug: string; name: string };
 const taxonomies = taxonomiesData as unknown as Taxonomy[];
 const categories = taxonomies.filter((t) => t.type === "category");
 
-/** Slug thể loại cũ từ trang chủ → taxonomy hiện tại */
+/** Slug thể loại cũ (vẫn giữ đường dẫn hoạt động) → taxonomy chuẩn hiện tại */
 const ALIASES: Record<string, string> = {
-  "khoa-hoc": "khoa-hoc-vt",
-  "hoat-hinh": "anime-hoat-hinh",
-  "lang-man": "tinh-cam",
+  "khoa-hoc-vt": "khoa-hoc",
+  "anime-hoat-hinh": "hoat-hinh",
 };
 
 type Params = { slug: string };

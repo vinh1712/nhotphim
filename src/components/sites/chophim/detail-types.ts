@@ -16,6 +16,8 @@ export type MovieDetail = {
   quality: string;
   lang: string;
   episodeLabel: string;
+  /** Ảnh tĩnh từng tập (TMDB still) lấy sẵn lúc sync: key = số tập. */
+  episodeStills: Record<string, string> | null;
   status: string;
   current: number | null;
   total: number | null;

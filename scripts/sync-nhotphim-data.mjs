@@ -13,7 +13,8 @@
  *   node scripts/sync-nhotphim-data.mjs            # kéo + ghi đè src/data
  *   node scripts/sync-nhotphim-data.mjs --dry-run  # chỉ báo cáo, không ghi
  */
-import { existsSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -158,6 +159,21 @@ const COUNTRY_CODE = {
   in: "an-do",
   vn: "viet-nam",
   th: "thai-lan",
+  // 14 mã mới từ admin (đã đồng bộ danh mục theo web phim)
+  gb: "anh",
+  fr: "phap",
+  ca: "canada",
+  ru: "nga",
+  ph: "philippines",
+  au: "uc",
+  de: "duc",
+  es: "tay-ban-nha",
+  it: "y",
+  tr: "tho-nhi-ky",
+  id: "indonesia",
+  mal: "malaysia",
+  br: "brazil",
+  nl: "ha-lan",
 };
 
 const FALLBACK_GENRE_MAP = {
@@ -171,11 +187,13 @@ const FALLBACK_GENRE_MAP = {
   crime: "Hình Sự",
   war: "Chiến Tranh",
   adventure: "Phiêu Lưu",
-  scifi: "Khoa Học VT",
+  scifi: "Khoa Học",
   fantasy: "Viễn Tưởng",
   family: "Gia Đình",
   costumes: "Cổ Trang",
-  anime: "Anime & Hoạt Hình",
+  anime: "Hoạt Hình",
+  hoatHinh: "Hoạt Hình",
+  langMan: "Lãng Mạn",
   school: "Học Đường",
   sport: "Thể Thao",
   sports: "Thể Thao",
@@ -207,15 +225,23 @@ const episodeLabel = (value, type) => {
 
 function buildServers(row, sub) {
   const episodes = parseJson(row.episodes);
+  const extra = parseJson(row.extra) || {};
+  const dubEmbeds = (extra.dubEmbeds && typeof extra.dubEmbeds === "object") ? extra.dubEmbeds : {};
+  const m3u8Dub = Array.isArray(extra.m3u8Dub) ? extra.m3u8Dub : [];
+  const vs = /thuy[eế]t|lồng|long/i.test(sub) ? "Vietsub" : (sub || "Vietsub");
   const fields = [
-    { key: "link", name: `${sub} (NC)` },
-    { key: "link3", name: `${sub} (VP)` },
+    { key: "link", name: `${vs} (NC)` },
+    { key: "link3", name: `${vs} (VP)` },
+  ];
+  const dubFields = [
+    { key: "linkDub", name: "Thuyết minh (NC)" },
+    { key: "link3Dub", name: "Thuyết minh (VP)" },
   ];
   const labelOf = (ep) => episodeLabel(ep?.name, row.type === "movie" ? "movie" : "series");
   const servers = [];
 
   if (Array.isArray(episodes) && episodes.length) {
-    for (const field of fields) {
+    for (const field of fields.concat(dubFields)) {
       const eps = episodes.map((ep) => {
         const raw = str(ep?.[field.key]);
         return { label: labelOf(ep), url: isKkEmbed(raw) ? null : raw || null };
@@ -225,17 +251,27 @@ function buildServers(row, sub) {
     const m3 = episodes.map((ep) => directM3u8(ep?.link2) || directM3u8(ep?.m3u8_2));
     if (m3.some(Boolean)) {
       servers.push({
-        name: `${sub} (KK)`,
+        name: `${vs} (KK)`,
         episodes: episodes.map((ep, i) => ({ label: labelOf(ep), url: m3[i] })),
+      });
+    }
+    const kkDub = episodes.map((ep) => directM3u8(ep?.link2Dub) || directM3u8(ep?.m3u8_2Dub));
+    if (kkDub.some(Boolean)) {
+      servers.push({
+        name: "Thuyết minh (KK)",
+        episodes: episodes.map((ep, i) => ({ label: labelOf(ep), url: kkDub[i] })),
       });
     }
   }
 
   if (servers.length === 0) {
     const single = [
-      { url: isKkEmbed(row.embedurl) ? null : str(row.embedurl), name: `${sub} (NC)` },
-      { url: isKkEmbed(row.embedurl3) ? null : str(row.embedurl3), name: `${sub} (VP)` },
-      { url: directM3u8(row.embedurl2) || directM3u8(row.m3u8url), name: `${sub} (KK)` },
+      { url: isKkEmbed(row.embedurl) ? null : str(row.embedurl), name: `${vs} (NC)` },
+      { url: isKkEmbed(row.embedurl3) ? null : str(row.embedurl3), name: `${vs} (VP)` },
+      { url: directM3u8(row.embedurl2) || directM3u8(row.m3u8url), name: `${vs} (KK)` },
+      { url: str(dubEmbeds.nc) || str(row.nguonc_embed_lt), name: "Thuyết minh (NC)" },
+      { url: directM3u8(dubEmbeds.kk) || directM3u8(m3u8Dub[1]), name: "Thuyết minh (KK)" },
+      { url: str(dubEmbeds.vp), name: "Thuyết minh (VP)" },
     ].filter((x) => x.url);
     if (single.length) {
       const label = episodeLabel(row.currentep, row.type === "movie" ? "movie" : "series");
@@ -255,6 +291,8 @@ function makeNormalizer({ genreMap, catNameToSlug, homeSlugs, taxonomies }) {
   return (row) => {
     const slug = primarySlug(row);
     const extra = parseJson(row.extra) || {};
+    const stillsRaw = extra.episodeStills;
+    const episodeStills = stillsRaw && typeof stillsRaw === "object" && !Array.isArray(stillsRaw) ? stillsRaw : null;
     const sub = str(row.sub) || "Vietsub";
     const genreCodes = str(row.genre)
       .split(",")
@@ -267,12 +305,25 @@ function makeNormalizer({ genreMap, catNameToSlug, homeSlugs, taxonomies }) {
     const countries = countrySlug
       ? [taxonomies.find((t) => t?.type === "country" && t?.slug === countrySlug)?.name || countryCode]
       : [];
-    const current = num(row.currentep);
-    const total = num(row.totalep);
+    const servers = buildServers(row, sub);
+    // currentep/totalep có thể là số tập dự kiến của nguồn (vd 16) trong khi
+    // thực tế mới chỉ có vài tập — luôn hiển thị theo số tập có thật.
+    const available = servers.reduce((max, s) => Math.max(max, s.episodes.length), 0);
+    const rawCurrent = num(row.currentep);
+    const rawTotal = num(row.totalep);
+    const current = available && rawCurrent != null && rawCurrent > available ? available : rawCurrent;
+    const total = available && rawTotal != null && rawTotal > available ? available : rawTotal;
     const epstatus = str(row.epstatus);
     const ratingRaw = row.rating && row.rating !== "N/A" ? parseFloat(row.rating) : null;
     const imdbScore = extra.imdbScore ? parseFloat(extra.imdbScore) : null;
-    const rating = Number.isFinite(ratingRaw) ? ratingRaw : Number.isFinite(imdbScore) ? imdbScore : null;
+    const tmdbScore = extra.tmdbScore ? parseFloat(extra.tmdbScore) : null;
+    const rating = Number.isFinite(ratingRaw)
+      ? ratingRaw
+      : Number.isFinite(imdbScore)
+        ? imdbScore
+        : Number.isFinite(tmdbScore)
+          ? tmdbScore
+          : null;
 
     let status;
     if (epstatus === "Hoàn thành") status = current && total ? `Hoàn Tất (${current}/${total})` : "Hoàn Tất";
@@ -295,6 +346,7 @@ function makeNormalizer({ genreMap, catNameToSlug, homeSlugs, taxonomies }) {
       quality: str(row.quality) || "FHD",
       lang: sub,
       episodeLabel,
+      episodeStills,
       status,
       current,
       total,
@@ -323,7 +375,7 @@ function makeNormalizer({ genreMap, catNameToSlug, homeSlugs, taxonomies }) {
       views: num(extra.views) ?? 0,
       likes: num(extra.likes) ?? 0,
       theater: !!extra.theater,
-      servers: buildServers(row, sub),
+      servers,
     };
   };
 }
@@ -719,6 +771,113 @@ function buildNotifications(rows, db) {
     .filter((n) => n.title);
 }
 
+// ── ảnh tĩnh từng tập (TMDB still) ──────────────────────────────────────────
+// chophim.fit lấy still qua /api/tmdb/episode-stills. Web mình là static nên
+// gọi sẵn ở đây rồi lưu vào extra.episodeStills — không cần API key hay route mới.
+const STILL_API = "https://chophim.fit/api/tmdb/episode-stills";
+
+function tmdbSeasonOf(row) {
+  const extra = parseJson(row.extra) || {};
+  const part = num(row.part_number);
+  if (part && part > 0 && part < 30) return part;
+  const text = `${str(row.title)} ${str(row.titleen)} ${str(extra.slug)}`;
+  const m = text.match(/(?:phần|season|s)\s*(\d{1,2})/i);
+  const n = m ? num(m[1]) : null;
+  return n && n > 0 && n < 30 ? n : 1;
+}
+
+async function fetchStills(row) {
+  const extra = parseJson(row.extra) || {};
+  const tmdbId = str(extra.tmdbId).replace(/\D/g, "");
+  if (!tmdbId) return null;
+  const key = `${tmdbId}:${tmdbSeasonOf(row)}`;
+  if (stillCache.has(key)) return stillCache.get(key);
+  let result = null;
+  try {
+    const res = await fetch(`${STILL_API}?tmdbId=${tmdbId}&season=${tmdbSeasonOf(row)}`, {
+      signal: AbortSignal.timeout(12000),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const raw = data?.stills;
+      if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+        const out = {};
+        for (const [k, v] of Object.entries(raw)) {
+          if (typeof v === "string" && v.startsWith("/")) out[String(k)] = `https://image.tmdb.org/t/p/w500${v}`;
+        }
+        if (Object.keys(out).length) result = out;
+      }
+    }
+  } catch {}
+  stillCache.set(key, result);
+  return result;
+}
+const stillCache = new Map();
+
+async function patchExtra(row, extra) {
+  const res = await fetch(`${SB_URL}/rest/v1/movies?id=eq.${row.id}`, {
+    method: "PATCH",
+    headers: {
+      apikey: SB_KEY,
+      Authorization: `Bearer ${SB_KEY}`,
+      "Content-Type": "application/json",
+      Prefer: "return=minimal",
+    },
+    body: JSON.stringify({ extra }),
+    signal: AbortSignal.timeout(20000),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${(await res.text()).slice(0, 160)}`);
+}
+
+async function prefetchEpisodeStills(rows) {
+  const targets = rows.filter((r) => {
+    const extra = parseJson(r.extra) || {};
+    const eps = parseJson(r.episodes);
+    return str(extra.tmdbId).replace(/\D/g, "") && Array.isArray(eps) && eps.length > 0;
+  });
+  if (!targets.length) return;
+
+  if (!DRY_RUN) {
+    const dir = path.join(process.env.TEMP || os.tmpdir(), "opencode", "episode-stills-before");
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(
+      path.join(dir, "movies-extra.json"),
+      JSON.stringify(targets.map((r) => ({ id: r.id, title: r.title, extra: parseJson(r.extra) || {} })), null, 1),
+      "utf8"
+    );
+  }
+
+  let done = 0;
+  let patched = 0;
+  let failed = 0;
+  const queue = [...targets];
+  const worker = async () => {
+    while (queue.length) {
+      const row = queue.shift();
+      if (!row) return;
+      const stills = await fetchStills(row);
+      done++;
+      if (!stills) continue;
+      const extra = parseJson(row.extra) || {};
+      const prev = extra.episodeStills;
+      if (prev && JSON.stringify(prev) === JSON.stringify(stills)) continue;
+      extra.episodeStills = stills;
+      if (!DRY_RUN) {
+        try {
+          await patchExtra(row, extra);
+        } catch (err) {
+          failed++;
+          continue;
+        }
+      }
+      row.extra = JSON.stringify(extra);
+      patched++;
+    }
+  };
+  await Promise.all(Array.from({ length: 6 }, worker));
+  console.log(`[sync-data] still tập: ${patched} phim cập nhật, ${done - patched} giữ nguyên/không có, lỗi ${failed}`);
+}
+
 // ── chạy ───────────────────────────────────────────────────────────────────
 if (SKIP) {
   console.log("[sync-data] SKIP_DATA_SYNC — giữ nguyên src/data/*.json");
@@ -741,6 +900,7 @@ let movieRows;
 try {
   movieRows = await fetchTable("movies");
   if (!movieRows.length) throw new Error("bảng movies trống");
+  await prefetchEpisodeStills(movieRows);
 } catch (err) {
   console.error(`[sync-data] Không tải được movies: ${err.message}`);
   if (IS_CI) process.exit(1);

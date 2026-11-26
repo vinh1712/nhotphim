@@ -71,7 +71,7 @@ function matchFilters(m: MovieDetail, f: Record<string, string>): boolean {
   if (f.listSlug === "phim-chieu-rap" && m.theater !== true) return false;
   if (f.listSlug === "tv-shows" && !(m.genreSlugs ?? []).includes("tv-shows")) return false;
   if (f.listSlug === "phim-long-tieng" && m.lang === "Vietsub") return false;
-  if (f.listSlug === "hoat-hinh" && !(m.genreSlugs ?? []).includes("anime-hoat-hinh")) return false;
+  if (f.listSlug === "hoat-hinh" && !(m.genreSlugs ?? []).some((s) => s === "hoat-hinh" || s === "anime-hoat-hinh")) return false;
   return true;
 }
 

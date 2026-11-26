@@ -109,8 +109,11 @@ export function getProgress(slug?: string): ProgressEntry[] {
 
 export function saveProgress(entry: NewProgressEntry): void {
   const current = read<ProgressEntry>("progress");
+  const prev = current.find((item) => item.slug === entry.slug);
+  // Mốc mới luôn có updatedAt lớn hơn mốc cũ, kể cả khi ghi trong cùng 1 ms.
+  const now = Math.max(Date.now(), Number(prev?.updatedAt || 0) + 1);
   const next = [
-    { ...entry, updatedAt: Date.now() },
+    { ...entry, updatedAt: now },
     ...current.filter((item) => item.slug !== entry.slug),
   ].slice(0, 40);
   write("progress", next);

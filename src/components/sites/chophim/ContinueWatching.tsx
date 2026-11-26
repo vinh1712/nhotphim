@@ -23,6 +23,12 @@ function watchHref(item: ProgressEntry): string {
   return liveWatchHref(item.slug, hash);
 }
 
+/** state của component có thể cũ hơn localStorage (tab bị ẩn rồi hiện lại),
+ *  nên lúc render link phải đọc lại mốc mới nhất. */
+function freshWatchHref(item: ProgressEntry): string {
+  return watchHref(getProgress(item.slug)[0] || item);
+}
+
 /** Section "Xem Tiếp" trên homepage của chophim: chỉ hiện khi đã đăng nhập
  *  và có tiến trình xem. Dùng thẳng dữ liệu progress đã đồng bộ qua Supabase. */
 export function ContinueWatching() {
@@ -40,11 +46,18 @@ export function ContinueWatching() {
     reload();
     setHydrated(true);
     const onChange = () => reload();
+    const onVisible = () => {
+      if (document.visibilityState === "visible") reload();
+    };
     window.addEventListener("storage", onChange);
+    window.addEventListener("pageshow", onChange);
     window.addEventListener("nhotphim:library-change", onChange);
+    document.addEventListener("visibilitychange", onVisible);
     return () => {
       window.removeEventListener("storage", onChange);
+      window.removeEventListener("pageshow", onChange);
       window.removeEventListener("nhotphim:library-change", onChange);
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, [reload]);
 
@@ -123,7 +136,7 @@ export function ContinueWatching() {
               <div key={item.slug} className="group relative w-[130px] shrink-0 bg-transparent sm:w-[185px]">
                 <div className="relative">
                   <a
-                    href={watchHref(item)}
+                    href={freshWatchHref(item)}
                     draggable={false}
                     onClick={(event) => {
                       if (drag.current.moved) {
@@ -182,7 +195,7 @@ export function ContinueWatching() {
                       </span>
                     </p>
                     <h3 className="line-clamp-1 px-1 text-center text-[13px] font-semibold text-white/90 transition-colors group-hover:text-white sm:text-[14px]">
-                      <a href={watchHref(item)} className="hover:underline underline-offset-2">
+                      <a href={freshWatchHref(item)} className="hover:underline underline-offset-2">
                         {item.title}
                       </a>
                     </h3>

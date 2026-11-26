@@ -11,6 +11,6 @@ export default function HoatHinhPage() {
   return renderCategory({
     title: "Hoạt Hình",
     basePath: withBasePath("/hoat-hinh"),
-    filter: (m) => (m.genreSlugs ?? []).includes("anime-hoat-hinh"),
+    filter: (m) => (m.genreSlugs ?? []).some((s) => s === "hoat-hinh" || s === "anime-hoat-hinh"),
   });
 }
