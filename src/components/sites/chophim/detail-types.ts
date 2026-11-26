@@ -43,6 +43,11 @@ export type MovieDetail = {
   countrySlug?: string | null;
   formatSlug?: string | null;
   movietypeSlug?: string;
+  /** id row trong bảng movies — dùng để tải đúng 1 dòng cho phim mới. */
+  id?: number | string;
+  imdbId?: string | null;
+  views?: number;
+  likes?: number;
   theater?: boolean;
   // Từ /api/skip-times của chophim.wtf — mỗi phim có độ dài intro khác nhau.
   introEnd?: number;

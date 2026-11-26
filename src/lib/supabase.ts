@@ -33,12 +33,19 @@ export async function sbFetch(path: string, init: RequestInit = {}, timeoutMs = 
   }
 }
 
-export async function sbTable<T = Record<string, unknown>>(table: string): Promise<T[]> {
+/** Đọc bảng với danh sách cột rõ ràng — KHÔNG dùng select=* (mỗi lần tải
+ *  toàn bảng movies cũng ~3,4 MB, chủ yếu là episodes/extra không cần ở danh sách). */
+export async function sbTable<T = Record<string, unknown>>(
+  table: string,
+  select = "*",
+  filters: Record<string, string> = {}
+): Promise<T[]> {
   const PAGE = 1000;
+  const params = new URLSearchParams({ select, ...filters });
   const all: T[] = [];
   for (let off = 0; off < 50 * PAGE; off += PAGE) {
     const res = await sbFetch(
-      `/rest/v1/${table}?select=*`,
+      `/rest/v1/${table}?${params}`,
       { headers: { Range: `${off}-${off + PAGE - 1}`, "Range-Unit": "rows" } },
       20000
     );

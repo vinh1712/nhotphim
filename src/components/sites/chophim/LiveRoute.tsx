@@ -5,7 +5,7 @@
  * HTML build sẵn được render ngay; khi Supabase trả về thì tự thay bằng bản mới
  * nhất (kể cả phim admin vừa thêm sau khi đã deploy).
  */
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { detailHref, liveSuggestions, useLiveData } from "@/lib/live-data";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
@@ -82,7 +82,27 @@ export function LiveRoute({
 }: Props) {
   const live = useLiveData();
   const liveMovie = slug ? live.movies[slug] || null : null;
-  const movie = liveMovie || initialMovie;
+  const [detail, setDetail] = useState<MovieDetail | null>(null);
+  const [detailTried, setDetailTried] = useState(false);
+  const detailId = liveMovie?.id;
+  const hasLiveServers = !!liveMovie?.servers?.length;
+
+  // Danh sách chỉ lấy cột gọn. Phim đã có trong bản tĩnh đã được gắn lại servers;
+  // phim mới (không có initialMovie) mới cần tải đúng 1 dòng có episodes.
+  useEffect(() => {
+    setDetail(null);
+    setDetailTried(false);
+    if (!detailId || hasLiveServers || initialMovie) return;
+    let cancelled = false;
+    void live
+      .loadDetail(detailId)
+      .then((rec) => { if (!cancelled) setDetail(rec); })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setDetailTried(true); });
+    return () => { cancelled = true; };
+  }, [detailId, hasLiveServers, initialMovie, live.loadDetail]);
+
+  const movie = (detail?.servers?.length ? detail : liveMovie) || initialMovie;
   const comments = liveMovie
     ? live.comments[slug]?.length
       ? live.comments[slug]
@@ -99,6 +119,10 @@ export function LiveRoute({
   if (!movie) {
     if (fallback && !live.ready) return <Message text="Đang tải phim..." />;
     return <Message text="Không tìm thấy phim. Vui lòng quay lại trang chủ." />;
+  }
+  // Phim mới đang chờ dòng chi tiết — đừng render trang xem với danh sách rỗng.
+  if (!initialMovie && liveMovie && !hasLiveServers && !detail?.servers?.length && !detailTried) {
+    return <Message text="Đang tải phim..." />;
   }
 
   if (mode === "detail") {

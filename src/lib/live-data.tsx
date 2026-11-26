@@ -1,16 +1,16 @@
 "use client";
 
 /**
- * Lớp dữ liệu "sống" cho bản static export.
+ * Lớp dữ liệu cho bản static export.
  *
- * Trang vẫn được build sẵn (HTML tĩnh, lên nhanh, giữ nguyên giao diện chophim),
- * nhưng ngay khi mở trang client sẽ đọc trực tiếp các bảng Supabase của repo
- * quản lí vinh1712/nhotphim-quanli và đăng ký realtime. Admin thêm/sửa phim,
- * bình luận hay tập mới là homepage / danh mục / thông báo đổi luôn — không cần
- * quét lại 10 phút và không cần build lại.
+ * HTML tĩnh (752 route) là nguồn ban đầu — mở trang KHÔNG kéo bảng movies.
+ * Client chỉ hỏi 1 giá trị cực nhỏ: app_settings.site_version (~250 bytes).
+ * Admin sửa phim/comment/tập/hero/taxonomy -> trigger tăng site_version -> client
+ * fetch danh sách đúng 1 lần rồi cache. Realtime chỉ nhận "chuông" thay đổi,
+ * không nhận/kéo payload của bảng lớn.
  *
- * Khi mạng lỗi hoặc Supabase chưa kịp trả về, toàn bộ dữ liệu build sẵn vẫn dùng
- * được nên trang không bao giờ trống.
+ * Khi mạng lỗi hoặc trigger chưa được cài, bản tĩnh vẫn dùng được nên trang
+ * không bao giờ trống.
  */
 import {
   createContext,
@@ -25,7 +25,7 @@ import {
 import { commentsData, moviesData, notificationsData, taxonomiesData } from "@/data";
 import { VN_FLAG_AVATAR } from "./avatar-fallback";
 import { stripBasePath, withBasePath } from "./base-path";
-import { SHOW_LOADING_EVENT, SKIP_OVERLAY_KEY, WAKE_REFRESH_MS } from "./overlay";
+import { SKIP_OVERLAY_KEY } from "./overlay";
 import { SB_KEY, SB_URL, sbFetch, sbTable } from "./supabase";
 import { commentTimestamp } from "@/components/sites/chophim/detail-types";
 import type {
@@ -68,9 +68,36 @@ type LiveState = {
 
 type LiveContextValue = LiveState & {
   refresh: () => Promise<void>;
+  /** Chỉ gọi cho phim mới không có trong bản tĩnh: tải đúng 1 dòng có episodes. */
+  loadDetail: (id: number | string) => Promise<MovieDetail | null>;
 };
 
-const CACHE_KEY = "nhotphim:live:v2";
+const CACHE_KEY = "nhotphim:live:v3";
+/** Cờ thay đổi do trigger Supabase cập nhật. Chỉ đọc/localStorage, ~250B/request. */
+const VERSION_KEY = "nhotphim:site:version";
+/** Chỉ dùng khi trigger site_version chưa có: fallback cache 10 phút. */
+const CACHE_TTL_MS = 10 * 60 * 1000;
+
+/** 20 cột gọn cho danh sách: 329 dòng chỉ ~165 KB (select=* là ~3,4 MB).
+ *  Mô tả/backdrop/logo/extra/episodes chỉ lấy ở bản tĩnh hoặc trang chi tiết. */
+const MOVIE_LIST_COLUMNS =
+  "id,hidden,created_at,ophim_slug,title,titleen,poster,year,quality,sub,epstatus,currentep,totalep,ep,rating,genre,country,type,series_group,part_number";
+/** Chỉ dùng cho phim admin thêm mới (không có trong bản tĩnh): đúng 1 dòng. */
+const MOVIE_DETAIL_COLUMNS = [
+  MOVIE_LIST_COLUMNS,
+  "backdrop",
+  "logo",
+  "description",
+  "desc",
+  "episodes",
+  "embedurl",
+  "embedurl2",
+  "embedurl3",
+  "m3u8url",
+  "nguonc_embed_lt",
+  "extra",
+].join(",");
+
 const staticMovies = moviesData as unknown as Record<string, MovieDetail>;
 const staticSlugs = new Set(Object.keys(staticMovies));
 
@@ -286,9 +313,13 @@ function makeNormalizer(ctx: {
       ? [ctx.taxonomies.find((t) => t.type === "country" && t.slug === countrySlug)?.name || countryCode]
       : [];
     const servers = buildServers(row, sub);
+    // Danh sách không tải episodes. Với phim đã có trong bản tĩnh, mượn lại
+    // servers để trang xem không bao giờ rơi vào cảnh "live sẵn sàng nhưng rỗng nguồn".
+    const fallback = staticMovies[slug] as MovieDetail | undefined;
+    const resolvedServers = servers.length ? servers : fallback?.servers || servers;
     // Admin có khi lưu currentep/totalep theo số tập dự kiến của nguồn (vd 16)
     // trong khi thực tế mới chỉ có 1-2 tập. Luôn hiển thị theo số tập có thật.
-    const available = servers.reduce((max, s) => Math.max(max, s.episodes.length), 0);
+    const available = resolvedServers.reduce((max, s) => Math.max(max, s.episodes.length), 0);
     const rawCurrent = num(row.currentep);
     const rawTotal = num(row.totalep);
     const current = available && rawCurrent != null && rawCurrent > available ? available : rawCurrent;
@@ -320,13 +351,13 @@ function makeNormalizer(ctx: {
       title: str(row.title),
       origin: str(row.titleen),
       poster: str(row.poster),
-      backdrop: str(row.backdrop),
-      logo: str(row.logo) || null,
+      backdrop: str(row.backdrop) || fallback?.backdrop || null,
+      logo: str(row.logo) || fallback?.logo || null,
       year: num(row.year),
       quality: str(row.quality) || "FHD",
       lang: sub,
       episodeLabel,
-      episodeStills,
+      episodeStills: episodeStills || fallback?.episodeStills || null,
       status,
       current,
       total,
@@ -334,12 +365,12 @@ function makeNormalizer(ctx: {
       genres,
       countries,
       rating,
-      description: str(row.description) || str(row.desc) || str(extra.metaDesc),
-      director: str(extra.director) || null,
-      duration: str(extra.duration) || null,
-      apiSlug: str(extra.slug) || str(row.ophim_slug) || slug,
-      trailer: str(extra.trailer) || null,
-      imdbId: str(extra.imdbId) || null,
+      description: str(row.description) || str(row.desc) || str(extra.metaDesc) || fallback?.description || "",
+      director: str(extra.director) || fallback?.director || null,
+      duration: str(extra.duration) || fallback?.duration || null,
+      apiSlug: str(extra.slug) || str(row.ophim_slug) || fallback?.apiSlug || slug,
+      trailer: str(extra.trailer) || fallback?.trailer || null,
+      imdbId: str(extra.imdbId) || fallback?.imdbId || null,
       source: "quanli",
       seriesGroup: str(row.series_group) || null,
       partNumber: num(row.part_number),
@@ -352,10 +383,10 @@ function makeNormalizer(ctx: {
       countrySlug,
       formatSlug: str(row.quality).toLowerCase() || null,
       movietypeSlug: row.type === "movie" ? "phim-le" : "phim-bo",
-      views: num(extra.views) ?? 0,
-      likes: num(extra.likes) ?? 0,
-      theater: !!extra.theater,
-      servers,
+      views: num(extra.views) ?? fallback?.views ?? 0,
+      likes: num(extra.likes) ?? fallback?.likes ?? 0,
+      theater: !!extra.theater || !!fallback?.theater,
+      servers: resolvedServers,
     } as MovieDetail;
   };
 }
@@ -772,6 +803,7 @@ function buildNotifications(rows: Row[], db: Record<string, MovieDetail>): LiveN
 const LiveContext = createContext<LiveContextValue>({
   ...staticState(),
   refresh: async () => {},
+  loadDetail: async () => null,
 });
 
 function readCache(): LiveState | null {
@@ -789,7 +821,8 @@ function readCache(): LiveState | null {
       taxonomies: (value.taxonomies || []) as Taxonomy[],
       ready: true,
       refreshing: false,
-      updatedAt: value.updatedAt || Date.now(),
+      // Giữ mốc thật để mount effect biết cache đã hết hạn chưa.
+      updatedAt: value.updatedAt || null,
       error: null,
     };
   } catch {
@@ -797,26 +830,28 @@ function readCache(): LiveState | null {
   }
 }
 
-function rowSignature(rows: Row[]): string {
-  return rows
-    .map((r) =>
-      [
-        r.id,
-        r.updated_at,
-        r.created_at,
-        r.title,
-        r.titleen,
-        r.currentep,
-        r.totalep,
-        r.epstatus,
-        r.rating,
-        r.hidden,
-        r.description,
-        r.poster,
-        Array.isArray(r.episodes) ? r.episodes.length : 0,
-      ].join("~")
-    )
-    .join("|");
+type NormalizeContext = {
+  genreMap: Record<string, string>;
+  catNameToSlug: Record<string, string>;
+  homeSlugs: Set<string>;
+  taxonomies: Taxonomy[];
+};
+
+function buildNormalizeContext(taxonomies: Taxonomy[]): NormalizeContext {
+  const genreMap: Record<string, string> = { ...FALLBACK_GENRE_MAP };
+  for (const m of Object.values(staticMovies)) {
+    (m as any).genreCodes?.forEach((code: string, i: number) => {
+      const name = m.genres?.[i];
+      if (code && name && !genreMap[code]) genreMap[code] = name;
+    });
+  }
+  const catNameToSlug: Record<string, string> = {};
+  for (const t of taxonomies) if (t.type === "category" && t.name && t.slug) catNameToSlug[t.name] = t.slug;
+  const homeSlugs = new Set(staticSlugs);
+  for (const s of staticHomeValue.sections || []) for (const it of s.items || []) if (it?.slug) homeSlugs.add(it.slug);
+  for (const s of staticHomeValue.hero?.slides || []) if (s?.slug) homeSlugs.add(s.slug);
+  for (const s of staticHomeValue.anime?.slides || []) if (s?.slug) homeSlugs.add(s.slug);
+  return { genreMap, catNameToSlug, homeSlugs, taxonomies };
 }
 
 async function fetchHeroIds(): Promise<Array<string | number>> {
@@ -832,46 +867,59 @@ async function fetchHeroIds(): Promise<Array<string | number>> {
     .filter((x: any) => x != null);
 }
 
+/** Đọc cờ phiên bản: 1 row của app_settings, không đụng bảng movies. */
+async function fetchSiteVersion(): Promise<string | null> {
+  const res = await sbFetch("/rest/v1/app_settings?key=eq.site_version&select=value");
+  if (!res.ok) return null;
+  const data = await res.json();
+  const row = Array.isArray(data) ? data[0] : null;
+  if (!row) return null;
+  const raw = typeof row.value === "string" ? parseJson(row.value) : row.value;
+  if (raw == null || Array.isArray(raw)) return null;
+  if (typeof raw === "object") return String((raw as any).v ?? (raw as any).version ?? "");
+  return String(raw);
+}
+function readSiteVersion(): string | null {
+  try { return window.localStorage.getItem(VERSION_KEY); } catch { return null; }
+}
+function writeSiteVersion(value: string): void {
+  try { window.localStorage.setItem(VERSION_KEY, value); } catch { /* private mode */ }
+}
+
 export function LiveDataProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<LiveState>(staticState);
   const inFlight = useRef<Promise<void> | null>(null);
-  const lastSig = useRef("");
-  const lastSigRef = lastSig;
+  const ctxRef = useRef<NormalizeContext>(buildNormalizeContext(staticState().taxonomies));
+  const detailCache = useRef<Map<string, MovieDetail>>(new Map());
+  const detailPending = useRef<Map<string, Promise<MovieDetail | null>>>(new Map());
 
-  const refresh = useCallback(async (force = false): Promise<void> => {
+  const refresh = useCallback(async (): Promise<void> => {
     if (typeof window === "undefined") return;
     if (inFlight.current) return inFlight.current;
     const task = (async () => {
       try {
         setState((s) => ({ ...s, refreshing: true }));
-        const rows = (await sbTable<Row>("movies")) as Row[];
+        // Version được đọc cùng lúc: chỉ ghi localStorage sau khi fetch thành công.
+        const [rows, serverVersion] = await Promise.all([
+          sbTable<Row>("movies", MOVIE_LIST_COLUMNS),
+          fetchSiteVersion().catch(() => null),
+        ]);
         if (!rows.length) throw new Error("movies trống");
-        const sig = rowSignature(rows);
-        if (!force && sig === lastSigRef.current) return;
 
         const [taxRows, commentRows, noticeRows, heroIds] = await Promise.all([
-          sbTable<Row>("taxonomies").catch(() => [] as Row[]),
-          sbTable<Row>("comments").catch(() => [] as Row[]),
-          sbTable<Row>("ep_notifs").catch(() => [] as Row[]),
+          sbTable<Row>("taxonomies", "id,type,name,slug").catch(() => [] as Row[]),
+          sbTable<Row>(
+            "comments",
+            "id,movie_id,movie_title,author_name,content,created_at,parent_id,reply_to_name,likes,dislikes,is_admin,author_avatar"
+          ).catch(() => [] as Row[]),
+          sbTable<Row>("ep_notifs", "id,title,ep,poster,created_at").catch(() => [] as Row[]),
           fetchHeroIds().catch(() => [] as Array<string | number>),
         ]);
 
         const taxonomies = taxRows.length ? (taxRows as Taxonomy[]) : staticState().taxonomies;
-        const genreMap: Record<string, string> = { ...FALLBACK_GENRE_MAP };
-        for (const m of Object.values(staticMovies)) {
-          (m as any).genreCodes?.forEach((code: string, i: number) => {
-            const name = m.genres?.[i];
-            if (code && name && !genreMap[code]) genreMap[code] = name;
-          });
-        }
-        const catNameToSlug: Record<string, string> = {};
-        for (const t of taxonomies) if (t.type === "category" && t.name && t.slug) catNameToSlug[t.name] = t.slug;
-        const homeSlugs = new Set(staticSlugs);
-        for (const s of staticHomeValue.sections || []) for (const it of s.items || []) if (it?.slug) homeSlugs.add(it.slug);
-        for (const s of staticHomeValue.hero?.slides || []) if (s?.slug) homeSlugs.add(s.slug);
-        for (const s of staticHomeValue.anime?.slides || []) if (s?.slug) homeSlugs.add(s.slug);
-
-        const normalize = makeNormalizer({ genreMap, catNameToSlug, homeSlugs, taxonomies });
+        const ctx = buildNormalizeContext(taxonomies);
+        ctxRef.current = ctx;
+        const normalize = makeNormalizer(ctx);
         const db = buildMovieDb(rows, normalize);
         const comments = commentRows.length
           ? buildComments(commentRows, db)
@@ -890,8 +938,8 @@ export function LiveDataProvider({ children }: { children: ReactNode }) {
           updatedAt: Date.now(),
           error: null,
         };
-        lastSigRef.current = sig;
         setState(next);
+        if (serverVersion) writeSiteVersion(serverVersion);
         try {
           window.sessionStorage.setItem(CACHE_KEY, JSON.stringify(next));
         } catch {
@@ -907,55 +955,86 @@ export function LiveDataProvider({ children }: { children: ReactNode }) {
     return task;
   }, []);
 
+  const loadDetail = useCallback(async (id: number | string): Promise<MovieDetail | null> => {
+    const key = String(id);
+    if (!key || key === "undefined" || key === "null") return null;
+    const cached = detailCache.current.get(key);
+    if (cached) return cached;
+    const running = detailPending.current.get(key);
+    if (running) return running;
+    // Đúng 1 dòng, có episodes/extra: chỉ cần cho phim mới chưa có bản tĩnh.
+    // React có thể chạy effect 2 lần — chia chung 1 promise để chỉ fetch 1 lần.
+    const task = (async () => {
+      const rows = await sbTable<Row>("movies", MOVIE_DETAIL_COLUMNS, { id: `eq.${key}` });
+      const row = rows[0];
+      if (!row) return null;
+      const rec = makeNormalizer(ctxRef.current)(row);
+      detailCache.current.set(key, rec);
+      return rec;
+    })().finally(() => {
+      detailPending.current.delete(key);
+    });
+    detailPending.current.set(key, task);
+    return task;
+  }, []);
+
+  // Mở trang: JSON tĩnh render ngay. Chỉ fetch khi cờ trên server khác cờ đã lưu.
   useEffect(() => {
+    let cancelled = false;
     const cached = readCache();
-    if (cached) setState(cached);
-    void refresh();
+    if (cached) {
+      setState(cached);
+      ctxRef.current = buildNormalizeContext(cached.taxonomies);
+    }
+    void (async () => {
+      const serverVersion = await fetchSiteVersion().catch(() => null);
+      if (cancelled) return;
+      if (serverVersion && cached && readSiteVersion() === serverVersion) return;
+      // Chưa cài trigger: giữ hành vi cache 10 phút để không tải lặp.
+      if (!serverVersion && cached && cached.updatedAt && Date.now() - cached.updatedAt < CACHE_TTL_MS) return;
+      void refresh();
+    })();
+    return () => { cancelled = true; };
   }, [refresh]);
 
-  // Realtime của Supabase + poll dự phòng. Poll vẫn chạy nếu publication chưa bật
-  // hoặc WebSocket bị chặn, nên admin sửa xong là client nhận trong vài giây.
+  // Realtime CHỈ nhận tín hiệu từ row site_version. Không subscribe 5 bảng,
+  // không poll, không kéo payload của bảng lớn.
   useEffect(() => {
+    if (typeof window === "undefined" || typeof WebSocket === "undefined") return;
     let stopped = false;
     let ws: WebSocket | null = null;
     let reconnect: number | undefined;
     let heartbeat: number | undefined;
+    let poll: number | undefined;
     let debounce: number | undefined;
     let attempts = 0;
     let seq = 1;
-    let hiddenAt = 0;
 
     const onChange = () => {
       if (stopped) return;
       if (debounce) window.clearTimeout(debounce);
-      debounce = window.setTimeout(() => void refresh(true), 700);
+      debounce = window.setTimeout(() => void refresh(), 500);
     };
 
     const connect = () => {
-      if (stopped || typeof WebSocket === "undefined") return;
+      if (stopped) return;
       try {
         const url = `${SB_URL.replace(/^http/, "ws")}/realtime/v1/websocket?apikey=${encodeURIComponent(SB_KEY)}&vsn=1.0.0`;
         ws = new WebSocket(url);
         ws.onopen = () => {
           attempts = 0;
-          ws?.send(
-            JSON.stringify({
-              topic: "realtime:movies",
-              event: "phx_join",
-              payload: {
-                config: {
-                  postgres_changes: [
-                    "movies",
-                    "comments",
-                    "ep_notifs",
-                    "taxonomies",
-                    "app_settings",
-                  ].map((table) => ({ event: "*", schema: "public", table })),
-                },
+          ws?.send(JSON.stringify({
+            topic: "realtime:public:app_settings",
+            event: "phx_join",
+            payload: {
+              config: {
+                postgres_changes: [
+                  { id: 1, event: "*", schema: "public", table: "app_settings", filter: "key=eq.site_version" },
+                ],
               },
-              ref: "1",
-            })
-          );
+            },
+            ref: "1",
+          }));
           if (heartbeat) window.clearInterval(heartbeat);
           heartbeat = window.setInterval(() => {
             if (ws?.readyState === WebSocket.OPEN) {
@@ -966,15 +1045,11 @@ export function LiveDataProvider({ children }: { children: ReactNode }) {
         ws.onmessage = (ev) => {
           try {
             const msg = JSON.parse(String(ev.data));
-            if (msg?.event === "postgres_changes") onChange();
-          } catch {
-            /* bỏ qua frame không đọc được */
-          }
+            if (msg?.event === "postgres_changes" || msg?.event === "change") onChange();
+          } catch { /* bỏ qua frame lạ */ }
         };
         ws.onclose = () => scheduleReconnect();
-        ws.onerror = () => {
-          try { ws?.close(); } catch { /* đã đóng */ }
-        };
+        ws.onerror = () => { try { ws?.close(); } catch { /* đã đóng */ } };
       } catch {
         scheduleReconnect();
       }
@@ -989,23 +1064,21 @@ export function LiveDataProvider({ children }: { children: ReactNode }) {
     };
 
     connect();
-    const poll = window.setInterval(() => {
-      if (document.visibilityState === "visible") void refresh(false);
+
+    // Dự phòng khi publication Realtime chưa bật: chỉ hỏi cờ (~250B)/20s.
+    // Khác với poll cũ: KHÔNG kéo danh sách phim, chỉ so sánh 1 số.
+    const checkVersion = async () => {
+      const v = await fetchSiteVersion().catch(() => null);
+      if (v && v !== readSiteVersion()) onChange();
+    };
+    poll = window.setInterval(() => {
+      if (document.visibilityState === "visible") void checkVersion();
     }, 20000);
+
+    // Quay lại tab: hỏi cờ ngay, không fetch danh sách.
     const onVisible = () => {
-      if (document.visibilityState !== "visible") {
-        hiddenAt = Date.now();
-        return;
-      }
-      const away = hiddenAt ? Date.now() - hiddenAt : 0;
-      hiddenAt = 0;
-      if (away >= WAKE_REFRESH_MS) {
-        // Dùng lại overlay có sẵn của chophim thay vì dựng màn load mới.
-        window.dispatchEvent(new Event(SHOW_LOADING_EVENT));
-        void refresh(true);
-      } else {
-        void refresh(false);
-      }
+      if (document.visibilityState !== "visible") return;
+      void checkVersion();
     };
     document.addEventListener("visibilitychange", onVisible);
 
@@ -1013,8 +1086,8 @@ export function LiveDataProvider({ children }: { children: ReactNode }) {
       stopped = true;
       if (reconnect) window.clearTimeout(reconnect);
       if (heartbeat) window.clearInterval(heartbeat);
+      if (poll) window.clearInterval(poll);
       if (debounce) window.clearTimeout(debounce);
-      window.clearInterval(poll);
       document.removeEventListener("visibilitychange", onVisible);
       try { ws?.close(); } catch { /* đã đóng */ }
     };
@@ -1081,7 +1154,10 @@ export function LiveDataProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const value = useMemo<LiveContextValue>(() => ({ ...state, refresh }), [state, refresh]);
+  const value = useMemo<LiveContextValue>(
+    () => ({ ...state, refresh, loadDetail }),
+    [state, refresh, loadDetail]
+  );
   return <LiveContext.Provider value={value}>{children}</LiveContext.Provider>;
 }
 
