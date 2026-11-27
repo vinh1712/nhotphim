@@ -46,6 +46,11 @@ const num = (v) => {
   const n = parseInt(String(v ?? "").replace(/[^\d]/g, ""), 10);
   return Number.isFinite(n) ? n : null;
 };
+/** Điểm 0–10: "N/A"/"" / null đều thành null, không thành NaN. */
+const score = (v) => {
+  const n = parseFloat(String(v ?? ""));
+  return Number.isFinite(n) && n > 0 && n <= 10 ? n : null;
+};
 const slugify = (s) =>
   str(s)
     .normalize("NFD")
@@ -283,7 +288,39 @@ function buildServers(row, sub) {
   return servers;
 }
 
-function makeNormalizer({ genreMap, catNameToSlug, homeSlugs, taxonomies }) {
+/** Admin copy totalep của phần trước sang phần sau khi 2 phần cùng ophim_slug.
+ *  Chỉ đánh dấu phần sau đang chiếu có tổng trùng row đã chiếu nhiều tập hơn. */
+function borrowedSequelTotalIds(rows) {
+  const byApi = new Map();
+  for (const row of rows) {
+    const api = str(row.ophim_slug);
+    if (!api) continue;
+    const list = byApi.get(api) || [];
+    list.push(row);
+    byApi.set(api, list);
+  }
+  const ids = new Set();
+  for (const group of byApi.values()) {
+    if (group.length < 2) continue;
+    for (const row of group) {
+      if ((num(row.part_number) ?? 0) < 2) continue;
+      const total = num(row.totalep);
+      const current = num(row.currentep) ?? 0;
+      if (total == null) continue;
+      if (
+        group.some(
+          (other) =>
+            other !== row && num(other.totalep) === total && (num(other.currentep) ?? 0) > current
+        )
+      ) {
+        ids.add(String(row.id));
+      }
+    }
+  }
+  return ids;
+}
+
+function makeNormalizer({ genreMap, catNameToSlug, homeSlugs, taxonomies, borrowedTotals }) {
   const primarySlug = (row) => {
     const candidates = [row.ophim_slug, slugify(row.title), slugify(row.titleen)].filter(Boolean);
     for (const c of candidates) if (homeSlugs.has(c)) return c;
@@ -308,24 +345,23 @@ function makeNormalizer({ genreMap, catNameToSlug, homeSlugs, taxonomies }) {
       ? [taxonomies.find((t) => t?.type === "country" && t?.slug === countrySlug)?.name || countryCode]
       : [];
     const servers = buildServers(row, sub);
-    // currentep/totalep có thể là số tập dự kiến của nguồn (vd 16) trong khi
-    // thực tế mới chỉ có vài tập — luôn hiển thị theo số tập có thật.
+    // current chỉ đi tới số tập có link thật; total là tổng admin lưu, trừ khi
+    // tổng đó bị copy nhầm từ phần khác cùng ophim_slug.
     const available = servers.reduce((max, s) => Math.max(max, playableCount(s)), 0);
     const rawCurrent = num(row.currentep);
     const rawTotal = num(row.totalep);
     const current = available && rawCurrent != null && rawCurrent > available ? available : rawCurrent;
-    const total = available && rawTotal != null && rawTotal > available ? available : rawTotal;
+    const total = borrowedTotals?.has(String(row.id)) ? available : rawTotal ?? available;
     const epstatus = str(row.epstatus);
-    const ratingRaw = row.rating && row.rating !== "N/A" ? parseFloat(row.rating) : null;
-    const imdbScore = extra.imdbScore ? parseFloat(extra.imdbScore) : null;
-    const tmdbScore = extra.tmdbScore ? parseFloat(extra.tmdbScore) : null;
-    const rating = Number.isFinite(ratingRaw)
-      ? ratingRaw
-      : Number.isFinite(imdbScore)
-        ? imdbScore
-        : Number.isFinite(tmdbScore)
-          ? tmdbScore
-          : null;
+    const ratingRaw = score(row.rating);
+    const rawImdb = score(extra.imdbScore);
+    const rawTmdb = score(extra.tmdbScore);
+    // Cột rating là "Điểm IMDb" trên admin (vài phim TMDB import ghi vote_average
+    // vào đây). Ưu tiên 2 field riêng trong extra, dùng rating làm IMDb chỉ khi
+    // nó không trùng điểm TMDb đã lưu.
+    const imdbRating = rawImdb ?? (ratingRaw != null && ratingRaw !== rawTmdb ? ratingRaw : null);
+    const tmdbRating = rawTmdb;
+    const rating = ratingRaw ?? imdbRating ?? tmdbRating;
 
     let status;
     if (epstatus === "Hoàn thành") status = current && total ? `Hoàn Tất (${current}/${total})` : "Hoàn Tất";
@@ -356,6 +392,8 @@ function makeNormalizer({ genreMap, catNameToSlug, homeSlugs, taxonomies }) {
       genres,
       countries,
       rating,
+      imdbRating,
+      tmdbRating,
       description: str(row.description) || str(row.desc) || str(extra.metaDesc),
       director: str(extra.director) || null,
       duration: str(extra.duration) || null,
@@ -530,7 +568,8 @@ function buildHome(tpl, db, comments, taxonomies, heroIds) {
       imgWrapClass: t?.imgWrapClass,
       slug: m.slug,
       meta: {
-        tmdb: m.rating,
+        imdb: m.imdbRating ?? null,
+        tmdb: m.tmdbRating ?? null,
         poster: m.poster,
         genres: m.genres,
         countries: m.countries,
@@ -598,7 +637,8 @@ function buildHome(tpl, db, comments, taxonomies, heroIds) {
     year: m.year || new Date().getFullYear(),
     quality: m.quality,
     episode: m.episodeLabel || m.status,
-    tmdb: m.rating ?? 0,
+    imdb: m.imdbRating ?? undefined,
+    tmdb: m.tmdbRating ?? 0,
     genres: m.genres.slice(0, 3),
     hrefWatch: `/xem/${m.slug}`,
     hrefDetail: `/phim/${m.slug}`,
@@ -620,7 +660,8 @@ function buildHome(tpl, db, comments, taxonomies, heroIds) {
     year: m.year || new Date().getFullYear(),
     quality: m.quality,
     episode: m.episodeLabel || m.status,
-    tmdb: m.rating ?? 0,
+    imdb: m.imdbRating ?? undefined,
+    tmdb: m.tmdbRating ?? 0,
     genres: m.genres.slice(0, 3),
     href: `/phim/${m.slug}`,
   }));
@@ -956,7 +997,13 @@ for (const s of tpl.sections || []) for (const it of s.items || []) if (it?.slug
 for (const s of tpl.hero?.slides || []) if (s?.slug) homeSlugs.add(s.slug);
 for (const s of tpl.anime?.slides || []) if (s?.slug) homeSlugs.add(s.slug);
 
-const normalize = makeNormalizer({ genreMap, catNameToSlug, homeSlugs, taxonomies });
+const normalize = makeNormalizer({
+  genreMap,
+  catNameToSlug,
+  homeSlugs,
+  taxonomies,
+  borrowedTotals: borrowedSequelTotalIds(movieRows),
+});
 const { db, collisions } = buildMovieDb(movieRows, normalize);
 const comments = commentRows === null ? currentComments : buildComments(commentRows, db);
 const notifications =

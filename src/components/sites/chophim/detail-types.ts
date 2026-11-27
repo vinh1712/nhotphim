@@ -35,14 +35,17 @@ export function nextPlayableIndex(server: MovieServer | null | undefined, index:
   return -1;
 }
 
-/** Số tập hiển thị cho server đang chọn: current không vượt quá số tập có link. */
+/** Số tập hiển thị cho server đang chọn:
+ *  - current = số tập có link của riêng server (không vượt quá link thật).
+ *  - total   = tổng số tập của phim do admin lưu, KHÔNG ép bằng số link của nguồn. */
 export function serverEpisodeProgress(
   movie: MovieDetail,
   server: MovieServer | null | undefined
 ): { current: number; total: number } {
-  const total = playableCount(server);
-  if (!total) return { current: 0, total: 0 };
-  const current = Math.min(Math.max(movie.current ?? total, 0), total);
+  const available = playableCount(server);
+  const total = Math.max(movie.total ?? available, 0);
+  if (!available && !total) return { current: 0, total: 0 };
+  const current = Math.min(Math.max(movie.current ?? available, 0), available || total);
   return { current, total };
 }
 
@@ -65,7 +68,11 @@ export type MovieDetail = {
   type: "series" | "movie";
   genres: string[];
   countries: string[];
+  /** Điểm tổng dùng để xếp hạng (cột rating của admin, có thể là IMDb hoặc TMDb). */
   rating: number | null;
+  /** Hai điểm riêng — admin lưu ở extra.imdbScore / extra.tmdbScore. */
+  imdbRating?: number | null;
+  tmdbRating?: number | null;
   description: string;
   director: string | null;
   duration: string | null;

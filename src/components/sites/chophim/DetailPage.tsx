@@ -178,10 +178,16 @@ function Badges({ movie, size }: { movie: MovieDetail; size: "md" | "sm" }) {
       {movie.episodeLabel && (
         <span className="px-2 py-[3px] rounded border border-white bg-black/20 backdrop-blur-sm font-medium">{movie.episodeLabel}</span>
       )}
-      {movie.rating != null && (
+      {!!movie.imdbRating && (
+        <div className="flex items-center text-[11px] font-bold rounded overflow-hidden border border-solid border-[rgba(245,197,24,0.5)]">
+          <span className="bg-[#F5C518] text-black px-1.5 py-0.5">IMDb</span>
+          <span className="bg-[rgba(245,197,24,0.1)] text-white px-1.5 py-0.5">{movie.imdbRating.toFixed(1)}</span>
+        </div>
+      )}
+      {!!movie.tmdbRating && (
         <div className="flex items-center text-[11px] font-bold rounded overflow-hidden border border-solid border-[rgba(1,180,228,0.5)]">
           <span className="bg-[#01B4E4] text-white px-1.5 py-0.5">TMDb</span>
-          <span className="bg-[rgba(1,180,228,0.1)] text-white px-1.5 py-0.5">{movie.rating.toFixed(1)}</span>
+          <span className="bg-[rgba(1,180,228,0.1)] text-white px-1.5 py-0.5">{movie.tmdbRating.toFixed(1)}</span>
         </div>
       )}
     </div>

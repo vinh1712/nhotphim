@@ -93,7 +93,9 @@ export function SearchAutocomplete({
     const q = query.trim();
     if (!q) return;
     closeAll();
-    router.push(withBasePath(`/tim-kiem?keyword=${encodeURIComponent(q)}`));
+    // Next tự thêm basePath cho router.push (xem basePath.md). Truyền path "sạch",
+    // không dùng withBasePath ở đây nếu không muốn thành /nhotphim/nhotphim/...
+    router.push(`/tim-kiem?keyword=${encodeURIComponent(q)}`);
   };
 
   const hasMovies = results.length > 0;

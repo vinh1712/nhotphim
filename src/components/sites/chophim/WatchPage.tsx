@@ -2122,10 +2122,16 @@ export function WatchPage({
                   <h2 className="text-[#eab308] text-sm md:text-[15px] font-medium opacity-90">{movie.origin}</h2>
                 </div>
                 <div className="flex flex-wrap justify-center sm:justify-start items-center gap-2">
-                  {movie.rating != null && (
+                  {!!movie.imdbRating && (
+                    <div className="flex items-center text-[11px] font-bold rounded overflow-hidden border border-solid border-[rgba(245,197,24,0.5)]">
+                      <span className="bg-[#F5C518] text-black px-1.5 py-0.5">IMDb</span>
+                      <span className="bg-[rgba(245,197,24,0.1)] text-white px-1.5 py-0.5">{movie.imdbRating.toFixed(1)}</span>
+                    </div>
+                  )}
+                  {!!movie.tmdbRating && (
                     <div className="flex items-center text-[11px] font-bold rounded overflow-hidden border border-solid border-[rgba(1,180,228,0.5)]">
                       <span className="bg-[#01B4E4] text-white px-1.5 py-0.5">TMDb</span>
-                      <span className="bg-[rgba(1,180,228,0.1)] text-white px-1.5 py-0.5">{movie.rating.toFixed(1)}</span>
+                      <span className="bg-[rgba(1,180,228,0.1)] text-white px-1.5 py-0.5">{movie.tmdbRating.toFixed(1)}</span>
                     </div>
                   )}
                   {movie.year && <span className="text-[11px] font-medium px-2 py-0.5 border border-white/20 rounded text-white/90">{movie.year}</span>}

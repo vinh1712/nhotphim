@@ -23,7 +23,7 @@ export type MovieItem = {
     year?: number;
     quality?: string;
     episode?: string;
-    imdb?: number;
+    imdb?: number | null;
   };
 };
 

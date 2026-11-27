@@ -15,6 +15,15 @@ function formatTime(seconds: number): string {
     : `${minutes}:${String(secs).padStart(2, "0")}`;
 }
 
+/** Chỉ dùng cho thẻ mobile dọc: rút gọn giờ thành 1h0m để vừa 1 dòng. */
+function formatTimeMobile(seconds: number): string {
+  const total = Math.max(0, Math.floor(Number(seconds) || 0));
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const secs = total % 60;
+  return hours > 0 ? `${hours}h${minutes}m` : `${minutes}:${String(secs).padStart(2, "0")}`;
+}
+
 /** Cùng dạng hash mà WatchPage và trang Xem tiếp đang dùng để phục hồi mốc xem. */
 function watchHref(item: ProgressEntry): string {
   // Gửi kèm duration (d=) để iOS 15.5 vẽ/tua thanh thời gian ngay cả lúc
@@ -190,7 +199,11 @@ export function ContinueWatching() {
                     <p className="mb-1.5 flex items-center justify-center gap-1 text-[11px] font-medium tracking-wide text-white/50 sm:text-[12px]">
                       <span>Tập {item.episode + 1}</span>
                       <span className="h-1 w-1 bg-white/30" />
-                      <span>
+                      <span className="whitespace-nowrap sm:hidden">
+                        {formatTimeMobile(item.time)} <span className="text-white/20">/</span>{" "}
+                        {formatTimeMobile(item.duration)}
+                      </span>
+                      <span className="hidden whitespace-nowrap sm:inline">
                         {formatTime(item.time)} <span className="text-white/20">/</span> {formatTime(item.duration)}
                       </span>
                     </p>

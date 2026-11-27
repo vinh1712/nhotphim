@@ -1,6 +1,6 @@
 "use client";
 
-import { withBasePath } from "@/lib/base-path";
+import { stripBasePath, withBasePath } from "@/lib/base-path";
 // Hero bản điện thoại — dựng lại theo giao diện mobile của chophim.wtf (đo ở 390×844):
 // section nền tối + backdrop blur, hàng pill Đề xuất/Phim Bộ/Phim Lẻ, coverflow poster,
 // tiêu đề chữ, 2 nút, badges, mô tả, dots và vuốt ngang để đổi phim.
@@ -217,7 +217,9 @@ export function MobileHero() {
                 aria-current={isActive}
                 onClick={() => {
                   if (Date.now() - swipedAt.current < 350) return;
-                  if (isActive) router.push(s.hrefWatch);
+                  // hrefWatch trong home.json đã được withBasePathDeep thêm prefix;
+                  // router.push lại tự thêm basePath → phải bỏ prefix trước khi push.
+                  if (isActive) router.push(stripBasePath(s.hrefWatch));
                   else setActive(i);
                 }}
                 className="mhero-p absolute left-1/2 top-0 block w-[min(52vw,230px)] aspect-[2/3] overflow-hidden rounded-2xl border-2 bg-[#171a26] will-change-transform"

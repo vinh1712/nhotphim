@@ -78,10 +78,14 @@ const VERSION_KEY = "nhotphim:site:version";
 /** Chỉ dùng khi trigger site_version chưa có: fallback cache 10 phút. */
 const CACHE_TTL_MS = 10 * 60 * 1000;
 
-/** 20 cột gọn cho danh sách: 329 dòng chỉ ~165 KB (select=* là ~3,4 MB).
- *  Mô tả/backdrop/logo/extra/episodes chỉ lấy ở bản tĩnh hoặc trang chi tiết. */
-const MOVIE_LIST_COLUMNS =
-  "id,hidden,created_at,ophim_slug,title,titleen,poster,year,quality,sub,epstatus,currentep,totalep,ep,rating,genre,country,type,series_group,part_number";
+/** 22 cột gọn cho danh sách: 329 dòng chỉ ~165 KB (select=* là ~3,4 MB).
+ *  Chỉ kéo 2 field điểm từ extra thay vì cả cột JSON episodes/dubEmbeds.
+ *  Mô tả/backdrop/logo/episodes chỉ lấy ở bản tĩnh hoặc trang chi tiết. */
+const MOVIE_LIST_COLUMNS = [
+  "id,hidden,created_at,ophim_slug,title,titleen,poster,year,quality,sub,epstatus,currentep,totalep,ep,rating,genre,country,type,series_group,part_number",
+  "extra->>imdbScore",
+  "extra->>tmdbScore",
+].join(",");
 /** Chỉ dùng cho phim admin thêm mới (không có trong bản tĩnh): đúng 1 dòng. */
 const MOVIE_DETAIL_COLUMNS = [
   MOVIE_LIST_COLUMNS,
@@ -122,6 +126,11 @@ const pad2 = (n: unknown): string => String(n ?? "").padStart(2, "0");
 const num = (v: unknown): number | null => {
   const n = parseInt(String(v ?? "").replace(/[^\d]/g, ""), 10);
   return Number.isFinite(n) ? n : null;
+};
+/** Điểm 0–10: "N/A"/"" / null đều thành null, không thành NaN. */
+const score = (v: unknown): number | null => {
+  const n = parseFloat(String(v ?? ""));
+  return Number.isFinite(n) && n > 0 && n <= 10 ? n : null;
 };
 const slugify = (s: string): string =>
   str(s)
@@ -280,11 +289,47 @@ function buildServers(row: Row, sub: string): MovieServer[] {
   return servers;
 }
 
+/** Admin có khi copy totalep của phần trước sang phần sau (cùng ophim_slug).
+ *  Chỉ đánh dấu các row phần sau đang chiếu có tổng trùng row khác đã chiếu nhiều
+ *  tập hơn — lúc đó totalep không phải tổng của phần này. */
+function borrowedSequelTotalIds(rows: Row[]): Set<string> {
+  const byApi = new Map<string, Row[]>();
+  for (const row of rows) {
+    const api = str(row.ophim_slug);
+    if (!api) continue;
+    const list = byApi.get(api) || [];
+    list.push(row);
+    byApi.set(api, list);
+  }
+  const ids = new Set<string>();
+  for (const group of byApi.values()) {
+    if (group.length < 2) continue;
+    for (const row of group) {
+      if ((num(row.part_number) ?? 0) < 2) continue;
+      const total = num(row.totalep);
+      const current = num(row.currentep) ?? 0;
+      if (total == null) continue;
+      if (
+        group.some(
+          (other) =>
+            other !== row &&
+            num(other.totalep) === total &&
+            (num(other.currentep) ?? 0) > current
+        )
+      ) {
+        ids.add(String(row.id));
+      }
+    }
+  }
+  return ids;
+}
+
 function makeNormalizer(ctx: {
   genreMap: Record<string, string>;
   catNameToSlug: Record<string, string>;
   homeSlugs: Set<string>;
   taxonomies: Taxonomy[];
+  borrowedTotals?: Set<string>;
 }) {
   const primarySlug = (row: Row): string => {
     const candidates = [row.ophim_slug, slugify(str(row.title)), slugify(str(row.titleen))].filter(Boolean);
@@ -313,28 +358,32 @@ function makeNormalizer(ctx: {
       ? [ctx.taxonomies.find((t) => t.type === "country" && t.slug === countrySlug)?.name || countryCode]
       : [];
     const servers = buildServers(row, sub);
-    // Danh sách không tải episodes. Với phim đã có trong bản tĩnh, mượn lại
-    // servers để trang xem không bao giờ rơi vào cảnh "live sẵn sàng nhưng rỗng nguồn".
-    const fallback = staticMovies[slug] as MovieDetail | undefined;
+    // Danh sách không tải episodes. Mượn servers của đúng phim trong bản tĩnh:
+    // nhiều row dùng chung ophim_slug (vd 2 phần "Cộng Sự Hoàn Hảo"), tra theo
+    // slug lúc này sẽ lấy nhầm tập của phần kia trước khi buildMovieDb tách slug.
+    const fallback =
+      (row.id != null ? staticById.get(String(row.id)) : undefined) ||
+      staticByTitle.get(normTitle(str(row.title))) ||
+      (staticMovies[slug] as MovieDetail | undefined);
     const resolvedServers = servers.length ? servers : fallback?.servers || servers;
-    // Admin có khi lưu currentep/totalep theo số tập dự kiến của nguồn (vd 16)
-    // trong khi thực tế mới chỉ có 1-2 tập. Luôn hiển thị theo số tập có thật.
+    // current không được vượt số tập có link thật (kẻo báo "Tập 16" khi mới có 2 link).
+    // total vẫn giữ tổng số tập admin lưu (vd 12), trừ khi tổng đó bị copy nhầm
+    // từ phần khác cùng ophim_slug.
     const available = resolvedServers.reduce((max, s) => Math.max(max, playableCount(s)), 0);
     const rawCurrent = num(row.currentep);
     const rawTotal = num(row.totalep);
     const current = available && rawCurrent != null && rawCurrent > available ? available : rawCurrent;
-    const total = available && rawTotal != null && rawTotal > available ? available : rawTotal;
+    const total = ctx.borrowedTotals?.has(String(row.id)) ? available : rawTotal ?? available;
     const epstatus = str(row.epstatus);
-    const ratingRaw = row.rating && row.rating !== "N/A" ? parseFloat(row.rating) : null;
-    const imdbScore = extra.imdbScore ? parseFloat(extra.imdbScore) : null;
-    const tmdbScore = extra.tmdbScore ? parseFloat(extra.tmdbScore) : null;
-    const rating = Number.isFinite(ratingRaw)
-      ? ratingRaw
-      : Number.isFinite(imdbScore)
-        ? imdbScore
-        : Number.isFinite(tmdbScore)
-          ? tmdbScore
-          : null;
+    const ratingRaw = score(row.rating);
+    const rawImdb = score(row.imdbScore ?? extra.imdbScore);
+    const rawTmdb = score(row.tmdbScore ?? extra.tmdbScore);
+    // Admin ghi cột rating như "Điểm IMDb"; vài phim import từ TMDB lại ghi
+    // vote_average vào cột này. Ưu tiên 2 field riêng trong extra, chỉ dùng
+    // rating làm IMDb khi nó không trùng điểm TMDb đã lưu.
+    const imdbRating = rawImdb ?? (ratingRaw != null && ratingRaw !== rawTmdb ? ratingRaw : null);
+    const tmdbRating = rawTmdb;
+    const rating = ratingRaw ?? imdbRating ?? tmdbRating;
 
     let status: string;
     if (epstatus === "Hoàn thành") status = current && total ? `Hoàn Tất (${current}/${total})` : "Hoàn Tất";
@@ -365,6 +414,8 @@ function makeNormalizer(ctx: {
       genres,
       countries,
       rating,
+      imdbRating,
+      tmdbRating,
       description: str(row.description) || str(row.desc) || str(extra.metaDesc) || fallback?.description || "",
       director: str(extra.director) || fallback?.director || null,
       duration: str(extra.duration) || fallback?.duration || null,
@@ -399,6 +450,14 @@ const normTitle = (s: string): string =>
     .replace(/đ/g, "d")
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
+
+/** Tra bản tĩnh theo id/tên trước, không tra theo slug đang bị trùng. */
+const staticById = new Map<string, MovieDetail>();
+const staticByTitle = new Map<string, MovieDetail>();
+for (const m of Object.values(staticMovies)) {
+  if (m.id != null) staticById.set(String(m.id), m);
+  staticByTitle.set(normTitle(str(m.title)), m);
+}
 
 const movieScore = (m: MovieDetail): number => playableCount(m.servers[0]) * 100 + (m.current || 0);
 
@@ -558,7 +617,8 @@ function buildHome(
       imgWrapClass: t?.imgWrapClass,
       slug: m.slug,
       meta: {
-        tmdb: m.rating,
+        imdb: m.imdbRating ?? null,
+        tmdb: m.tmdbRating ?? null,
         poster: m.poster,
         genres: m.genres,
         countries: m.countries,
@@ -634,7 +694,8 @@ function buildHome(
     year: m.year || new Date().getFullYear(),
     quality: m.quality,
     episode: m.episodeLabel || m.status,
-    tmdb: m.rating ?? 0,
+    imdb: m.imdbRating ?? undefined,
+    tmdb: m.tmdbRating ?? 0,
     genres: m.genres.slice(0, 3),
     hrefWatch: watchHref(m.slug),
     hrefDetail: detailHref(m.slug),
@@ -656,7 +717,8 @@ function buildHome(
     year: m.year || new Date().getFullYear(),
     quality: m.quality,
     episode: m.episodeLabel || m.status,
-    tmdb: m.rating ?? 0,
+    imdb: m.imdbRating ?? undefined,
+    tmdb: m.tmdbRating ?? 0,
     genres: m.genres.slice(0, 3),
     href: detailHref(m.slug),
   }));
@@ -835,6 +897,7 @@ type NormalizeContext = {
   catNameToSlug: Record<string, string>;
   homeSlugs: Set<string>;
   taxonomies: Taxonomy[];
+  borrowedTotals?: Set<string>;
 };
 
 function buildNormalizeContext(taxonomies: Taxonomy[]): NormalizeContext {
@@ -918,6 +981,7 @@ export function LiveDataProvider({ children }: { children: ReactNode }) {
 
         const taxonomies = taxRows.length ? (taxRows as Taxonomy[]) : staticState().taxonomies;
         const ctx = buildNormalizeContext(taxonomies);
+        ctx.borrowedTotals = borrowedSequelTotalIds(rows);
         ctxRef.current = ctx;
         const normalize = makeNormalizer(ctx);
         const db = buildMovieDb(rows, normalize);
