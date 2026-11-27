@@ -85,6 +85,7 @@ const MOVIE_LIST_COLUMNS = [
   "id,hidden,created_at,ophim_slug,title,titleen,poster,year,quality,sub,epstatus,currentep,totalep,ep,rating,genre,country,type,series_group,part_number",
   "extra->>imdbScore",
   "extra->>tmdbScore",
+  "extra->>episodesRevision",
 ].join(",");
 /** Chỉ dùng cho phim admin thêm mới (không có trong bản tĩnh): đúng 1 dòng. */
 const MOVIE_DETAIL_COLUMNS = [
@@ -410,7 +411,10 @@ function makeNormalizer(ctx: {
       status,
       current,
       total,
-      episodeRevision: rawCurrent,
+      // Mốc để client biết episodes trong DB đã đổi (admin sửa link nhưng số tập
+      // không đổi). Admin ghi extra.episodesRevision mỗi lần lưu; row cũ chưa có
+      // thì fallback về currentep như trước.
+      episodeRevision: num(row.episodesRevision) || num(extra.episodesRevision) || rawCurrent,
       type: row.type === "movie" ? "movie" : "series",
       genres,
       countries,

@@ -88,20 +88,16 @@ export function LiveRoute({
   const hasLiveServers = !!liveMovie?.servers?.length;
   const detailLoadedFor = useRef<string | null>(null);
 
-  // Danh sách chỉ lấy cột gọn, nên row từ DB không có episodes: makeNormalizer mượn
-  // servers của bản tĩnh. Nếu DB báo số tập/tổng khác bản tĩnh thì đó chỉ là bản mượn
-  // lỗi thời — phải tải đúng 1 dòng có episodes để lấy link mới.
-  const staticRevision = initialMovie?.episodeRevision ?? initialMovie?.current ?? 0;
-  const liveRevision = liveMovie?.episodeRevision ?? 0;
-  const liveEpisodesChanged =
-    live.ready &&
-    !!liveMovie &&
-    (liveRevision !== staticRevision || (liveMovie.total ?? 0) !== (initialMovie?.total ?? 0));
-  const needDetail = !!detailId && (!initialMovie || !hasLiveServers || liveEpisodesChanged);
+  // Trang chi tiết/xem luôn tải đúng 1 dòng có episodes từ DB: danh sách chỉ có cột
+  // gọn nên makeNormalizer phải mượn servers của bản tĩnh, mà bản tĩnh có thể cũ khi
+  // admin sửa link nhưng số tập không đổi. Revision giúp tải lại nếu admin lưu lúc
+  // trang đang mở.
+  const revision = liveMovie?.episodeRevision ?? 0;
+  const needDetail = !!detailId;
 
   useEffect(() => {
     if (!detailId || !needDetail) return;
-    const key = String(detailId);
+    const key = String(detailId) + ":" + revision;
     if (detailLoadedFor.current === key) return;
     detailLoadedFor.current = key;
     let cancelled = false;
@@ -113,7 +109,7 @@ export function LiveRoute({
       .catch(() => {})
       .finally(() => { if (!cancelled) setDetailTried(true); });
     return () => { cancelled = true; };
-  }, [detailId, needDetail, live.loadDetail]);
+  }, [detailId, revision, needDetail, live.loadDetail]);
 
   const movie = (detail?.servers?.length ? detail : liveMovie) || initialMovie;
   const comments = liveMovie
