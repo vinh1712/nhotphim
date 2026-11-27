@@ -1,0 +1,3019 @@
+[
+ {
+  "id": 1,
+  "title": "Phi vụ chung cư",
+  "ep": "Tập 8/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/3/phi-vu-chung-cu.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 2,
+  "title": "Chuyện Tình Ma Quái",
+  "ep": "Tập 6/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/chuyen-tinh-ma-quai.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 3,
+  "title": "Thanh Tra Mẫu Mực (Phần 2)",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/thanh-tra-mau-muc-phan-2-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 4,
+  "title": "Thanh tra mẫu mực",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/thanh-tra-mau-muc-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 5,
+  "title": "Chim Mồi",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/chim-moi-phan-1-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 6,
+  "title": "Tội Ác Kinh Hoàng",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/toi-ac-kinh-hoang-2023-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 7,
+  "title": "Vigilante",
+  "ep": "Full 8 tập",
+  "poster": "https://img.ophim.live/uploads/movies/vigilante-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 8,
+  "title": "Cảnh Sát Sông Hàn",
+  "ep": "Full 6 tập",
+  "poster": "https://img.ophim.live/uploads/movies/canh-sat-song-han-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 9,
+  "title": "Sòng Bạc - Phần 2",
+  "ep": "Full 8 tập",
+  "poster": "https://img.ophim.live/uploads/movies/song-bac-phan-2-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 10,
+  "title": "Sòng Bạc",
+  "ep": "Full 8 tập",
+  "poster": "https://img.ophim.live/uploads/movies/song-bac-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 11,
+  "title": "Linh Mục Nhiệt Huyết (Phần 2)",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/linh-muc-nhiet-huyet-phan-2-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 12,
+  "title": "Linh Mục Nhiệt Huyết",
+  "ep": "Full 20 tập",
+  "poster": "https://img.ophim.live/uploads/movies/linh-muc-nhiet-huyet-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 13,
+  "title": "Đời Cải Thảo",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/doi-cai-thao-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 14,
+  "title": "Bọ Ngựa",
+  "ep": "Full 8 tập",
+  "poster": "https://img.ophim.live/uploads/movies/bo-ngua-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 15,
+  "title": "Bẫy Tình Yêu",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/bay-tinh-yeu-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 16,
+  "title": "Trung tâm chăm sóc chấn thương",
+  "ep": "Full 8 tập",
+  "poster": "https://img.ophim.live/uploads/movies/trung-tam-cham-soc-chan-thuong-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 17,
+  "title": "Baby Đến Rồi!",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/baby-den-roi-2026-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 18,
+  "title": "Tarot",
+  "ep": "Full 7 tập",
+  "poster": "https://img.ophim.live/uploads/movies/tarot-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 19,
+  "title": "Tập làm người xấu (Phần 4)",
+  "ep": "Full 13 tập",
+  "poster": "https://img.ophim.live/uploads/movies/tap-lam-nguoi-xau-phan-4-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 20,
+  "title": "Tập làm người xấu (Phần 3)",
+  "ep": "Full 13 tập",
+  "poster": "https://img.ophim.live/uploads/movies/tap-lam-nguoi-xau-phan-3-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 21,
+  "title": "Tập làm người xấu (Phần 2)",
+  "ep": "Full 13 tập",
+  "poster": "https://img.ophim.live/uploads/movies/tap-lam-nguoi-xau-phan-2-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 22,
+  "title": "Tập làm người xấu (Phần 1)",
+  "ep": "Full 7 tập",
+  "poster": "https://img.ophim.live/uploads/movies/tap-lam-nguoi-xau-phan-1-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 23,
+  "title": "Bài Học Đáng Đời",
+  "ep": "Full 10 tập",
+  "poster": "https://img.ophim.live/uploads/movies/bai-hoc-dang-doi-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 24,
+  "title": "Bác Sĩ Đảo Hoang",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/bac-si-dao-hoang-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 25,
+  "title": "Mr. Plankton",
+  "ep": "Full 10 tập",
+  "poster": "https://img.ophim.live/uploads/movies/mr-plankton-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 26,
+  "title": "Mùa hè yêu dấu của chúng ta",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/mua-he-yeu-dau-cua-chung-ta-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 27,
+  "title": "Kẻ Thù Dấu Yêu",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/ke-thu-dau-yeu-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 28,
+  "title": "Ngôi Trường Xác Sống",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/ngoi-truong-xac-song-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 29,
+  "title": "Vị khách",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/vi-khach-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 30,
+  "title": "Thế Giới Ma Quái (Phần 2)",
+  "ep": "Full 8 tập",
+  "poster": "https://img.ophim.live/uploads/movies/the-gioi-ma-quai-phan-2-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 31,
+  "title": "Sweet Home: Thế giới ma quái (Phần 3)",
+  "ep": "Full 8 tập",
+  "poster": "https://img.ophim.live/uploads/movies/sweet-home-the-gioi-ma-quai-phan-3-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 32,
+  "title": "Thế Giới Ma Quái",
+  "ep": "Full 10 tập",
+  "poster": "https://img.ophim.live/uploads/movies/the-gioi-ma-quai-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 33,
+  "title": "Liên Kết Vận Mệnh",
+  "ep": "Full 6 tập",
+  "poster": "https://img.ophim.live/uploads/movies/lien-ket-van-menh-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 34,
+  "title": "Người lạ đến từ địa ngục",
+  "ep": "Full 10 tập",
+  "poster": "https://img.ophim.live/uploads/movies/nguoi-la-den-tu-dia-nguc-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 35,
+  "title": "Lãng khách",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/lang-khach-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 36,
+  "title": "Bông Hoa Ác Ma (hoa của quỷ)",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/bong-hoa-ac-ma-hoa-cua-quy-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 37,
+  "title": "Hoạt Động Ngoại Khóa",
+  "ep": "Full 10 tập",
+  "poster": "https://img.ophim.live/uploads/movies/hoat-dong-ngoai-khoa-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 38,
+  "title": "Bản Án Từ Địa Ngục (Phần 2)",
+  "ep": "Full 6 tập",
+  "poster": "https://img.ophim.live/uploads/movies/ban-an-tu-dia-nguc-phan-2-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 39,
+  "title": "Bản án từ địa ngục",
+  "ep": "Full 6 tập",
+  "poster": "https://img.ophim.live/uploads/movies/ban-an-tu-dia-nguc-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 40,
+  "title": "Người Hùng Yếu Đuối (Phần 2)",
+  "ep": "Full 8 tập",
+  "poster": "https://img.ophim.live/uploads/movies/nguoi-hung-yeu-duoi-phan-2-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 41,
+  "title": "Người Hùng Yếu Đuối",
+  "ep": "Full 8 tập",
+  "poster": "https://img.ophim.live/uploads/movies/nguoi-hung-yeu-duoi-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 42,
+  "title": "Sự Trả Thù Của Người Thứ 3",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/su-tra-thu-cua-nguoi-thu-3-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 43,
+  "title": "Spider-Noir",
+  "ep": "Full 8 tập",
+  "poster": "https://img.ophim.live/uploads/movies/spider-noir-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 44,
+  "title": "Không Lối Thoát: Trò Chơi Roulette",
+  "ep": "Full 8 tập",
+  "poster": "https://img.ophim.live/uploads/movies/khong-loi-thoat-tro-choi-roulette-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 45,
+  "title": "Trò chơi con mực (Phần 3)",
+  "ep": "Full 6 tập",
+  "poster": "https://img.ophim.live/uploads/movies/tro-choi-con-muc-phan-3-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 46,
+  "title": "Trò chơi con mực (Phần 2)",
+  "ep": "Full 7 tập",
+  "poster": "https://img.ophim.live/uploads/movies/tro-choi-con-muc-phan-2-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 47,
+  "title": "Trò Chơi Con Mực",
+  "ep": "Full 9 tập",
+  "poster": "https://img.ophim.live/uploads/movies/tro-choi-con-muc-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 48,
+  "title": "Hoàn hồn (Phần 2)",
+  "ep": "Full 10 tập",
+  "poster": "https://img.ophim.live/uploads/movies/hoan-hon-phan-2-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 49,
+  "title": "Hoàn hồn",
+  "ep": "Full 20 tập",
+  "poster": "https://img.ophim.live/uploads/movies/alchemy-of-souls-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 50,
+  "title": "Khi Điện Thoại Đổ Chuông",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/khi-dien-thoai-do-chuong-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 51,
+  "title": "Những bác sĩ tài hoa",
+  "ep": "Full 2 tập",
+  "poster": "https://img.ophim.live/uploads/movies/nhung-bac-si-tai-hoa-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 52,
+  "title": "Ác Quỷ",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/ac-quy-revenant-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 53,
+  "title": "Cô Đi Mà Lấy Chồng Tôi",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/co-di-ma-lay-chong-toi-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 54,
+  "title": "Ngự Trù Của Bạo Chúa",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/ngu-tru-cua-bao-chua-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 55,
+  "title": "Thân Chủ Ma Của Tôi",
+  "ep": "Full 10 tập",
+  "poster": "https://img.ophim.live/uploads/movies/than-chu-ma-cua-toi-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 56,
+  "title": "Thẩm Phán Từ Địa Ngục",
+  "ep": "Full 14 tập",
+  "poster": "https://img.ophim.live/uploads/movies/tham-phan-tu-dia-nguc-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 57,
+  "title": "Bậc Thầy Giải Hòa",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/bac-thay-giai-hoa-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 58,
+  "title": "Vinh quang trong thù hận",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/vinh-quang-trong-thu-han-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 59,
+  "title": "Tai Nạn",
+  "ep": "Full 8 tập",
+  "poster": "https://img.ophim.live/uploads/movies/tai-nan-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 60,
+  "title": "Rừng không tiếng",
+  "ep": "Full 8 tập",
+  "poster": "https://img.ophim.live/uploads/movies/rung-khong-tieng-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 61,
+  "title": "Một Seoul Chưa Biết Đến",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/mot-seoul-chua-biet-den-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 62,
+  "title": "9 Mảnh Ghép",
+  "ep": "Full 11 tập",
+  "poster": "https://img.ophim.live/uploads/movies/9-manh-ghep-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 63,
+  "title": "Luật Sư Của Thần Tượng",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/luat-su-cua-than-tuong-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 64,
+  "title": "Phi vụ triệu đô: Hàn Quốc",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/phi-vu-trieu-do-han-quoc-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 65,
+  "title": "Luật Sư 1000 Won",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/luat-su-1000-won-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 66,
+  "title": "Good Boy",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/good-boy-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 67,
+  "title": "Tân Thế Giới",
+  "ep": "Full 8 tập",
+  "poster": "https://img.ophim.live/uploads/movies/tan-the-gioi-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 68,
+  "title": "Khi Cuộc Đời Cho Bạn Quả Quýt",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/khi-cuoc-doi-cho-ban-qua-quyt-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 69,
+  "title": "Mùa Rực Rỡ Của Em",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/mua-ruc-ro-cua-em-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 70,
+  "title": "Điều Ước Đoạt Mạng",
+  "ep": "Full 8 tập",
+  "poster": "https://img.ophim.live/uploads/movies/dieu-uoc-doat-mang-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 71,
+  "title": "Giấc Mơ Điên Rồ",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/giac-mo-dien-ro-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 72,
+  "title": "Penthouse Cuộc Chiến Thượng Lưu Phần 3",
+  "ep": "Full 14 tập",
+  "poster": "https://img.ophim.live/uploads/movies/penthouse-cuoc-chien-thuong-luu-phan-3-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 73,
+  "title": "Cuộc Chiến Thượng Lưu 2",
+  "ep": "Full 13 tập",
+  "poster": "https://img.ophim.live/uploads/movies/cuoc-chien-thuong-luu-2-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 74,
+  "title": "Khách Sạn Vương Giả",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/khach-san-vuong-gia-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 75,
+  "title": "Đại Ca Đi Học",
+  "ep": "Full 8 tập",
+  "poster": "https://img.ophim.live/uploads/movies/dai-ca-di-hoc-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 76,
+  "title": "Mối Liên Kết Bí Ẩn",
+  "ep": "Full 14 tập",
+  "poster": "https://img.ophim.live/uploads/movies/moi-lien-ket-bi-an-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 77,
+  "title": "Cõng Anh Mà Chạy",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/cong-anh-ma-chay-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 78,
+  "title": "Cuộc Chiến Thượng Lưu 1",
+  "ep": "Full 21 tập",
+  "poster": "https://img.ophim.live/uploads/movies/cuoc-chien-thuong-luu-1-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 79,
+  "title": "Điệu cha-cha-cha làng biển",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/dieu-cha-cha-cha-lang-bien-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 80,
+  "title": "Tầng lớp Itaewon",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/tang-lop-itaewon-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 81,
+  "title": "Chuyện Đời Bác Sĩ Nội Trú",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/chuyen-doi-bac-si-noi-tru-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 82,
+  "title": "The 8 Show",
+  "ep": "Full 8 tập",
+  "poster": "https://img.ophim.live/uploads/movies/the-8-show-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 83,
+  "title": "Nữ Hoàng Nước Mắt",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/nu-hoang-nuoc-mat-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 84,
+  "title": "Nghệ thuật săn quỷ và nấu mì (Phần 2)",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/nghe-thuat-san-quy-va-nau-mi-phan-2-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 85,
+  "title": "Nghệ thuật săn quỷ và nấu mì",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/nghe-thuat-san-quy-va-nau-mi-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 86,
+  "title": "Trò Chơi Kim Tự Tháp",
+  "ep": "Full 10 tập",
+  "poster": "https://img.ophim.live/uploads/movies/tro-choi-kim-tu-thap-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 87,
+  "title": "Chị Đại Học Đường (Phần 2)",
+  "ep": "Full 10 tập",
+  "poster": "https://img.ophim.live/uploads/movies/chi-dai-hoc-duong-phan-2-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 88,
+  "title": "Chị Đại Học Đường",
+  "ep": "Full 10 tập",
+  "poster": "https://img.ophim.live/uploads/movies/chi-dai-hoc-duong-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 89,
+  "title": "Ẩn Danh (Phần 3)",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/an-danh-phan-3-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 90,
+  "title": "Ẩn Danh 2",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/an-danh-2-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 91,
+  "title": "Tài xế ẩn danh",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/tai-xe-an-danh-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 92,
+  "title": "Bảy Viên Ngọc Rồng Siêu Cấp: Huyền Thoại Broly",
+  "ep": "Full 1 tập",
+  "poster": "https://img.ophim.live/uploads/movies/bay-vien-ngoc-rong-sieu-cap-huyen-thoai-broly-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 93,
+  "title": "Hãy gọi cho Saul (Phần 6)",
+  "ep": "Full 13 tập",
+  "poster": "https://img.ophim.live/uploads/movies/hay-goi-cho-saul-phan-6-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 94,
+  "title": "Hãy gọi cho Saul (Phần 5)",
+  "ep": "Full 10 tập",
+  "poster": "https://img.ophim.live/uploads/movies/hay-goi-cho-saul-phan-5-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 95,
+  "title": "Hãy gọi cho Saul (Phần 4)",
+  "ep": "Full 10 tập",
+  "poster": "https://img.ophim.live/uploads/movies/hay-goi-cho-saul-phan-4-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 96,
+  "title": "Hãy gọi cho Saul (Phần 3)",
+  "ep": "Full 10 tập",
+  "poster": "https://img.ophim.live/uploads/movies/hay-goi-cho-saul-phan-3-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 97,
+  "title": "Hãy gọi cho Saul (Phần 2)",
+  "ep": "Full 10 tập",
+  "poster": "https://img.ophim.live/uploads/movies/hay-goi-cho-saul-phan-2-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 98,
+  "title": "Tập làm người xấu (Phần 5)",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/tap-lam-nguoi-xau-phan-5-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 99,
+  "title": "Trao Em Cả Vũ Trụ",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/trao-em-ca-vu-tru-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 100,
+  "title": "Xóa Tan Ký Ức",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/xoa-tan-ky-uc-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 101,
+  "title": "Nữ luật sư kỳ lạ Woo Young Woo",
+  "ep": "Full 16 tập",
+  "poster": "https://img.ophim.live/uploads/movies/nu-luat-su-ky-la-woo-young-woo-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 102,
+  "title": "Biệt Đội Siêu Khờ",
+  "ep": "Full 8 tập",
+  "poster": "https://img.ophim.live/uploads/movies/biet-doi-sieu-kho-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 103,
+  "title": "Thân gửi X",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/than-gui-x-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 104,
+  "title": "Cơn Say Mùa Xuân",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/con-say-mua-xuan-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 105,
+  "title": "Nụ Hôn Siren",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/nu-hon-siren-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 106,
+  "title": "Bác Sĩ Shin",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/bac-si-shin-thumb.jpg",
+  "created_at": "2026-08-07T11:30:54.553+00:00"
+ },
+ {
+  "id": 107,
+  "title": "Tập làm người xấu (Phần 3)",
+  "ep": "Full 13 tập",
+  "poster": "https://img.ophim.live/uploads/movies/tap-lam-nguoi-xau-phan-3-thumb.jpg",
+  "created_at": "2026-08-07T12:17:16.047+00:00"
+ },
+ {
+  "id": 108,
+  "title": "Bác Sĩ Đảo Hoang",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/bac-si-dao-hoang-thumb.jpg",
+  "created_at": "2026-08-07T12:17:16.047+00:00"
+ },
+ {
+  "id": 109,
+  "title": "Sáu Đêm Kinh Hoàng",
+  "ep": "Full 6 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/sau-dem-kinh-hoang.jpg",
+  "created_at": "2026-08-07T12:21:55.205+00:00"
+ },
+ {
+  "id": 110,
+  "title": "Tập làm người xấu (Phần 3)",
+  "ep": "Full 13 tập",
+  "poster": "https://img.ophim.live/uploads/movies/tap-lam-nguoi-xau-phan-3-thumb.jpg",
+  "created_at": "2026-08-07T12:21:55.205+00:00"
+ },
+ {
+  "id": 111,
+  "title": "Bác Sĩ Đảo Hoang",
+  "ep": "Full 12 tập",
+  "poster": "https://img.ophim.live/uploads/movies/bac-si-dao-hoang-thumb.jpg",
+  "created_at": "2026-08-07T12:21:55.205+00:00"
+ },
+ {
+  "id": 112,
+  "title": "Ngoại Tình Đã Nhằm Nhò Gì",
+  "ep": "Tập 4/8",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/ngoai-tinh-da-nham-nho-gi.jpg",
+  "created_at": "2026-08-08T04:49:24.776+00:00"
+ },
+ {
+  "id": 113,
+  "title": "Vợ Tôi Là Sát Thủ",
+  "ep": "Tập 3/2",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/vo-toi-la-sat-thu.jpg",
+  "created_at": "2026-08-08T04:49:24.776+00:00"
+ },
+ {
+  "id": 114,
+  "title": "Sếp Chính Là Thần Tượng",
+  "ep": "Tập 2/2",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/sep-chinh-la-than-tuong.jpg",
+  "created_at": "2026-08-08T04:49:24.776+00:00"
+ },
+ {
+  "id": 115,
+  "title": "Phi vụ chung cư",
+  "ep": "Tập 8/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/3/phi-vu-chung-cu.jpg",
+  "created_at": "2026-08-08T04:49:24.776+00:00"
+ },
+ {
+  "id": 116,
+  "title": "Ngoại Tình Đã Nhằm Nhò Gì",
+  "ep": "Tập 4/8",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/ngoai-tinh-da-nham-nho-gi.jpg",
+  "created_at": "2026-08-08T04:53:22.132+00:00"
+ },
+ {
+  "id": 117,
+  "title": "Vợ Tôi Là Sát Thủ",
+  "ep": "Tập 3/2",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/vo-toi-la-sat-thu.jpg",
+  "created_at": "2026-08-08T04:53:22.132+00:00"
+ },
+ {
+  "id": 118,
+  "title": "Sếp Chính Là Thần Tượng",
+  "ep": "Tập 2/2",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/sep-chinh-la-than-tuong.jpg",
+  "created_at": "2026-08-08T04:53:22.132+00:00"
+ },
+ {
+  "id": 119,
+  "title": "Phi vụ chung cư",
+  "ep": "Tập 8/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/3/phi-vu-chung-cu.jpg",
+  "created_at": "2026-08-08T04:53:22.132+00:00"
+ },
+ {
+  "id": 120,
+  "title": "Tiệm Bánh Gạo Vũ Trụ",
+  "ep": "Tập 1/12",
+  "poster": "https://phimimg.com/uploads/movies/20260805/tiem-banh-gao-vu-tru-thumb.webp",
+  "created_at": "2026-08-08T05:43:06.227+00:00"
+ },
+ {
+  "id": 121,
+  "title": "Giấc Mơ Trao Em",
+  "ep": "Tập 8/2",
+  "poster": "https://phim.nguonc.com/public/images/Post/5/giac-mo-trao-em.jpg",
+  "created_at": "2026-08-08T05:43:06.227+00:00"
+ },
+ {
+  "id": 122,
+  "title": "Tài phiệt và Cảnh sát (Phần 2)",
+  "ep": "Tập 4/1",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/tai-phiet-va-canh-sat-phan-2.jpg",
+  "created_at": "2026-08-08T10:49:46.62+00:00"
+ },
+ {
+  "id": 123,
+  "title": "Phi vụ chung cư",
+  "ep": "Tập 9/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/3/phi-vu-chung-cu.jpg",
+  "created_at": "2026-08-08T15:42:14.506+00:00"
+ },
+ {
+  "id": 124,
+  "title": "Tài phiệt và Cảnh sát (Phần 2)",
+  "ep": "Tập 2/14",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/tai-phiet-va-canh-sat-phan-2.jpg",
+  "created_at": "2026-08-08T17:47:53.451+00:00"
+ },
+ {
+  "id": 125,
+  "title": "Dạ Ngữ Ký",
+  "ep": "Tập 18/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/da-ngu-ky.jpg",
+  "created_at": "2026-08-09T07:23:30.227+00:00"
+ },
+ {
+  "id": 126,
+  "title": "Vợ Tôi Là Sát Thủ",
+  "ep": "Tập 4/14",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/vo-toi-la-sat-thu.jpg",
+  "created_at": "2026-08-09T07:23:30.227+00:00"
+ },
+ {
+  "id": 127,
+  "title": "Ngự Đình Dao",
+  "ep": "Tập 22/32",
+  "poster": "https://phim.nguonc.com/public/images/Post/5/ngu-dinh-dao.jpg",
+  "created_at": "2026-08-09T16:01:06.752+00:00"
+ },
+ {
+  "id": 128,
+  "title": "Bạn Gái Thiên Tài",
+  "ep": "Tập 20/28",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/ban-gai-thien-tai.jpg",
+  "created_at": "2026-08-09T16:01:06.752+00:00"
+ },
+ {
+  "id": 129,
+  "title": "Phi vụ chung cư",
+  "ep": "Tập 10/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/3/phi-vu-chung-cu.jpg",
+  "created_at": "2026-08-09T16:01:06.752+00:00"
+ },
+ {
+  "id": 130,
+  "title": "Chuyện Tình Ma Quái",
+  "ep": "Tập 8/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/chuyen-tinh-ma-quai.jpg",
+  "created_at": "2026-08-09T16:01:06.752+00:00"
+ },
+ {
+  "id": 131,
+  "title": "Hoa Khai Cẩm Tú",
+  "ep": "Tập 5/36",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/hoa-khai-cam-tu.jpg",
+  "created_at": "2026-08-10T18:08:04.147+00:00"
+ },
+ {
+  "id": 132,
+  "title": "Ngự Đình Dao",
+  "ep": "Tập 24/32",
+  "poster": "https://phim.nguonc.com/public/images/Post/5/ngu-dinh-dao.jpg",
+  "created_at": "2026-08-10T18:08:04.147+00:00"
+ },
+ {
+  "id": 133,
+  "title": "Bạn Gái Thiên Tài",
+  "ep": "Tập 21/28",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/ban-gai-thien-tai.jpg",
+  "created_at": "2026-08-10T18:08:04.147+00:00"
+ },
+ {
+  "id": 134,
+  "title": "Giấc Mơ Trao Em",
+  "ep": "Tập 9/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/5/giac-mo-trao-em.jpg",
+  "created_at": "2026-08-10T18:08:04.147+00:00"
+ },
+ {
+  "id": 135,
+  "title": "Hoa Khai Cẩm Tú",
+  "ep": "Tập 8/36",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/hoa-khai-cam-tu.jpg",
+  "created_at": "2026-08-12T01:29:12.422+00:00"
+ },
+ {
+  "id": 136,
+  "title": "Tình yêu nổi loạn (Phần 2)",
+  "ep": "Tập 7/10",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/tinh-yeu-noi-loan-phan-2.jpg",
+  "created_at": "2026-08-12T01:29:12.422+00:00"
+ },
+ {
+  "id": 137,
+  "title": "Ngự Đình Dao",
+  "ep": "Tập 26/32",
+  "poster": "https://phim.nguonc.com/public/images/Post/5/ngu-dinh-dao.jpg",
+  "created_at": "2026-08-12T01:29:12.422+00:00"
+ },
+ {
+  "id": 138,
+  "title": "Dạ Ngữ Ký",
+  "ep": "Tập 20/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/da-ngu-ky.jpg",
+  "created_at": "2026-08-12T01:29:12.422+00:00"
+ },
+ {
+  "id": 139,
+  "title": "Bạn Gái Thiên Tài",
+  "ep": "Tập 22/28",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/ban-gai-thien-tai.jpg",
+  "created_at": "2026-08-12T01:29:12.422+00:00"
+ },
+ {
+  "id": 140,
+  "title": "Giấc Mơ Trao Em",
+  "ep": "Tập 10/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/5/giac-mo-trao-em.jpg",
+  "created_at": "2026-08-12T01:29:12.422+00:00"
+ },
+ {
+  "id": 141,
+  "title": "Sếp Chính Là Thần Tượng",
+  "ep": "Tập 4/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/sep-chinh-la-than-tuong.jpg",
+  "created_at": "2026-08-12T01:29:12.422+00:00"
+ },
+ {
+  "id": 142,
+  "title": "Hoa Khai Cẩm Tú",
+  "ep": "Tập 9/36",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/hoa-khai-cam-tu.jpg",
+  "created_at": "2026-08-12T10:24:17.15+00:00"
+ },
+ {
+  "id": 143,
+  "title": "Dạ Ngữ Ký",
+  "ep": "Tập 21/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/da-ngu-ky.jpg",
+  "created_at": "2026-08-12T10:24:17.15+00:00"
+ },
+ {
+  "id": 144,
+  "title": "Bạn Gái Thiên Tài",
+  "ep": "Tập 23/28",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/ban-gai-thien-tai.jpg",
+  "created_at": "2026-08-12T10:24:17.15+00:00"
+ },
+ {
+  "id": 145,
+  "title": "Cửa Hàng Sát Thủ (Phần 2)",
+  "ep": "Full 8 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/3/cua-hang-sat-thu-phan-2.jpg",
+  "created_at": "2026-08-12T10:24:17.15+00:00"
+ },
+ {
+  "id": 146,
+  "title": "Ngự Đình Dao",
+  "ep": "Full 32 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/5/ngu-dinh-dao.jpg",
+  "created_at": "2026-08-12T14:38:20.993+00:00"
+ },
+ {
+  "id": 147,
+  "title": "Hoa Khai Cẩm Tú",
+  "ep": "Tập 13/36",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/hoa-khai-cam-tu.jpg",
+  "created_at": "2026-08-14T14:10:46.356+00:00"
+ },
+ {
+  "id": 148,
+  "title": "Dạ Ngữ Ký",
+  "ep": "Tập 23/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/da-ngu-ky.jpg",
+  "created_at": "2026-08-14T14:10:46.356+00:00"
+ },
+ {
+  "id": 149,
+  "title": "Bạn Gái Thiên Tài",
+  "ep": "Full 28 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/ban-gai-thien-tai.jpg",
+  "created_at": "2026-08-14T14:10:46.356+00:00"
+ },
+ {
+  "id": 150,
+  "title": "Hoa Khai Cẩm Tú",
+  "ep": "Tập 14/36",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/hoa-khai-cam-tu.jpg",
+  "created_at": "2026-08-14T18:14:18.208+00:00"
+ },
+ {
+  "id": 151,
+  "title": "Tài phiệt và Cảnh sát (Phần 2)",
+  "ep": "Tập 3/14",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/tai-phiet-va-canh-sat-phan-2.jpg",
+  "created_at": "2026-08-14T18:14:18.208+00:00"
+ },
+ {
+  "id": 152,
+  "title": "Ngoại Tình Đã Nhằm Nhò Gì",
+  "ep": "Tập 5/8",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/ngoai-tinh-da-nham-nho-gi.jpg",
+  "created_at": "2026-08-14T18:14:18.208+00:00"
+ },
+ {
+  "id": 153,
+  "title": "Hoa Khai Cẩm Tú",
+  "ep": "Tập 15/36",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/hoa-khai-cam-tu.jpg",
+  "created_at": "2026-08-15T15:22:17.994+00:00"
+ },
+ {
+  "id": 154,
+  "title": "Dạ Ngữ Ký",
+  "ep": "Full 24 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/da-ngu-ky.jpg",
+  "created_at": "2026-08-15T15:22:17.994+00:00"
+ },
+ {
+  "id": 155,
+  "title": "Vợ Tôi Là Sát Thủ",
+  "ep": "Tập 5/14",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/vo-toi-la-sat-thu.jpg",
+  "created_at": "2026-08-15T15:22:17.994+00:00"
+ },
+ {
+  "id": 156,
+  "title": "Phi vụ chung cư",
+  "ep": "Tập 11/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/3/phi-vu-chung-cu.jpg",
+  "created_at": "2026-08-15T15:22:17.994+00:00"
+ },
+ {
+  "id": 157,
+  "title": "Chuyện Tình Ma Quái",
+  "ep": "Tập 9/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/chuyen-tinh-ma-quai.jpg",
+  "created_at": "2026-08-15T15:22:17.994+00:00"
+ },
+ {
+  "id": 158,
+  "title": "Tài phiệt và Cảnh sát (Phần 2)",
+  "ep": "Tập 4/14",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/tai-phiet-va-canh-sat-phan-2.jpg",
+  "created_at": "2026-08-15T17:09:27.614+00:00"
+ },
+ {
+  "id": 159,
+  "title": "Vợ Tôi Là Sát Thủ",
+  "ep": "Tập 6/14",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/vo-toi-la-sat-thu.jpg",
+  "created_at": "2026-08-16T08:14:12.119+00:00"
+ },
+ {
+  "id": 160,
+  "title": "Hàn Y Nhập Tâm",
+  "ep": "Tập 13/21",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/han-y-nhap-tam.jpg",
+  "created_at": "2026-08-18T14:19:35.666+00:00"
+ },
+ {
+  "id": 161,
+  "title": "Hoa Khai Cẩm Tú",
+  "ep": "Tập 19/36",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/hoa-khai-cam-tu.jpg",
+  "created_at": "2026-08-18T14:19:35.666+00:00"
+ },
+ {
+  "id": 162,
+  "title": "Tình yêu nổi loạn (Phần 2)",
+  "ep": "Full 10 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/tinh-yeu-noi-loan-phan-2.jpg",
+  "created_at": "2026-08-18T14:19:35.666+00:00"
+ },
+ {
+  "id": 163,
+  "title": "Giấc Mơ Trao Em",
+  "ep": "Tập 11/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/5/giac-mo-trao-em.jpg",
+  "created_at": "2026-08-18T14:19:35.666+00:00"
+ },
+ {
+  "id": 164,
+  "title": "Sếp Chính Là Thần Tượng",
+  "ep": "Tập 5/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/sep-chinh-la-than-tuong.jpg",
+  "created_at": "2026-08-18T14:19:35.666+00:00"
+ },
+ {
+  "id": 165,
+  "title": "Hàn Y Nhập Tâm",
+  "ep": "Tập 14/21",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/han-y-nhap-tam.jpg",
+  "created_at": "2026-08-19T08:32:09.903+00:00"
+ },
+ {
+  "id": 166,
+  "title": "Hoa Khai Cẩm Tú",
+  "ep": "Tập 20/36",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/hoa-khai-cam-tu.jpg",
+  "created_at": "2026-08-19T08:32:09.903+00:00"
+ },
+ {
+  "id": 167,
+  "title": "Giấc Mơ Trao Em",
+  "ep": "Full 12 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/5/giac-mo-trao-em.jpg",
+  "created_at": "2026-08-19T08:32:09.903+00:00"
+ },
+ {
+  "id": 168,
+  "title": "Sếp Chính Là Thần Tượng",
+  "ep": "Tập 6/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/sep-chinh-la-than-tuong.jpg",
+  "created_at": "2026-08-19T08:32:09.903+00:00"
+ },
+ {
+  "id": 169,
+  "title": "Hoa Khai Cẩm Tú",
+  "ep": "Tập 21/36",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/hoa-khai-cam-tu.jpg",
+  "created_at": "2026-08-19T17:40:39.711+00:00"
+ },
+ {
+  "id": 170,
+  "title": "Hàn Y Nhập Tâm",
+  "ep": "Tập 15/21",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/han-y-nhap-tam.jpg",
+  "created_at": "2026-08-20T15:41:45.428+00:00"
+ },
+ {
+  "id": 171,
+  "title": "Hoa Khai Cẩm Tú",
+  "ep": "Tập 22/36",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/hoa-khai-cam-tu.jpg",
+  "created_at": "2026-08-20T15:41:45.428+00:00"
+ },
+ {
+  "id": 172,
+  "title": "Hàn Y Nhập Tâm",
+  "ep": "Tập 17/21",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/han-y-nhap-tam.jpg",
+  "created_at": "2026-08-22T15:40:15.897+00:00"
+ },
+ {
+  "id": 173,
+  "title": "Hoa Khai Cẩm Tú",
+  "ep": "Tập 26/36",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/hoa-khai-cam-tu.jpg",
+  "created_at": "2026-08-22T15:40:15.897+00:00"
+ },
+ {
+  "id": 174,
+  "title": "Tài phiệt và Cảnh sát (Phần 2)",
+  "ep": "Tập 5/14",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/tai-phiet-va-canh-sat-phan-2.jpg",
+  "created_at": "2026-08-22T15:40:15.897+00:00"
+ },
+ {
+  "id": 175,
+  "title": "Ngoại Tình Đã Nhằm Nhò Gì",
+  "ep": "Tập 6/8",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/ngoai-tinh-da-nham-nho-gi.jpg",
+  "created_at": "2026-08-22T15:40:15.897+00:00"
+ },
+ {
+  "id": 176,
+  "title": "Vợ Tôi Là Sát Thủ",
+  "ep": "Tập 7/14",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/vo-toi-la-sat-thu.jpg",
+  "created_at": "2026-08-22T15:40:15.897+00:00"
+ },
+ {
+  "id": 177,
+  "title": "Chuyện Tình Ma Quái",
+  "ep": "Tập 11/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/chuyen-tinh-ma-quai.jpg",
+  "created_at": "2026-08-22T15:40:15.897+00:00"
+ },
+ {
+  "id": 178,
+  "title": "Tài phiệt và Cảnh sát (Phần 2)",
+  "ep": "Tập 6/14",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/tai-phiet-va-canh-sat-phan-2.jpg",
+  "created_at": "2026-08-23T08:05:48.706+00:00"
+ },
+ {
+  "id": 179,
+  "title": "Hàn Y Nhập Tâm",
+  "ep": "Tập 18/21",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/han-y-nhap-tam.jpg",
+  "created_at": "2026-08-24T00:59:03.725+00:00"
+ },
+ {
+  "id": 180,
+  "title": "Hoa Khai Cẩm Tú",
+  "ep": "Tập 28/36",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/hoa-khai-cam-tu.jpg",
+  "created_at": "2026-08-24T00:59:03.725+00:00"
+ },
+ {
+  "id": 181,
+  "title": "Vợ Tôi Là Sát Thủ",
+  "ep": "Tập 8/14",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/vo-toi-la-sat-thu.jpg",
+  "created_at": "2026-08-24T00:59:03.725+00:00"
+ },
+ {
+  "id": 182,
+  "title": "Chuyện Tình Ma Quái",
+  "ep": "Full 12 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/chuyen-tinh-ma-quai.jpg",
+  "created_at": "2026-08-24T00:59:03.725+00:00"
+ },
+ {
+  "id": 183,
+  "title": "Hàn Y Nhập Tâm",
+  "ep": "Tập 19/21",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/han-y-nhap-tam.jpg",
+  "created_at": "2026-08-24T16:58:48.733+00:00"
+ },
+ {
+  "id": 184,
+  "title": "Hoa Khai Cẩm Tú",
+  "ep": "Tập 29/36",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/hoa-khai-cam-tu.jpg",
+  "created_at": "2026-08-24T16:58:48.733+00:00"
+ },
+ {
+  "id": 185,
+  "title": "Sếp Chính Là Thần Tượng",
+  "ep": "Tập 7/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/sep-chinh-la-than-tuong.jpg",
+  "created_at": "2026-08-24T16:58:48.733+00:00"
+ },
+ {
+  "id": 186,
+  "title": "Hàn Y Nhập Tâm",
+  "ep": "Tập 19/21",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/han-y-nhap-tam.jpg",
+  "created_at": "2026-08-24T17:02:45.119+00:00"
+ },
+ {
+  "id": 187,
+  "title": "Hoa Khai Cẩm Tú",
+  "ep": "Tập 29/36",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/hoa-khai-cam-tu.jpg",
+  "created_at": "2026-08-24T17:02:45.119+00:00"
+ },
+ {
+  "id": 188,
+  "title": "Sếp Chính Là Thần Tượng",
+  "ep": "Tập 7/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/sep-chinh-la-than-tuong.jpg",
+  "created_at": "2026-08-24T17:02:45.119+00:00"
+ },
+ {
+  "id": 189,
+  "title": "Hàn Y Nhập Tâm",
+  "ep": "Tập 19/21",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/han-y-nhap-tam.jpg",
+  "created_at": "2026-08-24T17:15:50.534+00:00"
+ },
+ {
+  "id": 190,
+  "title": "Hoa Khai Cẩm Tú",
+  "ep": "Tập 29/36",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/hoa-khai-cam-tu.jpg",
+  "created_at": "2026-08-24T17:15:50.534+00:00"
+ },
+ {
+  "id": 191,
+  "title": "Sếp Chính Là Thần Tượng",
+  "ep": "Tập 7/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/sep-chinh-la-than-tuong.jpg",
+  "created_at": "2026-08-24T17:15:50.534+00:00"
+ },
+ {
+  "id": 192,
+  "title": "Hàn Y Nhập Tâm",
+  "ep": "Tập 20/21",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/han-y-nhap-tam.jpg",
+  "created_at": "2026-08-25T08:01:50.823+00:00"
+ },
+ {
+  "id": 193,
+  "title": "Hoa Khai Cẩm Tú",
+  "ep": "Tập 30/36",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/hoa-khai-cam-tu.jpg",
+  "created_at": "2026-08-25T08:01:50.823+00:00"
+ },
+ {
+  "id": 194,
+  "title": "Hoa Khai Cẩm Tú",
+  "ep": "Tập 31/36",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/hoa-khai-cam-tu.jpg",
+  "created_at": "2026-08-26T04:52:47.041+00:00"
+ },
+ {
+  "id": 195,
+  "title": "Sếp Chính Là Thần Tượng",
+  "ep": "Tập 8/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/sep-chinh-la-than-tuong.jpg",
+  "created_at": "2026-08-26T04:52:47.041+00:00"
+ },
+ {
+  "id": 196,
+  "title": "Hoa Khai Cẩm Tú",
+  "ep": "Tập 31/36",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/hoa-khai-cam-tu.jpg",
+  "created_at": "2026-08-26T04:53:35.88+00:00"
+ },
+ {
+  "id": 197,
+  "title": "Tình yêu nổi loạn (Phần 2)",
+  "ep": "Full 13 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/tinh-yeu-noi-loan-phan-2.jpg",
+  "created_at": "2026-08-26T04:53:35.88+00:00"
+ },
+ {
+  "id": 198,
+  "title": "Sếp Chính Là Thần Tượng",
+  "ep": "Tập 8/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/sep-chinh-la-than-tuong.jpg",
+  "created_at": "2026-08-26T04:53:35.88+00:00"
+ },
+ {
+  "id": 199,
+  "title": "Hàn Y Nhập Tâm",
+  "ep": "Tập 23/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/han-y-nhap-tam.jpg",
+  "created_at": "2026-08-28T15:06:26.362+00:00"
+ },
+ {
+  "id": 200,
+  "title": "Hoa Khai Cẩm Tú",
+  "ep": "Full 36 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/hoa-khai-cam-tu.jpg",
+  "created_at": "2026-08-28T15:06:26.362+00:00"
+ },
+ {
+  "id": 201,
+  "title": "Ngoại Tình Đã Nhằm Nhò Gì",
+  "ep": "Tập 7/8",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/ngoai-tinh-da-nham-nho-gi.jpg",
+  "created_at": "2026-08-28T15:06:26.362+00:00"
+ },
+ {
+  "id": 202,
+  "title": "Hàn Y Nhập Tâm",
+  "ep": "Tập 23/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/han-y-nhap-tam.jpg",
+  "created_at": "2026-08-28T15:15:19.316+00:00"
+ },
+ {
+  "id": 203,
+  "title": "Ngoại Tình Đã Nhằm Nhò Gì",
+  "ep": "Tập 7/8",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/ngoai-tinh-da-nham-nho-gi.jpg",
+  "created_at": "2026-08-28T15:15:19.316+00:00"
+ },
+ {
+  "id": 204,
+  "title": "Sự Tái Sinh Của Nàng",
+  "ep": "Tập 21/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/su-tai-sinh-cua-nang.jpg",
+  "created_at": "2026-08-31T06:52:43.723+00:00"
+ },
+ {
+  "id": 205,
+  "title": "Sư Huynh Quá Cẩn Trọng",
+  "ep": "Tập 22/30",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/su-huynh-qua-can-trong.jpg",
+  "created_at": "2026-08-31T06:52:43.723+00:00"
+ },
+ {
+  "id": 206,
+  "title": "Đầu xuân tươi sáng",
+  "ep": "Tập 12/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/dau-xuan-tuoi-sang.jpg",
+  "created_at": "2026-08-31T06:52:43.723+00:00"
+ },
+ {
+  "id": 207,
+  "title": "Hàn Y Nhập Tâm",
+  "ep": "Full 24 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/han-y-nhap-tam.jpg",
+  "created_at": "2026-08-31T06:52:43.723+00:00"
+ },
+ {
+  "id": 208,
+  "title": "Tài phiệt và Cảnh sát (Phần 2)",
+  "ep": "Tập 8/14",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/tai-phiet-va-canh-sat-phan-2.jpg",
+  "created_at": "2026-08-31T06:52:43.723+00:00"
+ },
+ {
+  "id": 209,
+  "title": "Vợ Tôi Là Sát Thủ",
+  "ep": "Tập 10/14",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/vo-toi-la-sat-thu.jpg",
+  "created_at": "2026-08-31T06:52:43.723+00:00"
+ },
+ {
+  "id": 210,
+  "title": "Sự Tái Sinh Của Nàng",
+  "ep": "Tập 21/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/su-tai-sinh-cua-nang.jpg",
+  "created_at": "2026-08-31T07:10:17.926+00:00"
+ },
+ {
+  "id": 211,
+  "title": "Sư Huynh Quá Cẩn Trọng",
+  "ep": "Tập 22/30",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/su-huynh-qua-can-trong.jpg",
+  "created_at": "2026-08-31T07:10:17.926+00:00"
+ },
+ {
+  "id": 212,
+  "title": "Đầu xuân tươi sáng",
+  "ep": "Tập 12/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/dau-xuan-tuoi-sang.jpg",
+  "created_at": "2026-08-31T07:10:17.926+00:00"
+ },
+ {
+  "id": 213,
+  "title": "Tài phiệt và Cảnh sát (Phần 2)",
+  "ep": "Tập 8/14",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/tai-phiet-va-canh-sat-phan-2.jpg",
+  "created_at": "2026-08-31T07:10:17.926+00:00"
+ },
+ {
+  "id": 214,
+  "title": "Vợ Tôi Là Sát Thủ",
+  "ep": "Tập 10/14",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/vo-toi-la-sat-thu.jpg",
+  "created_at": "2026-08-31T07:10:17.926+00:00"
+ },
+ {
+  "id": 215,
+  "title": "Sự Tái Sinh Của Nàng",
+  "ep": "Tập 22/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/su-tai-sinh-cua-nang.jpg",
+  "created_at": "2026-09-01T15:54:52.604+00:00"
+ },
+ {
+  "id": 216,
+  "title": "Sư Huynh Quá Cẩn Trọng",
+  "ep": "Tập 24/30",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/su-huynh-qua-can-trong.jpg",
+  "created_at": "2026-09-01T15:54:52.604+00:00"
+ },
+ {
+  "id": 217,
+  "title": "Đầu xuân tươi sáng",
+  "ep": "Tập 13/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/dau-xuan-tuoi-sang.jpg",
+  "created_at": "2026-09-01T15:54:52.604+00:00"
+ },
+ {
+  "id": 218,
+  "title": "Sếp Chính Là Thần Tượng",
+  "ep": "Tập 10/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/sep-chinh-la-than-tuong.jpg",
+  "created_at": "2026-09-01T15:54:52.604+00:00"
+ },
+ {
+  "id": 219,
+  "title": "Sư Huynh Quá Cẩn Trọng",
+  "ep": "Full 30 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/su-huynh-qua-can-trong.jpg",
+  "created_at": "2026-09-03T16:28:02.881+00:00"
+ },
+ {
+  "id": 220,
+  "title": "Ừ Thì Ly Hôn!",
+  "ep": "Tập 6/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/u-thi-ly-hon.jpg",
+  "created_at": "2026-09-04T02:52:45.407+00:00"
+ },
+ {
+  "id": 221,
+  "title": "Đầu xuân tươi sáng",
+  "ep": "Tập 16/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/dau-xuan-tuoi-sang.jpg",
+  "created_at": "2026-09-04T07:22:01.351+00:00"
+ },
+ {
+  "id": 222,
+  "title": "Tàn Thuốc",
+  "ep": "Tập 5/9",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/tan-thuoc.jpg",
+  "created_at": "2026-09-05T08:54:58.426+00:00"
+ },
+ {
+  "id": 223,
+  "title": "Đầu xuân tươi sáng",
+  "ep": "Tập 17/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/dau-xuan-tuoi-sang.jpg",
+  "created_at": "2026-09-05T08:54:58.426+00:00"
+ },
+ {
+  "id": 224,
+  "title": "Tài phiệt và Cảnh sát (Phần 2)",
+  "ep": "Tập 9/14",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/tai-phiet-va-canh-sat-phan-2.jpg",
+  "created_at": "2026-09-05T08:54:58.426+00:00"
+ },
+ {
+  "id": 225,
+  "title": "Ngoại Tình Đã Nhằm Nhò Gì",
+  "ep": "Full 8 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/ngoai-tinh-da-nham-nho-gi.jpg",
+  "created_at": "2026-09-05T08:54:58.426+00:00"
+ },
+ {
+  "id": 226,
+  "title": "Vợ Tôi Là Sát Thủ",
+  "ep": "Tập 11/14",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/vo-toi-la-sat-thu.jpg",
+  "created_at": "2026-09-05T08:54:58.426+00:00"
+ },
+ {
+  "id": 227,
+  "title": "Tiệm Bánh Gạo Vũ Trụ",
+  "ep": "Full 16 tập",
+  "poster": "https://phimimg.com/uploads/movies/20260805/tiem-banh-gao-vu-tru-thumb.webp",
+  "created_at": "2026-09-05T10:40:33.415+00:00"
+ },
+ {
+  "id": 228,
+  "title": "Tiệm Bánh Gạo Vũ Trụ",
+  "ep": "Full 16 tập",
+  "poster": "https://phimimg.com/uploads/movies/20260805/tiem-banh-gao-vu-tru-thumb.webp",
+  "created_at": "2026-09-05T10:50:39.736+00:00"
+ },
+ {
+  "id": 229,
+  "title": "Bay Vào Tim Anh",
+  "ep": "Tập 13/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/bay-vao-tim-anh.jpg",
+  "created_at": "2026-09-07T13:05:47.113+00:00"
+ },
+ {
+  "id": 230,
+  "title": "Bốn bàn tay, hai bản sonata",
+  "ep": "Tập 4/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/bon-ban-tay-hai-ban-sonata.jpg",
+  "created_at": "2026-09-07T13:05:47.113+00:00"
+ },
+ {
+  "id": 231,
+  "title": "Đầu xuân tươi sáng",
+  "ep": "Tập 19/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/dau-xuan-tuoi-sang.jpg",
+  "created_at": "2026-09-07T13:05:47.113+00:00"
+ },
+ {
+  "id": 232,
+  "title": "Tài phiệt và Cảnh sát (Phần 2)",
+  "ep": "Tập 10/14",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/tai-phiet-va-canh-sat-phan-2.jpg",
+  "created_at": "2026-09-07T13:05:47.113+00:00"
+ },
+ {
+  "id": 233,
+  "title": "Vợ Tôi Là Sát Thủ",
+  "ep": "Tập 12/14",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/vo-toi-la-sat-thu.jpg",
+  "created_at": "2026-09-07T13:05:47.113+00:00"
+ },
+ {
+  "id": 234,
+  "title": "Bay Vào Tim Anh",
+  "ep": "Tập 15/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/bay-vao-tim-anh.jpg",
+  "created_at": "2026-09-08T06:09:35.98+00:00"
+ },
+ {
+  "id": 235,
+  "title": "Đầu xuân tươi sáng",
+  "ep": "Tập 20/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/dau-xuan-tuoi-sang.jpg",
+  "created_at": "2026-09-08T06:09:35.98+00:00"
+ },
+ {
+  "id": 236,
+  "title": "Sếp Chính Là Thần Tượng",
+  "ep": "Tập 11/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/sep-chinh-la-than-tuong.jpg",
+  "created_at": "2026-09-08T06:09:35.98+00:00"
+ },
+ {
+  "id": 237,
+  "title": "Tình yêu nổi loạn (Phần 2)",
+  "ep": "Full 20 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/tinh-yeu-noi-loan-phan-2.jpg",
+  "created_at": "2026-09-08T09:54:43.508+00:00"
+ },
+ {
+  "id": 238,
+  "title": "Yêu một người khác",
+  "ep": "Tập 2/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/yeu-mot-nguoi-khac-1.jpg",
+  "created_at": "2026-09-14T03:42:03.532+00:00"
+ },
+ {
+  "id": 239,
+  "title": "Tế Công: Hàng Long Trừ Yêu",
+  "ep": "Tập 12/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/te-cong-hang-long-tru-yeu.jpg",
+  "created_at": "2026-09-14T03:42:03.532+00:00"
+ },
+ {
+  "id": 240,
+  "title": "Seoul Unnie",
+  "ep": "Tập 2/3",
+  "poster": "https://phimimg.com/uploads/movies/20260905/seoul-unnie-poster.webp",
+  "created_at": "2026-09-14T03:42:03.532+00:00"
+ },
+ {
+  "id": 241,
+  "title": "Bay Vào Tim Anh",
+  "ep": "Tập 22/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/bay-vao-tim-anh.jpg",
+  "created_at": "2026-09-14T03:42:03.532+00:00"
+ },
+ {
+  "id": 242,
+  "title": "Ngày Hè",
+  "ep": "Tập 6/10",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/ngay-he.jpg",
+  "created_at": "2026-09-14T03:42:03.532+00:00"
+ },
+ {
+  "id": 243,
+  "title": "Tàn Thuốc",
+  "ep": "Tập 6/9",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/tan-thuoc.jpg",
+  "created_at": "2026-09-14T03:42:03.532+00:00"
+ },
+ {
+  "id": 244,
+  "title": "Ừ Thì Ly Hôn!",
+  "ep": "Tập 8/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/u-thi-ly-hon.jpg",
+  "created_at": "2026-09-14T03:42:03.532+00:00"
+ },
+ {
+  "id": 245,
+  "title": "Đầu xuân tươi sáng",
+  "ep": "Full 24 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/dau-xuan-tuoi-sang.jpg",
+  "created_at": "2026-09-14T03:42:03.532+00:00"
+ },
+ {
+  "id": 246,
+  "title": "Tài phiệt và Cảnh sát (Phần 2)",
+  "ep": "Tập 12/14",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/tai-phiet-va-canh-sat-phan-2.jpg",
+  "created_at": "2026-09-14T03:42:03.532+00:00"
+ },
+ {
+  "id": 247,
+  "title": "Tiệm Bánh Gạo Vũ Trụ",
+  "ep": "Tập 7/12",
+  "poster": "https://phimimg.com/uploads/movies/20260805/tiem-banh-gao-vu-tru-thumb.webp",
+  "created_at": "2026-09-14T03:42:03.532+00:00"
+ },
+ {
+  "id": 248,
+  "title": "Vợ Tôi Là Sát Thủ",
+  "ep": "Full 14 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/7/vo-toi-la-sat-thu.jpg",
+  "created_at": "2026-09-14T03:42:03.532+00:00"
+ },
+ {
+  "id": 249,
+  "title": "Sếp Chính Là Thần Tượng",
+  "ep": "Full 12 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/sep-chinh-la-than-tuong.jpg",
+  "created_at": "2026-09-14T03:42:03.532+00:00"
+ },
+ {
+  "id": 250,
+  "title": "Tế Công: Hàng Long Trừ Yêu",
+  "ep": "Tập 14/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/te-cong-hang-long-tru-yeu.jpg",
+  "created_at": "2026-09-15T01:28:34.047+00:00"
+ },
+ {
+  "id": 251,
+  "title": "Bay Vào Tim Anh",
+  "ep": "Tập 23/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/bay-vao-tim-anh.jpg",
+  "created_at": "2026-09-15T01:28:34.047+00:00"
+ },
+ {
+  "id": 252,
+  "title": "Tế Công: Hàng Long Trừ Yêu",
+  "ep": "Tập 19/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/te-cong-hang-long-tru-yeu.jpg",
+  "created_at": "2026-09-17T10:59:13.04+00:00"
+ },
+ {
+  "id": 253,
+  "title": "Đế Chế Đại Hàn (Phần 2)",
+  "ep": "Tập 4/6",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/de-che-dai-han-phan-2.jpg",
+  "created_at": "2026-09-17T10:59:13.04+00:00"
+ },
+ {
+  "id": 254,
+  "title": "Bay Vào Tim Anh",
+  "ep": "Full 24 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/bay-vao-tim-anh.jpg",
+  "created_at": "2026-09-17T10:59:13.04+00:00"
+ },
+ {
+  "id": 255,
+  "title": "Ừ Thì Ly Hôn!",
+  "ep": "Tập 9/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/u-thi-ly-hon.jpg",
+  "created_at": "2026-09-17T10:59:13.04+00:00"
+ },
+ {
+  "id": 256,
+  "title": "Tế Công: Hàng Long Trừ Yêu",
+  "ep": "Tập 20/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/te-cong-hang-long-tru-yeu.jpg",
+  "created_at": "2026-09-19T04:10:09.122+00:00"
+ },
+ {
+  "id": 257,
+  "title": "Trúng Số Độc Đắc Vẫn Phải Đi Làm",
+  "ep": "Tập 4/10",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/trung-so-doc-dac-van-phai-di-lam.jpg",
+  "created_at": "2026-09-19T04:10:09.122+00:00"
+ },
+ {
+  "id": 258,
+  "title": "Doraemon (2005)",
+  "ep": "Tập 933/1000",
+  "poster": "https://phim.nguonc.com/public/images/Film/292.jpg",
+  "created_at": "2026-09-19T04:10:09.122+00:00"
+ },
+ {
+  "id": 259,
+  "title": "Ngày Hè",
+  "ep": "Tập 8/10",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/ngay-he.jpg",
+  "created_at": "2026-09-19T04:10:09.122+00:00"
+ },
+ {
+  "id": 260,
+  "title": "Tàn Thuốc",
+  "ep": "Tập 7/9",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/tan-thuoc.jpg",
+  "created_at": "2026-09-19T04:10:09.122+00:00"
+ },
+ {
+  "id": 261,
+  "title": "Ừ Thì Ly Hôn!",
+  "ep": "Tập 10/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/u-thi-ly-hon.jpg",
+  "created_at": "2026-09-19T04:10:09.122+00:00"
+ },
+ {
+  "id": 262,
+  "title": "Tài phiệt và Cảnh sát (Phần 2)",
+  "ep": "Tập 13/14",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/tai-phiet-va-canh-sat-phan-2.jpg",
+  "created_at": "2026-09-19T04:10:09.122+00:00"
+ },
+ {
+  "id": 263,
+  "title": "Tế Công: Hàng Long Trừ Yêu",
+  "ep": "Tập 21/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/te-cong-hang-long-tru-yeu.jpg",
+  "created_at": "2026-09-19T15:39:56.246+00:00"
+ },
+ {
+  "id": 264,
+  "title": "Seoul Unnie",
+  "ep": "Full 3 tập",
+  "poster": "https://phimimg.com/uploads/movies/20260905/seoul-unnie-poster.webp",
+  "created_at": "2026-09-19T15:39:56.246+00:00"
+ },
+ {
+  "id": 265,
+  "title": "Tiệm Bánh Gạo Vũ Trụ",
+  "ep": "Tập 8/12",
+  "poster": "https://phimimg.com/uploads/movies/20260805/tiem-banh-gao-vu-tru-thumb.webp",
+  "created_at": "2026-09-19T15:39:56.246+00:00"
+ },
+ {
+  "id": 266,
+  "title": "Yêu một người khác",
+  "ep": "Tập 4/12",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/yeu-mot-nguoi-khac-1.jpg",
+  "created_at": "2026-09-20T19:05:30.176+00:00"
+ },
+ {
+  "id": 267,
+  "title": "Tế Công: Hàng Long Trừ Yêu",
+  "ep": "Tập 22/24",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/te-cong-hang-long-tru-yeu.jpg",
+  "created_at": "2026-09-20T19:05:30.176+00:00"
+ },
+ {
+  "id": 268,
+  "title": "Tài phiệt và Cảnh sát (Phần 2)",
+  "ep": "Full 14 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/tai-phiet-va-canh-sat-phan-2.jpg",
+  "created_at": "2026-09-20T19:05:30.176+00:00"
+ },
+ {
+  "id": 269,
+  "title": "Tế Công: Hàng Long Trừ Yêu",
+  "ep": "Full 24 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/te-cong-hang-long-tru-yeu.jpg",
+  "created_at": "2026-09-27T15:41:32.845+00:00"
+ },
+ {
+  "id": 270,
+  "title": "Trúng Số Độc Đắc Vẫn Phải Đi Làm",
+  "ep": "Tập 6/10",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/trung-so-doc-dac-van-phai-di-lam.jpg",
+  "created_at": "2026-09-27T15:41:32.845+00:00"
+ },
+ {
+  "id": 271,
+  "title": "Đế Chế Đại Hàn (Phần 2)",
+  "ep": "Full 6 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/de-che-dai-han-phan-2.jpg",
+  "created_at": "2026-09-27T15:41:32.845+00:00"
+ },
+ {
+  "id": 272,
+  "title": "Doraemon (2005)",
+  "ep": "Tập 934/1000",
+  "poster": "https://phim.nguonc.com/public/images/Film/292.jpg",
+  "created_at": "2026-09-27T15:41:32.845+00:00"
+ },
+ {
+  "id": 273,
+  "title": "Ngày Hè",
+  "ep": "Full 10 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/10/ngay-he.jpg",
+  "created_at": "2026-09-27T15:41:32.845+00:00"
+ },
+ {
+  "id": 274,
+  "title": "Tàn Thuốc",
+  "ep": "Tập 8/9",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/tan-thuoc.jpg",
+  "created_at": "2026-09-27T15:41:32.845+00:00"
+ },
+ {
+  "id": 275,
+  "title": "Ừ Thì Ly Hôn!",
+  "ep": "Full 12 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/u-thi-ly-hon.jpg",
+  "created_at": "2026-09-27T15:41:32.845+00:00"
+ },
+ {
+  "id": 276,
+  "title": "Tiệm Bánh Gạo Vũ Trụ",
+  "ep": "Tập 9/12",
+  "poster": "https://phimimg.com/uploads/movies/20260805/tiem-banh-gao-vu-tru-thumb.webp",
+  "created_at": "2026-09-27T15:41:32.845+00:00"
+ },
+ {
+  "id": 277,
+  "title": "Chìm Vào Mắt Em (Phần 1)",
+  "ep": "Tập 2/12",
+  "poster": "https://img.nguonc.com/images/img-a1d172992dc36bffc33416129773f37b716a9a8314b3243c9a0fb93df265193b.png",
+  "created_at": "2026-09-27T17:39:46.917+00:00"
+ },
+ {
+  "id": 278,
+  "title": "Chìm Vào Mắt Em (Phần 1)",
+  "ep": "Tập 3/12",
+  "poster": "https://img.nguonc.com/images/img-a1d172992dc36bffc33416129773f37b716a9a8314b3243c9a0fb93df265193b.png",
+  "created_at": "2026-10-04T14:53:47.83+00:00"
+ },
+ {
+  "id": 279,
+  "title": "Yêu Một Người Khác",
+  "ep": "Tập 5/12",
+  "poster": "https://img.nguonc.com/images/img-65cafc2f0c781a8a78796785667ecc89e9ca36b537c44b09b81166513bd53705.jpg",
+  "created_at": "2026-10-04T14:53:47.83+00:00"
+ },
+ {
+  "id": 280,
+  "title": "Trúng Số Độc Đắc Vẫn Phải Đi Làm",
+  "ep": "Tập 8/10",
+  "poster": "https://phim.nguonc.com/public/images/Post/1/trung-so-doc-dac-van-phai-di-lam.jpg",
+  "created_at": "2026-10-04T14:53:47.83+00:00"
+ },
+ {
+  "id": 281,
+  "title": "Tàn Thuốc",
+  "ep": "Full 9 tập",
+  "poster": "https://phim.nguonc.com/public/images/Post/2/tan-thuoc.jpg",
+  "created_at": "2026-10-04T14:53:47.83+00:00"
+ },
+ {
+  "id": 282,
+  "title": "Tiệm Bánh Gạo Vũ Trụ",
+  "ep": "Tập 10/12",
+  "poster": "https://phimimg.com/uploads/movies/20260805/tiem-banh-gao-vu-tru-thumb.webp",
+  "created_at": "2026-10-04T14:53:47.83+00:00"
+ },
+ {
+  "id": 283,
+  "title": "Yêu Một Người Khác",
+  "ep": "Tập 6/12",
+  "poster": "https://img.nguonc.com/images/img-65cafc2f0c781a8a78796785667ecc89e9ca36b537c44b09b81166513bd53705.jpg",
+  "created_at": "2026-10-05T03:06:49.713+00:00"
+ },
+ {
+  "id": 284,
+  "title": "Giác Quan Thứ Sáu: Mặt Trái",
+  "ep": "Tập 3/10",
+  "poster": "https://img.nguonc.com/images/img-7784f6b7db151e562f43e0bd1fa5f62011d357ed1680af63660703373a3c577f.jpg",
+  "created_at": "2026-10-05T16:15:44.829+00:00"
+ },
+ {
+  "id": 285,
+  "title": "Chìm Vào Mắt Em (Phần 1)",
+  "ep": "Tập 4/12",
+  "poster": "https://img.nguonc.com/images/img-a1d172992dc36bffc33416129773f37b716a9a8314b3243c9a0fb93df265193b.png",
+  "created_at": "2026-10-05T16:15:44.829+00:00"
+ },
+ {
+  "id": 286,
+  "title": "Không Thể Thay Thế (Phần 1)",
+  "ep": "Tập 13/20",
+  "poster": "https://img.nguonc.com/images/img-a7cff2f303365fbfecca7b7d2b79eadfeaecd5c1bdca9bc85a23fe2b43f30d89.jpg",
+  "created_at": "2026-10-06T14:26:53.271+00:00"
+ },
+ {
+  "id": 287,
+  "title": "Không Thể Thay Thế (Phần 1)",
+  "ep": "Tập 14/20",
+  "poster": "https://img.nguonc.com/images/img-a7cff2f303365fbfecca7b7d2b79eadfeaecd5c1bdca9bc85a23fe2b43f30d89.jpg",
+  "created_at": "2026-10-07T16:29:52.297+00:00"
+ },
+ {
+  "id": 288,
+  "title": "Trúng Số Độc Đắc Vẫn Phải Đi Làm",
+  "ep": "Full 10 tập",
+  "poster": "https://img.nguonc.com/images/img-d64a21b3a3c7fe3264f29adaeb7c0d020029bade5f0f4b2ebd08f5ef46c11463.jpg",
+  "created_at": "2026-10-09T16:28:19.156+00:00"
+ },
+ {
+  "id": 289,
+  "title": "Tiệm Bánh Gạo Vũ Trụ",
+  "ep": "Tập 11/12",
+  "poster": "https://img.nguonc.com/images/img-9599c4117ac82297a367cce1e4591d0c3d8010e944c43249a63097da5cda8555.jpg",
+  "created_at": "2026-10-10T15:11:12.183+00:00"
+ },
+ {
+  "id": 290,
+  "title": "Bác Sĩ X (Phần 1)",
+  "ep": "Full 8 tập",
+  "poster": "https://img.nguonc.com/images/img-51c7ef015eae5869ad0bcdd2665b06d94a0e37893b90f17369ecb1095e18f35b.png",
+  "created_at": "2026-10-10T15:11:19.202+00:00"
+ },
+ {
+  "id": 291,
+  "title": "Tiệm Bánh Gạo Vũ Trụ",
+  "ep": "Tập 11/12",
+  "poster": "https://img.nguonc.com/images/img-9599c4117ac82297a367cce1e4591d0c3d8010e944c43249a63097da5cda8555.jpg",
+  "created_at": "2026-10-10T19:06:26.721+00:00"
+ },
+ {
+  "id": 292,
+  "title": "Bác Sĩ X (Phần 1)",
+  "ep": "Full 8 tập",
+  "poster": "https://img.nguonc.com/images/img-51c7ef015eae5869ad0bcdd2665b06d94a0e37893b90f17369ecb1095e18f35b.png",
+  "created_at": "2026-10-10T19:06:33.979+00:00"
+ },
+ {
+  "id": 293,
+  "title": "Bác Sĩ X (Phần 1)",
+  "ep": "Full 8 tập",
+  "poster": "https://img.nguonc.com/images/img-51c7ef015eae5869ad0bcdd2665b06d94a0e37893b90f17369ecb1095e18f35b.png",
+  "created_at": "2026-10-11T03:07:09.391+00:00"
+ },
+ {
+  "id": 294,
+  "title": "Tiệm Bánh Gạo Vũ Trụ",
+  "ep": "Tập 11/12",
+  "poster": "https://img.nguonc.com/images/img-9599c4117ac82297a367cce1e4591d0c3d8010e944c43249a63097da5cda8555.jpg",
+  "created_at": "2026-10-11T04:30:18.938+00:00"
+ },
+ {
+  "id": 295,
+  "title": "Lời Đề Nghị Của Công Tố Viên",
+  "ep": "Full 10 tập",
+  "poster": "https://img.nguonc.com/images/img-ed170728d044b9d4aebb4dfeab0ac4602ff75bce091eb3719e188fb2455ca858.jpg",
+  "created_at": "2026-10-11T04:30:18.938+00:00"
+ },
+ {
+  "id": 296,
+  "title": "Sếp Ơi, Mai Đừng Gặp Nhau!",
+  "ep": "Full 12 tập",
+  "poster": "https://img.nguonc.com/images/img-65205465a69f3125f644839f5e6101c000305c8d9b336ad2c54da659ead626e5.jpg",
+  "created_at": "2026-10-11T04:30:18.938+00:00"
+ },
+ {
+  "id": 297,
+  "title": "Ngôi Nhà Của Những Lời Dối Trá",
+  "ep": "Full 8 tập",
+  "poster": "https://img.nguonc.com/images/img-e4829f17486733fdb707d039024a67e5944ca409c6b33c5a964743c599554f9e.jpg",
+  "created_at": "2026-10-11T04:30:18.938+00:00"
+ },
+ {
+  "id": 298,
+  "title": "Thám Tử Bắt Ma",
+  "ep": "Full 16 tập",
+  "poster": "https://img.nguonc.com/images/img-05378e00d00ae6282e70029c9e0aff6370520f9dcee6fc88d0ffd78ccf2f7487.jpg",
+  "created_at": "2026-10-11T04:30:18.938+00:00"
+ },
+ {
+  "id": 299,
+  "title": "Hoàn Hồn",
+  "ep": "Full 30 tập",
+  "poster": "https://img.nguonc.com/images/img-40836f5556afe87b04cb7dda47224ae8857ba6891dafc7de3dea953c5a028d14.jpg",
+  "created_at": "2026-10-11T04:30:18.938+00:00"
+ },
+ {
+  "id": 300,
+  "title": "Cái Chết Nhân Đạo",
+  "ep": "Full 12 tập",
+  "poster": "https://img.nguonc.com/images/img-e57bee96a0399965bcb05367235921124ceaedc8e8c73e71ac7ce77ca2934bbb.jpg",
+  "created_at": "2026-10-11T04:30:18.938+00:00"
+ },
+ {
+  "id": 301,
+  "title": "Kiện Tướng",
+  "ep": "Full 16 tập",
+  "poster": "https://img.nguonc.com/images/img-8e06f724b0e84a0b19dfcf20633eb90a33bf2e94b4eff0992e3f8cd360a69166.jpg",
+  "created_at": "2026-10-11T04:30:18.938+00:00"
+ },
+ {
+  "id": 302,
+  "title": "Tài Xế Ẩn Danh (Phần 2)",
+  "ep": "Full 16 tập",
+  "poster": "https://img.nguonc.com/images/img-eb6d95b7de42dac21f8c13fb8bc8061adf0938c60c0960441ff5ccdb18f38d85.jpg",
+  "created_at": "2026-10-11T04:30:18.938+00:00"
+ },
+ {
+  "id": 303,
+  "title": "Yêu Một Người Khác",
+  "ep": "Tập 7/12",
+  "poster": "https://img.nguonc.com/images/img-65cafc2f0c781a8a78796785667ecc89e9ca36b537c44b09b81166513bd53705.jpg",
+  "created_at": "2026-10-11T05:03:12.912+00:00"
+ },
+ {
+  "id": 304,
+  "title": "100 Ngày Lừa Dối (Phần 1)",
+  "ep": "Tập 2/16",
+  "poster": "https://img.nguonc.com/images/img-172684a1dd9eb7a95d0373b2d6afc8e7240c031f022ee7f6d21ef687db7a6c8f.png",
+  "created_at": "2026-10-11T15:22:04.031+00:00"
+ },
+ {
+  "id": 305,
+  "title": "Giác Quan Thứ Sáu: Mặt Trái",
+  "ep": "Tập 4/10",
+  "poster": "https://img.nguonc.com/images/img-7784f6b7db151e562f43e0bd1fa5f62011d357ed1680af63660703373a3c577f.jpg",
+  "created_at": "2026-10-12T22:17:01.572+00:00"
+ },
+ {
+  "id": 306,
+  "title": "Yêu Một Người Khác",
+  "ep": "Tập 8/14",
+  "poster": "https://img.nguonc.com/images/img-65cafc2f0c781a8a78796785667ecc89e9ca36b537c44b09b81166513bd53705.jpg",
+  "created_at": "2026-10-12T22:17:05.966+00:00"
+ },
+ {
+  "id": 307,
+  "title": "Dragon Ball Super: Beerus",
+  "ep": "Tập 1/19",
+  "poster": "https://img.nguonc.com/images/img-093d03fc92a60d6193420e4040275351a1d4e608ba92e07ae6b97c6d17733996.png",
+  "created_at": "2026-10-12T22:17:10.131+00:00"
+ },
+ {
+  "id": 308,
+  "title": "Từng Bước Bên Nhau",
+  "ep": "Tập 4/12",
+  "poster": "https://img.nguonc.com/images/img-4d196c91619a364ebf285a64c58d78a32acad275b3462a1b24e0a51b150e3b79.png",
+  "created_at": "2026-10-13T20:25:02.695+00:00"
+ },
+ {
+  "id": 309,
+  "title": "Chuyện Tình Rung Cảm",
+  "ep": "Tập 4/10",
+  "poster": "https://img.nguonc.com/images/img-e58a2d1cf6c92b4519a468a634e4a2d7409b3411df2a6817cf7ec545b5782edc.png",
+  "created_at": "2026-10-15T18:44:21.711+00:00"
+ },
+ {
+  "id": 310,
+  "title": "Chìm Vào Mắt Em (Phần 1)",
+  "ep": "Tập 6/12",
+  "poster": "https://img.nguonc.com/images/img-a1d172992dc36bffc33416129773f37b716a9a8314b3243c9a0fb93df265193b.png",
+  "created_at": "2026-10-16T18:28:51.969+00:00"
+ },
+ {
+  "id": 311,
+  "title": "Dâu Tây Ngọt Ngào (Phần 1)",
+  "ep": "Tập 2/10",
+  "poster": "https://img.nguonc.com/images/img-5ece79a24dd6893908c8168ea2dd778c49be76aea10e1ba1dd9e1a9d9de1cc5d.png",
+  "created_at": "2026-10-16T18:28:57.024+00:00"
+ },
+ {
+  "id": 312,
+  "title": "Tiệm Bánh Gạo Vũ Trụ",
+  "ep": "Full 12 tập",
+  "poster": "https://img.nguonc.com/images/img-9599c4117ac82297a367cce1e4591d0c3d8010e944c43249a63097da5cda8555.jpg",
+  "created_at": "2026-10-17T13:07:25.543+00:00"
+ },
+ {
+  "id": 313,
+  "title": "Bác Sĩ X",
+  "ep": "Tập 3/12",
+  "poster": "https://phimimg.com/uploads/movies/20261010/bac-si-x-poster.webp",
+  "created_at": "2026-10-17T17:34:40.306+00:00"
+ },
+ {
+  "id": 314,
+  "title": "Yêu Một Người Khác",
+  "ep": "Tập 9/14",
+  "poster": "https://img.nguonc.com/images/img-65cafc2f0c781a8a78796785667ecc89e9ca36b537c44b09b81166513bd53705.jpg",
+  "created_at": "2026-10-18T03:24:20.227+00:00"
+ },
+ {
+  "id": 315,
+  "title": "Dragon Ball Super: Beerus",
+  "ep": "Tập 2/19",
+  "poster": "https://img.nguonc.com/images/img-093d03fc92a60d6193420e4040275351a1d4e608ba92e07ae6b97c6d17733996.png",
+  "created_at": "2026-10-18T18:23:19.366+00:00"
+ },
+ {
+  "id": 316,
+  "title": "Yêu Một Người Khác",
+  "ep": "Tập 10/14",
+  "poster": "https://img.nguonc.com/images/img-65cafc2f0c781a8a78796785667ecc89e9ca36b537c44b09b81166513bd53705.jpg",
+  "created_at": "2026-10-18T18:23:19.366+00:00"
+ },
+ {
+  "id": 317,
+  "title": "Chìm Vào Mắt Em",
+  "ep": "Tập 8/12",
+  "poster": "https://img.nguonc.com/images/img-a1d172992dc36bffc33416129773f37b716a9a8314b3243c9a0fb93df265193b.png",
+  "created_at": "2026-10-18T18:23:19.366+00:00"
+ },
+ {
+  "id": 318,
+  "title": "Tình Yêu Trong Vỏ Bọc / Tình Yêu Ngụy Trang",
+  "ep": "Tập 2/12",
+  "poster": "https://phimimg.com/uploads/movies/20261020/tinh-yeu-trong-vo-boc-tinh-yeu-nguy-trang-poster.webp",
+  "created_at": "2026-10-21T06:29:35.454+00:00"
+ },
+ {
+  "id": 319,
+  "title": "Từng Bước Bên Nhau",
+  "ep": "Tập 6/12",
+  "poster": "https://img.nguonc.com/images/img-4d196c91619a364ebf285a64c58d78a32acad275b3462a1b24e0a51b150e3b79.png",
+  "created_at": "2026-10-21T06:29:35.454+00:00"
+ },
+ {
+  "id": 320,
+  "title": "Giác Quan Thứ Sáu: Mặt Trái",
+  "ep": "Tập 5/10",
+  "poster": "https://img.nguonc.com/images/img-7784f6b7db151e562f43e0bd1fa5f62011d357ed1680af63660703373a3c577f.jpg",
+  "created_at": "2026-10-21T06:29:35.454+00:00"
+ },
+ {
+  "id": 321,
+  "title": "Chuyện Tình Rung Cảm",
+  "ep": "Tập 6/10",
+  "poster": "https://img.nguonc.com/images/img-e58a2d1cf6c92b4519a468a634e4a2d7409b3411df2a6817cf7ec545b5782edc.png",
+  "created_at": "2026-10-23T17:51:06.585+00:00"
+ },
+ {
+  "id": 322,
+  "title": "Bác Sĩ X",
+  "ep": "Tập 5/12",
+  "poster": "https://img.nguonc.com/images/img-51c7ef015eae5869ad0bcdd2665b06d94a0e37893b90f17369ecb1095e18f35b.png",
+  "created_at": "2026-10-23T17:51:06.585+00:00"
+ },
+ {
+  "id": 323,
+  "title": "Dâu Tây Ngọt Ngào",
+  "ep": "Tập 3/10",
+  "poster": "https://img.nguonc.com/images/img-5ece79a24dd6893908c8168ea2dd778c49be76aea10e1ba1dd9e1a9d9de1cc5d.png",
+  "created_at": "2026-10-23T17:51:06.585+00:00"
+ },
+ {
+  "id": 324,
+  "title": "Bậc Thầy Đàm Phán",
+  "ep": "Full 12 tập",
+  "poster": "https://node-img-akm-cache.onflixcdn.com/img/tv/255298/season/1/thumbnail",
+  "created_at": "2026-10-24T18:02:22.43+00:00"
+ },
+ {
+  "id": 325,
+  "title": "Chiếc Cà Vạt Rối Rắm",
+  "ep": "Tập 3/6",
+  "poster": "https://node-img-akm-cache.onflixcdn.com/img/tv/318634/season/1/thumbnail",
+  "created_at": "2026-10-24T18:19:12.451+00:00"
+ },
+ {
+  "id": 326,
+  "title": "100 Ngày Lừa Dối",
+  "ep": "Tập 5/16",
+  "poster": "https://img.nguonc.com/images/img-172684a1dd9eb7a95d0373b2d6afc8e7240c031f022ee7f6d21ef687db7a6c8f.png",
+  "created_at": "2026-10-24T18:19:12.451+00:00"
+ },
+ {
+  "id": 327,
+  "title": "Bác Sĩ X",
+  "ep": "Tập 6/12",
+  "poster": "https://img.nguonc.com/images/img-51c7ef015eae5869ad0bcdd2665b06d94a0e37893b90f17369ecb1095e18f35b.png",
+  "created_at": "2026-10-24T18:19:12.451+00:00"
+ },
+ {
+  "id": 328,
+  "title": "Yêu Một Người Khác",
+  "ep": "Tập 11/14",
+  "poster": "https://img.nguonc.com/images/img-65cafc2f0c781a8a78796785667ecc89e9ca36b537c44b09b81166513bd53705.jpg",
+  "created_at": "2026-10-24T18:19:12.451+00:00"
+ },
+ {
+  "id": 329,
+  "title": "Chìm Vào Mắt Em",
+  "ep": "Tập 9/12",
+  "poster": "https://img.nguonc.com/images/img-a1d172992dc36bffc33416129773f37b716a9a8314b3243c9a0fb93df265193b.png",
+  "created_at": "2026-10-24T18:19:12.451+00:00"
+ },
+ {
+  "id": 330,
+  "title": "Yêu Một Người Khác",
+  "ep": "Tập 12/14",
+  "poster": "https://img.nguonc.com/images/img-65cafc2f0c781a8a78796785667ecc89e9ca36b537c44b09b81166513bd53705.jpg",
+  "created_at": "2026-10-25T18:19:55.458+00:00"
+ },
+ {
+  "id": 331,
+  "title": "100 Ngày Lừa Dối",
+  "ep": "Tập 6/16",
+  "poster": "https://img.nguonc.com/images/img-172684a1dd9eb7a95d0373b2d6afc8e7240c031f022ee7f6d21ef687db7a6c8f.png",
+  "created_at": "2026-10-25T18:19:58.912+00:00"
+ },
+ {
+  "id": 332,
+  "title": "Dragon Ball Super: Beerus",
+  "ep": "Tập 3/19",
+  "poster": "https://img.nguonc.com/images/img-093d03fc92a60d6193420e4040275351a1d4e608ba92e07ae6b97c6d17733996.png",
+  "created_at": "2026-10-26T03:05:24.294+00:00"
+ },
+ {
+  "id": 333,
+  "title": "Chìm Vào Mắt Em",
+  "ep": "Tập 10/12",
+  "poster": "https://img.nguonc.com/images/img-a1d172992dc36bffc33416129773f37b716a9a8314b3243c9a0fb93df265193b.png",
+  "created_at": "2026-10-26T03:05:24.294+00:00"
+ },
+ {
+  "id": 334,
+  "title": "Giác Quan Thứ Sáu: Mặt Trái",
+  "ep": "Tập 6/10",
+  "poster": "https://img.nguonc.com/images/img-7784f6b7db151e562f43e0bd1fa5f62011d357ed1680af63660703373a3c577f.jpg",
+  "created_at": "2026-10-27T00:20:57.868+00:00"
+ },
+ {
+  "id": 335,
+  "title": "Từng Bước Bên Nhau",
+  "ep": "Tập 8/12",
+  "poster": "https://img.nguonc.com/images/img-4d196c91619a364ebf285a64c58d78a32acad275b3462a1b24e0a51b150e3b79.png",
+  "created_at": "2026-10-27T20:00:05.37+00:00"
+ },
+ {
+  "id": 336,
+  "title": "Tình Yêu Ngụy Trang",
+  "ep": "Tập 4/12",
+  "poster": "https://img.nguonc.com/images/img-c15c66e744d0b989b78fc6ffc57c95f6945f70f74d358385e1c337dbcdad22c7.png",
+  "created_at": "2026-10-27T20:00:22.021+00:00"
+ },
+ {
+  "id": 337,
+  "title": "Chuyến Đi Chữa Lành",
+  "ep": "Tập 2/10",
+  "poster": "https://img.nguonc.com/images/img-203cce92597427acb00a256728c7789187cd111f4fd7430da20b193c1316d0f3.png",
+  "created_at": "2026-10-27T20:00:33.625+00:00"
+ },
+ {
+  "id": 338,
+  "title": "Dâu Tây Ngọt Ngào",
+  "ep": "Tập 4/10",
+  "poster": "https://img.nguonc.com/images/img-5ece79a24dd6893908c8168ea2dd778c49be76aea10e1ba1dd9e1a9d9de1cc5d.png",
+  "created_at": "2026-10-29T20:10:31.795+00:00"
+ },
+ {
+  "id": 339,
+  "title": "Chuyện Tình Rung Cảm",
+  "ep": "Tập 8/10",
+  "poster": "https://img.nguonc.com/images/img-e58a2d1cf6c92b4519a468a634e4a2d7409b3411df2a6817cf7ec545b5782edc.png",
+  "created_at": "2026-10-29T20:10:40.948+00:00"
+ },
+ {
+  "id": 340,
+  "title": "Âm Thanh Của Những Viên Đường",
+  "ep": "Tập 4/10",
+  "poster": "https://node-img-akm-cache.onflixcdn.com/img/tv/322051/season/1/poster",
+  "created_at": "2026-10-29T20:10:45.54+00:00"
+ },
+ {
+  "id": 341,
+  "title": "Chiếc Cà Vạt Rối Rắm",
+  "ep": "Tập 4/6",
+  "poster": "https://node-img-akm-cache.onflixcdn.com/img/tv/318634/season/1/poster",
+  "created_at": "2026-10-29T20:10:47.344+00:00"
+ },
+ {
+  "id": 342,
+  "title": "Gả Kim Thoa (Gã Trâm Vàng)",
+  "ep": "Tập 22/33",
+  "poster": "https://img.nguonc.com/images/img-6e40385839ea07aa0384ac0abe8f517afaba04cda84bbb3a82703fd3a132f6a7.png",
+  "created_at": "2026-10-29T20:10:55.527+00:00"
+ },
+ {
+  "id": 343,
+  "title": "Bác Sĩ X",
+  "ep": "Tập 7/12",
+  "poster": "https://img.nguonc.com/images/img-51c7ef015eae5869ad0bcdd2665b06d94a0e37893b90f17369ecb1095e18f35b.png",
+  "created_at": "2026-10-30T19:54:12.197+00:00"
+ },
+ {
+  "id": 344,
+  "title": "Gả Kim Thoa (Gã Trâm Vàng)",
+  "ep": "Tập 23/33",
+  "poster": "https://img.nguonc.com/images/img-6e40385839ea07aa0384ac0abe8f517afaba04cda84bbb3a82703fd3a132f6a7.png",
+  "created_at": "2026-10-30T19:54:27.564+00:00"
+ },
+ {
+  "id": 345,
+  "title": "Lời Nói Dối Hoàn Hảo.",
+  "ep": "Full 7 tập",
+  "poster": "https://node-img-akm-cache.onflixcdn.com/img/tv/307478/season/1/poster",
+  "created_at": "2026-10-30T19:54:29.004+00:00"
+ },
+ {
+  "id": 346,
+  "title": "Lời Nói Dối Hoàn Hảo",
+  "ep": "Tập 7/12",
+  "poster": "https://img.nguonc.com/images/img-50d32acbbcca9a9297fad388f4443e3d0cc90cbfa497e108467c8e8170a7d7fe.png",
+  "created_at": "2026-10-31T07:11:36.719+00:00"
+ },
+ {
+  "id": 347,
+  "title": "Gả Kim Thoa (Gã Trâm Vàng)",
+  "ep": "Tập 24/33",
+  "poster": "https://img.nguonc.com/images/img-6e40385839ea07aa0384ac0abe8f517afaba04cda84bbb3a82703fd3a132f6a7.png",
+  "created_at": "2026-10-31T07:11:36.719+00:00"
+ },
+ {
+  "id": 348,
+  "title": "Lời Nói Dối Hoàn Hảo",
+  "ep": "Tập 7/12",
+  "poster": "https://img.nguonc.com/images/img-50d32acbbcca9a9297fad388f4443e3d0cc90cbfa497e108467c8e8170a7d7fe.png",
+  "created_at": "2026-10-31T07:25:55.952+00:00"
+ },
+ {
+  "id": 349,
+  "title": "Yêu Một Người Khác",
+  "ep": "Tập 13/14",
+  "poster": "https://img.nguonc.com/images/img-65cafc2f0c781a8a78796785667ecc89e9ca36b537c44b09b81166513bd53705.jpg",
+  "created_at": "2026-10-31T19:12:52.327+00:00"
+ },
+ {
+  "id": 350,
+  "title": "Bác Sĩ X",
+  "ep": "Tập 8/12",
+  "poster": "https://img.nguonc.com/images/img-51c7ef015eae5869ad0bcdd2665b06d94a0e37893b90f17369ecb1095e18f35b.png",
+  "created_at": "2026-10-31T19:12:53.96+00:00"
+ },
+ {
+  "id": 351,
+  "title": "100 Ngày Lừa Dối",
+  "ep": "Tập 7/16",
+  "poster": "https://img.nguonc.com/images/img-172684a1dd9eb7a95d0373b2d6afc8e7240c031f022ee7f6d21ef687db7a6c8f.png",
+  "created_at": "2026-10-31T19:12:55.593+00:00"
+ },
+ {
+  "id": 352,
+  "title": "Lời Nói Dối Hoàn Hảo",
+  "ep": "Tập 2/12",
+  "poster": "https://img.nguonc.com/images/img-50d32acbbcca9a9297fad388f4443e3d0cc90cbfa497e108467c8e8170a7d7fe.png",
+  "created_at": "2026-10-31T19:13:12.463+00:00"
+ },
+ {
+  "id": 353,
+  "title": "Chìm Vào Mắt Em",
+  "ep": "Tập 11/12",
+  "poster": "https://img.nguonc.com/images/img-a1d172992dc36bffc33416129773f37b716a9a8314b3243c9a0fb93df265193b.png",
+  "created_at": "2026-11-01T19:29:16.135+00:00"
+ },
+ {
+  "id": 354,
+  "title": "Yêu Một Người Khác",
+  "ep": "Full 14 tập",
+  "poster": "https://img.nguonc.com/images/img-65cafc2f0c781a8a78796785667ecc89e9ca36b537c44b09b81166513bd53705.jpg",
+  "created_at": "2026-11-01T19:29:22.873+00:00"
+ },
+ {
+  "id": 355,
+  "title": "100 Ngày Lừa Dối",
+  "ep": "Tập 8/16",
+  "poster": "https://img.nguonc.com/images/img-172684a1dd9eb7a95d0373b2d6afc8e7240c031f022ee7f6d21ef687db7a6c8f.png",
+  "created_at": "2026-11-01T19:29:26.431+00:00"
+ },
+ {
+  "id": 356,
+  "title": "Anh Là Nam Chính Đời Em",
+  "ep": "Tập 3/16",
+  "poster": "https://img.nguonc.com/images/img-a36aed74243c6ebe5b982c77ab62682c848bb595b1e53df77620918631ee2deb.png",
+  "created_at": "2026-11-01T19:29:36.544+00:00"
+ },
+ {
+  "id": 357,
+  "title": "Cuộc Chiến Ẩm Thực",
+  "ep": "Tập 4/12",
+  "poster": "https://img.nguonc.com/images/img-efcbe0ea0a9ad38e2bcfd073ad9f5db16dfed8021d6fcea7f25635674745d520.png",
+  "created_at": "2026-11-01T19:29:38.303+00:00"
+ },
+ {
+  "id": 358,
+  "title": "Gả Kim Thoa (Gã Trâm Vàng)",
+  "ep": "Tập 25/33",
+  "poster": "https://img.nguonc.com/images/img-6e40385839ea07aa0384ac0abe8f517afaba04cda84bbb3a82703fd3a132f6a7.png",
+  "created_at": "2026-11-01T19:29:41.374+00:00"
+ },
+ {
+  "id": 359,
+  "title": "Từng Bước Bên Nhau",
+  "ep": "Tập 9/12",
+  "poster": "https://img.nguonc.com/images/img-4d196c91619a364ebf285a64c58d78a32acad275b3462a1b24e0a51b150e3b79.png",
+  "created_at": "2026-11-02T23:04:27.708+00:00"
+ },
+ {
+  "id": 360,
+  "title": "Dragon Ball Super: Beerus",
+  "ep": "Tập 4/19",
+  "poster": "https://img.nguonc.com/images/img-093d03fc92a60d6193420e4040275351a1d4e608ba92e07ae6b97c6d17733996.png",
+  "created_at": "2026-11-02T23:04:33.932+00:00"
+ },
+ {
+  "id": 361,
+  "title": "Tình Yêu Ngụy Trang",
+  "ep": "Tập 5/12",
+  "poster": "https://img.nguonc.com/images/img-c15c66e744d0b989b78fc6ffc57c95f6945f70f74d358385e1c337dbcdad22c7.png",
+  "created_at": "2026-11-02T23:04:37.008+00:00"
+ },
+ {
+  "id": 362,
+  "title": "Anh Là Nam Chính Đời Em",
+  "ep": "Tập 4/16",
+  "poster": "https://img.nguonc.com/images/img-a36aed74243c6ebe5b982c77ab62682c848bb595b1e53df77620918631ee2deb.png",
+  "created_at": "2026-11-02T23:04:41.626+00:00"
+ },
+ {
+  "id": 363,
+  "title": "Chuyến Đi Chữa Lành",
+  "ep": "Tập 3/10",
+  "poster": "https://img.nguonc.com/images/img-203cce92597427acb00a256728c7789187cd111f4fd7430da20b193c1316d0f3.png",
+  "created_at": "2026-11-02T23:04:44.69+00:00"
+ },
+ {
+  "id": 364,
+  "title": "Gả Kim Thoa (Gã Trâm Vàng)",
+  "ep": "Tập 26/33",
+  "poster": "https://img.nguonc.com/images/img-6e40385839ea07aa0384ac0abe8f517afaba04cda84bbb3a82703fd3a132f6a7.png",
+  "created_at": "2026-11-02T23:04:46.229+00:00"
+ },
+ {
+  "id": 365,
+  "title": "Từng Bước Bên Nhau",
+  "ep": "Tập 10/12",
+  "poster": "https://img.nguonc.com/images/img-4d196c91619a364ebf285a64c58d78a32acad275b3462a1b24e0a51b150e3b79.png",
+  "created_at": "2026-11-03T20:51:51.112+00:00"
+ },
+ {
+  "id": 366,
+  "title": "Tình Yêu Ngụy Trang",
+  "ep": "Tập 6/12",
+  "poster": "https://img.nguonc.com/images/img-c15c66e744d0b989b78fc6ffc57c95f6945f70f74d358385e1c337dbcdad22c7.png",
+  "created_at": "2026-11-03T20:52:08.677+00:00"
+ },
+ {
+  "id": 367,
+  "title": "Chuyến Đi Chữa Lành",
+  "ep": "Tập 4/10",
+  "poster": "https://img.nguonc.com/images/img-203cce92597427acb00a256728c7789187cd111f4fd7430da20b193c1316d0f3.png",
+  "created_at": "2026-11-03T20:52:23.67+00:00"
+ },
+ {
+  "id": 368,
+  "title": "Gả Kim Thoa (Gã Trâm Vàng)",
+  "ep": "Tập 27/33",
+  "poster": "https://img.nguonc.com/images/img-6e40385839ea07aa0384ac0abe8f517afaba04cda84bbb3a82703fd3a132f6a7.png",
+  "created_at": "2026-11-03T20:52:26.469+00:00"
+ },
+ {
+  "id": 369,
+  "title": "Dâu Tây Ngọt Ngào",
+  "ep": "Tập 5/10",
+  "poster": "https://img.nguonc.com/images/img-5ece79a24dd6893908c8168ea2dd778c49be76aea10e1ba1dd9e1a9d9de1cc5d.png",
+  "created_at": "2026-11-04T21:13:38.715+00:00"
+ },
+ {
+  "id": 370,
+  "title": "Thượng Công Chúa",
+  "ep": "Tập 24/40",
+  "poster": "https://img.nguonc.com/images/img-b5062972890525fe851d79773ebdaa2c3e0b9124d9ff8a0485ed84ff35f61eae.png",
+  "created_at": "2026-11-04T21:14:07.247+00:00"
+ },
+ {
+  "id": 371,
+  "title": "Chuyện Tình Rung Cảm",
+  "ep": "Full 10 tập",
+  "poster": "https://img.nguonc.com/images/img-e58a2d1cf6c92b4519a468a634e4a2d7409b3411df2a6817cf7ec545b5782edc.png",
+  "created_at": "2026-11-05T21:25:42.669+00:00"
+ },
+ {
+  "id": 372,
+  "title": "Âm Thanh Của Những Viên Đường",
+  "ep": "Tập 6/10",
+  "poster": "https://node-img-akm-cache.onflixcdn.com/img/tv/322051/season/1/poster",
+  "created_at": "2026-11-05T21:25:46.012+00:00"
+ },
+ {
+  "id": 373,
+  "title": "Chiếc Cà Vạt Rối Rắm",
+  "ep": "Tập 5/6",
+  "poster": "https://node-img-akm-cache.onflixcdn.com/img/tv/318634/season/1/poster",
+  "created_at": "2026-11-05T21:25:47.666+00:00"
+ },
+ {
+  "id": 374,
+  "title": "Gả Kim Thoa (Gã Trâm Vàng)",
+  "ep": "Tập 28/33",
+  "poster": "https://img.nguonc.com/images/img-6e40385839ea07aa0384ac0abe8f517afaba04cda84bbb3a82703fd3a132f6a7.png",
+  "created_at": "2026-11-05T21:25:54.305+00:00"
+ },
+ {
+  "id": 375,
+  "title": "Thượng Công Chúa",
+  "ep": "Tập 25/40",
+  "poster": "https://img.nguonc.com/images/img-b5062972890525fe851d79773ebdaa2c3e0b9124d9ff8a0485ed84ff35f61eae.png",
+  "created_at": "2026-11-05T21:25:57.562+00:00"
+ },
+ {
+  "id": 376,
+  "title": "Bác Sĩ X",
+  "ep": "Tập 9/12",
+  "poster": "https://img.nguonc.com/images/img-51c7ef015eae5869ad0bcdd2665b06d94a0e37893b90f17369ecb1095e18f35b.png",
+  "created_at": "2026-11-06T20:48:00.876+00:00"
+ },
+ {
+  "id": 377,
+  "title": "Gả Kim Thoa (Gã Trâm Vàng)",
+  "ep": "Tập 29/33",
+  "poster": "https://img.nguonc.com/images/img-6e40385839ea07aa0384ac0abe8f517afaba04cda84bbb3a82703fd3a132f6a7.png",
+  "created_at": "2026-11-06T20:48:16.348+00:00"
+ },
+ {
+  "id": 378,
+  "title": "Lời Nói Dối Hoàn Hảo",
+  "ep": "Tập 3/12",
+  "poster": "https://img.nguonc.com/images/img-50d32acbbcca9a9297fad388f4443e3d0cc90cbfa497e108467c8e8170a7d7fe.png",
+  "created_at": "2026-11-06T20:48:17.902+00:00"
+ },
+ {
+  "id": 379,
+  "title": "Thượng Công Chúa",
+  "ep": "Tập 28/40",
+  "poster": "https://img.nguonc.com/images/img-b5062972890525fe851d79773ebdaa2c3e0b9124d9ff8a0485ed84ff35f61eae.png",
+  "created_at": "2026-11-06T20:48:19.515+00:00"
+ },
+ {
+  "id": 380,
+  "title": "Cuộc Chiến Ẩm Thực",
+  "ep": "Tập 5/12",
+  "poster": "https://img.nguonc.com/images/img-efcbe0ea0a9ad38e2bcfd073ad9f5db16dfed8021d6fcea7f25635674745d520.png",
+  "created_at": "2026-11-07T18:00:05.726+00:00"
+ },
+ {
+  "id": 381,
+  "title": "Anh Là Nam Chính Đời Em",
+  "ep": "Tập 5/16",
+  "poster": "https://img.nguonc.com/images/img-a36aed74243c6ebe5b982c77ab62682c848bb595b1e53df77620918631ee2deb.png",
+  "created_at": "2026-11-07T18:00:05.726+00:00"
+ },
+ {
+  "id": 382,
+  "title": "100 Ngày Lừa Dối",
+  "ep": "Tập 9/16",
+  "poster": "https://img.nguonc.com/images/img-172684a1dd9eb7a95d0373b2d6afc8e7240c031f022ee7f6d21ef687db7a6c8f.png",
+  "created_at": "2026-11-07T18:00:05.726+00:00"
+ },
+ {
+  "id": 383,
+  "title": "Bác Sĩ X",
+  "ep": "Tập 10/12",
+  "poster": "https://img.nguonc.com/images/img-51c7ef015eae5869ad0bcdd2665b06d94a0e37893b90f17369ecb1095e18f35b.png",
+  "created_at": "2026-11-07T18:00:05.726+00:00"
+ },
+ {
+  "id": 384,
+  "title": "100 Ngày Lừa Dối",
+  "ep": "Tập 10/16",
+  "poster": "https://img.nguonc.com/images/img-172684a1dd9eb7a95d0373b2d6afc8e7240c031f022ee7f6d21ef687db7a6c8f.png",
+  "created_at": "2026-11-08T19:28:09.224+00:00"
+ },
+ {
+  "id": 385,
+  "title": "Anh Là Nam Chính Đời Em",
+  "ep": "Tập 6/16",
+  "poster": "https://img.nguonc.com/images/img-a36aed74243c6ebe5b982c77ab62682c848bb595b1e53df77620918631ee2deb.png",
+  "created_at": "2026-11-08T19:28:20.146+00:00"
+ },
+ {
+  "id": 386,
+  "title": "Cuộc Chiến Ẩm Thực",
+  "ep": "Tập 6/12",
+  "poster": "https://img.nguonc.com/images/img-efcbe0ea0a9ad38e2bcfd073ad9f5db16dfed8021d6fcea7f25635674745d520.png",
+  "created_at": "2026-11-08T19:28:22.434+00:00"
+ },
+ {
+  "id": 387,
+  "title": "Lời Nói Dối Hoàn Hảo",
+  "ep": "Tập 4/12",
+  "poster": "https://img.nguonc.com/images/img-50d32acbbcca9a9297fad388f4443e3d0cc90cbfa497e108467c8e8170a7d7fe.png",
+  "created_at": "2026-11-08T19:28:28.283+00:00"
+ },
+ {
+  "id": 388,
+  "title": "Thượng Công Chúa",
+  "ep": "Tập 32/40",
+  "poster": "https://img.nguonc.com/images/img-b5062972890525fe851d79773ebdaa2c3e0b9124d9ff8a0485ed84ff35f61eae.png",
+  "created_at": "2026-11-08T19:28:30.556+00:00"
+ },
+ {
+  "id": 389,
+  "title": "Giác Quan Thứ Sáu: Mặt Trái",
+  "ep": "Tập 8/10",
+  "poster": "https://img.nguonc.com/images/img-7784f6b7db151e562f43e0bd1fa5f62011d357ed1680af63660703373a3c577f.jpg",
+  "created_at": "2026-11-09T23:45:20.601+00:00"
+ },
+ {
+  "id": 390,
+  "title": "Từng Bước Bên Nhau",
+  "ep": "Tập 11/12",
+  "poster": "https://img.nguonc.com/images/img-4d196c91619a364ebf285a64c58d78a32acad275b3462a1b24e0a51b150e3b79.png",
+  "created_at": "2026-11-09T23:45:22.393+00:00"
+ },
+ {
+  "id": 391,
+  "title": "Tình Yêu Ngụy Trang",
+  "ep": "Tập 7/12",
+  "poster": "https://img.nguonc.com/images/img-c15c66e744d0b989b78fc6ffc57c95f6945f70f74d358385e1c337dbcdad22c7.png",
+  "created_at": "2026-11-09T23:45:30.707+00:00"
+ },
+ {
+  "id": 392,
+  "title": "Chuyến Đi Chữa Lành",
+  "ep": "Tập 5/10",
+  "poster": "https://img.nguonc.com/images/img-203cce92597427acb00a256728c7789187cd111f4fd7430da20b193c1316d0f3.png",
+  "created_at": "2026-11-09T23:45:39.898+00:00"
+ },
+ {
+  "id": 393,
+  "title": "Thượng Công Chúa",
+  "ep": "Tập 34/40",
+  "poster": "https://img.nguonc.com/images/img-b5062972890525fe851d79773ebdaa2c3e0b9124d9ff8a0485ed84ff35f61eae.png",
+  "created_at": "2026-11-09T23:45:42.998+00:00"
+ },
+ {
+  "id": 394,
+  "title": "Từng Bước Bên Nhau",
+  "ep": "Full 12 tập",
+  "poster": "https://img.nguonc.com/images/img-4d196c91619a364ebf285a64c58d78a32acad275b3462a1b24e0a51b150e3b79.png",
+  "created_at": "2026-11-10T21:15:32.136+00:00"
+ },
+ {
+  "id": 395,
+  "title": "Tình Yêu Ngụy Trang",
+  "ep": "Tập 8/12",
+  "poster": "https://img.nguonc.com/images/img-c15c66e744d0b989b78fc6ffc57c95f6945f70f74d358385e1c337dbcdad22c7.png",
+  "created_at": "2026-11-10T21:15:41.161+00:00"
+ },
+ {
+  "id": 396,
+  "title": "Chuyến Đi Chữa Lành",
+  "ep": "Tập 6/10",
+  "poster": "https://img.nguonc.com/images/img-203cce92597427acb00a256728c7789187cd111f4fd7430da20b193c1316d0f3.png",
+  "created_at": "2026-11-10T21:15:49.698+00:00"
+ },
+ {
+  "id": 397,
+  "title": "Thượng Công Chúa",
+  "ep": "Tập 35/40",
+  "poster": "https://img.nguonc.com/images/img-b5062972890525fe851d79773ebdaa2c3e0b9124d9ff8a0485ed84ff35f61eae.png",
+  "created_at": "2026-11-10T21:15:53.041+00:00"
+ },
+ {
+  "id": 398,
+  "title": "Hoàng Hậu Tái Hôn",
+  "ep": "Tập 6/10",
+  "poster": "https://node-img-akm-cache.onflixcdn.com/img/tv/279246/season/1/poster",
+  "created_at": "2026-11-11T21:50:30.079+00:00"
+ },
+ {
+  "id": 399,
+  "title": "Trò Chơi Bắt Cóc",
+  "ep": "Tập 6/11",
+  "poster": "https://img.nguonc.com/images/img-f374cbd0e51b34f7503c4016553b017a7a81371eafe3b8ca81b17f6310ff9e83.png",
+  "created_at": "2026-11-11T21:50:31.477+00:00"
+ },
+ {
+  "id": 400,
+  "title": "Dâu Tây Ngọt Ngào",
+  "ep": "Tập 6/10",
+  "poster": "https://img.nguonc.com/images/img-5ece79a24dd6893908c8168ea2dd778c49be76aea10e1ba1dd9e1a9d9de1cc5d.png",
+  "created_at": "2026-11-12T21:48:29.507+00:00"
+ },
+ {
+  "id": 401,
+  "title": "Dragon Ball Super: Beerus",
+  "ep": "Tập 5/19",
+  "poster": "https://img.nguonc.com/images/img-093d03fc92a60d6193420e4040275351a1d4e608ba92e07ae6b97c6d17733996.png",
+  "created_at": "2026-11-12T21:48:34.534+00:00"
+ },
+ {
+  "id": 402,
+  "title": "Gu Yêu Lộ Liễu Của Sếp",
+  "ep": "Tập 2/12",
+  "poster": "https://node-img-akm-cache.onflixcdn.com/img/tv/326975/season/1/poster",
+  "created_at": "2026-11-12T21:48:56.576+00:00"
+ },
+ {
+  "id": 403,
+  "title": "Bác Sĩ X",
+  "ep": "Tập 11/12",
+  "poster": "https://img.nguonc.com/images/img-51c7ef015eae5869ad0bcdd2665b06d94a0e37893b90f17369ecb1095e18f35b.png",
+  "created_at": "2026-11-13T21:22:01.29+00:00"
+ },
+ {
+  "id": 404,
+  "title": "Bạn Học Ma Cà Rồng",
+  "ep": "Full 4 tập",
+  "poster": "https://node-img-akm-cache.onflixcdn.com/img/tv/332269/season/1/poster",
+  "created_at": "2026-11-13T21:22:22.254+00:00"
+ },
+ {
+  "id": 405,
+  "title": "The Rules",
+  "ep": "Tập 4/10",
+  "poster": "https://phimimg.com/uploads/movies/20261112/the-rules-poster.webp",
+  "created_at": "2026-11-14T18:44:04.116+00:00"
+ },
+ {
+  "id": 406,
+  "title": "Thượng Công Chúa",
+  "ep": "Full 40 tập",
+  "poster": "https://img.nguonc.com/images/img-b5062972890525fe851d79773ebdaa2c3e0b9124d9ff8a0485ed84ff35f61eae.png",
+  "created_at": "2026-11-14T18:44:04.116+00:00"
+ },
+ {
+  "id": 407,
+  "title": "Lời Nói Dối Hoàn Hảo",
+  "ep": "Tập 5/12",
+  "poster": "https://img.nguonc.com/images/img-50d32acbbcca9a9297fad388f4443e3d0cc90cbfa497e108467c8e8170a7d7fe.png",
+  "created_at": "2026-11-14T18:44:04.116+00:00"
+ },
+ {
+  "id": 408,
+  "title": "Cuộc Chiến Ẩm Thực",
+  "ep": "Tập 7/12",
+  "poster": "https://img.nguonc.com/images/img-efcbe0ea0a9ad38e2bcfd073ad9f5db16dfed8021d6fcea7f25635674745d520.png",
+  "created_at": "2026-11-14T18:44:04.116+00:00"
+ },
+ {
+  "id": 409,
+  "title": "Anh Là Nam Chính Đời Em",
+  "ep": "Tập 7/16",
+  "poster": "https://img.nguonc.com/images/img-a36aed74243c6ebe5b982c77ab62682c848bb595b1e53df77620918631ee2deb.png",
+  "created_at": "2026-11-14T18:44:04.116+00:00"
+ },
+ {
+  "id": 410,
+  "title": "100 Ngày Lừa Dối",
+  "ep": "Tập 11/16",
+  "poster": "https://img.nguonc.com/images/img-172684a1dd9eb7a95d0373b2d6afc8e7240c031f022ee7f6d21ef687db7a6c8f.png",
+  "created_at": "2026-11-14T18:44:04.116+00:00"
+ },
+ {
+  "id": 411,
+  "title": "Bác Sĩ X",
+  "ep": "Full 12 tập",
+  "poster": "https://img.nguonc.com/images/img-51c7ef015eae5869ad0bcdd2665b06d94a0e37893b90f17369ecb1095e18f35b.png",
+  "created_at": "2026-11-14T18:44:04.116+00:00"
+ },
+ {
+  "id": 412,
+  "title": "100 Ngày Lừa Dối",
+  "ep": "Tập 12/16",
+  "poster": "https://img.nguonc.com/images/img-172684a1dd9eb7a95d0373b2d6afc8e7240c031f022ee7f6d21ef687db7a6c8f.png",
+  "created_at": "2026-11-15T20:16:40.307+00:00"
+ },
+ {
+  "id": 413,
+  "title": "Anh Là Nam Chính Đời Em",
+  "ep": "Tập 7/16",
+  "poster": "https://img.nguonc.com/images/img-a36aed74243c6ebe5b982c77ab62682c848bb595b1e53df77620918631ee2deb.png",
+  "created_at": "2026-11-15T20:16:51.241+00:00"
+ },
+ {
+  "id": 414,
+  "title": "Lời Nói Dối Hoàn Hảo",
+  "ep": "Tập 6/12",
+  "poster": "https://img.nguonc.com/images/img-50d32acbbcca9a9297fad388f4443e3d0cc90cbfa497e108467c8e8170a7d7fe.png",
+  "created_at": "2026-11-15T20:16:58.416+00:00"
+ },
+ {
+  "id": 415,
+  "title": "Giác Quan Thứ Sáu: Mặt Trái",
+  "ep": "Tập 9/10",
+  "poster": "https://img.nguonc.com/images/img-7784f6b7db151e562f43e0bd1fa5f62011d357ed1680af63660703373a3c577f.jpg",
+  "created_at": "2026-11-16T23:41:57.584+00:00"
+ },
+ {
+  "id": 416,
+  "title": "Tình Yêu Ngụy Trang",
+  "ep": "Tập 9/12",
+  "poster": "https://img.nguonc.com/images/img-c15c66e744d0b989b78fc6ffc57c95f6945f70f74d358385e1c337dbcdad22c7.png",
+  "created_at": "2026-11-16T23:42:04.311+00:00"
+ },
+ {
+  "id": 417,
+  "title": "Anh Là Nam Chính Đời Em",
+  "ep": "Tập 8/16",
+  "poster": "https://img.nguonc.com/images/img-a36aed74243c6ebe5b982c77ab62682c848bb595b1e53df77620918631ee2deb.png",
+  "created_at": "2026-11-16T23:42:09.048+00:00"
+ },
+ {
+  "id": 418,
+  "title": "Cuộc Chiến Ẩm Thực",
+  "ep": "Tập 8/12",
+  "poster": "https://img.nguonc.com/images/img-efcbe0ea0a9ad38e2bcfd073ad9f5db16dfed8021d6fcea7f25635674745d520.png",
+  "created_at": "2026-11-16T23:42:10.641+00:00"
+ },
+ {
+  "id": 419,
+  "title": "The Rules",
+  "ep": "Tập 4/10",
+  "poster": "https://phimimg.com/uploads/movies/20261112/the-rules-poster.webp",
+  "created_at": "2026-11-16T23:42:23.292+00:00"
+ },
+ {
+  "id": 420,
+  "title": "Vũ Văn Vương",
+  "ep": "Tập 2/28",
+  "poster": "https://node-img-akm-cache.onflixcdn.com/img/tv/301354/season/1/poster",
+  "created_at": "2026-11-16T23:42:24.729+00:00"
+ },
+ {
+  "id": 421,
+  "title": "Dragon Ball Super: Beerus",
+  "ep": "Tập 6/19",
+  "poster": "https://img.nguonc.com/images/img-093d03fc92a60d6193420e4040275351a1d4e608ba92e07ae6b97c6d17733996.png",
+  "created_at": "2026-11-17T22:50:36.112+00:00"
+ },
+ {
+  "id": 422,
+  "title": "Tình Yêu Ngụy Trang",
+  "ep": "Tập 10/12",
+  "poster": "https://img.nguonc.com/images/img-c15c66e744d0b989b78fc6ffc57c95f6945f70f74d358385e1c337dbcdad22c7.png",
+  "created_at": "2026-11-17T22:50:38.459+00:00"
+ },
+ {
+  "id": 423,
+  "title": "Chuyến Đi Chữa Lành",
+  "ep": "Tập 7/10",
+  "poster": "https://img.nguonc.com/images/img-203cce92597427acb00a256728c7789187cd111f4fd7430da20b193c1316d0f3.png",
+  "created_at": "2026-11-17T22:50:49.075+00:00"
+ },
+ {
+  "id": 424,
+  "title": "Tình Yêu Độc Nhất",
+  "ep": "Tập 4/12",
+  "poster": "https://node-img-akm-cache.onflixcdn.com/img/tv/313738/season/1/poster",
+  "created_at": "2026-11-17T22:51:01.097+00:00"
+ },
+ {
+  "id": 425,
+  "title": "Dâu Tây Ngọt Ngào",
+  "ep": "Tập 7/10",
+  "poster": "https://img.nguonc.com/images/img-5ece79a24dd6893908c8168ea2dd778c49be76aea10e1ba1dd9e1a9d9de1cc5d.png",
+  "created_at": "2026-11-18T22:32:30.791+00:00"
+ },
+ {
+  "id": 426,
+  "title": "Chuyến Đi Chữa Lành",
+  "ep": "Tập 8/10",
+  "poster": "https://img.nguonc.com/images/img-203cce92597427acb00a256728c7789187cd111f4fd7430da20b193c1316d0f3.png",
+  "created_at": "2026-11-18T22:32:45.648+00:00"
+ },
+ {
+  "id": 427,
+  "title": "Gu Yêu Lộ Liễu Của Sếp",
+  "ep": "Tập 3/12",
+  "poster": "https://node-img-akm-cache.onflixcdn.com/img/tv/326975/season/1/poster",
+  "created_at": "2026-11-18T22:32:54.433+00:00"
+ },
+ {
+  "id": 428,
+  "title": "Hoàng Hậu Tái Hôn",
+  "ep": "Tập 8/10",
+  "poster": "https://node-img-akm-cache.onflixcdn.com/img/tv/279246/season/1/poster",
+  "created_at": "2026-11-19T22:38:24.85+00:00"
+ },
+ {
+  "id": 429,
+  "title": "Ước Mơ Chưa Hạ Màn",
+  "ep": "Tập 4/12",
+  "poster": "https://node-img-akm-cache.onflixcdn.com/img/tv/299764/season/1/poster",
+  "created_at": "2026-11-19T22:38:34.891+00:00"
+ },
+ {
+  "id": 430,
+  "title": "Âm Thanh Của Những Viên Đường",
+  "ep": "Full 10 tập",
+  "poster": "https://node-img-akm-cache.onflixcdn.com/img/tv/322051/season/1/poster",
+  "created_at": "2026-11-20T22:12:19.312+00:00"
+ },
+ {
+  "id": 431,
+  "title": "Gu Yêu Lộ Liễu Của Sếp",
+  "ep": "Tập 4/12",
+  "poster": "https://node-img-akm-cache.onflixcdn.com/img/tv/326975/season/1/poster",
+  "created_at": "2026-11-20T22:12:33.631+00:00"
+ }
+]

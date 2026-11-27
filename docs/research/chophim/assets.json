@@ -1,0 +1,1551 @@
+{
+  "links": [
+    "/_next/static/chunks/70fe5e839f30e6e6.css",
+    "/_next/static/chunks/f9a629bb9feaceb8.css",
+    "/_next/static/chunks/bf245b3454c762e2.css",
+    "/_next/static/chunks/163f657a16afbe5e.css",
+    "/_next/static/chunks/c0f49241367ed258.js",
+    "https://analytics.chophim.app/script.js",
+    "https://img.ophim.live",
+    "https://phimapi.com",
+    "https://ophim1.com",
+    "https://api.themoviedb.org",
+    "/manifest.webmanifest",
+    "https://chophim.ink",
+    "/favicon.ico?v=20260510",
+    "/favicon.ico?v=20260510",
+    "/icons/apple-touch-icon.png?v=20260510"
+  ],
+  "scripts": [
+    "/_next/static/chunks/4596e6a3715aa70f.js",
+    "/_next/static/chunks/43b9c87cee2ecb10.js",
+    "/_next/static/chunks/961311cbebbffb6d.js",
+    "/_next/static/chunks/turbopack-5cd934065c794f32.js",
+    "/_next/static/chunks/3a7e1029d9ed1cf8.js",
+    "/_next/static/chunks/8ea1a1e5ab6871aa.js",
+    "/_next/static/chunks/5151dc833a82d2bf.js",
+    "/_next/static/chunks/0a7c3c85860e364c.js",
+    "/_next/static/chunks/2ca738d6a360063c.js",
+    "/_next/static/chunks/4011fdcde61b9433.js",
+    "/_next/static/chunks/630b1e105afdc4a5.js",
+    "/_next/static/chunks/babb04e198c4cbc0.js",
+    "/_next/static/chunks/74316ba5de0c4a97.js",
+    "/_next/static/chunks/8b30b385ec3796ef.js",
+    "/_next/static/chunks/02118cd462e0fb13.js",
+    "/_next/static/chunks/e4eb4a4cbf32b8b6.js",
+    "/_next/static/chunks/a6dad97d9634a72d.js",
+    "/_next/static/chunks/c0f49241367ed258.js"
+  ],
+  "imgs": [
+    {
+      "src": "/images/home-background.jpg?w=1920",
+      "alt": "Home Background",
+      "srcset": ""
+    },
+    {
+      "src": "/branding/logo.png?v=20260510&amp;w=1920",
+      "alt": "ChopHim",
+      "srcset": ""
+    },
+    {
+      "src": "/branding/logo.png?v=20260510&amp;w=384",
+      "alt": "ChoPhim",
+      "srcset": ""
+    },
+    {
+      "src": "/branding/logo.png?v=20260510&amp;w=640",
+      "alt": "ChoPhim",
+      "srcset": ""
+    },
+    {
+      "src": "/icons/vn_flag.svg?w=48",
+      "alt": "VN Flag",
+      "srcset": ""
+    },
+    {
+      "src": "/branding/logo.png?v=20260510&amp;w=640",
+      "alt": "Chợ Phim",
+      "srcset": ""
+    },
+    {
+      "src": "/icons/telegram-icon.svg?w=48",
+      "alt": "Telegram",
+      "srcset": ""
+    },
+    {
+      "src": "/icons/discord-icon.svg?w=48",
+      "alt": "Discord",
+      "srcset": ""
+    },
+    {
+      "src": "/icons/x-icon.svg?w=32",
+      "alt": "X",
+      "srcset": ""
+    },
+    {
+      "src": "/icons/facebook-icon.svg?w=48",
+      "alt": "Facebook",
+      "srcset": ""
+    },
+    {
+      "src": "/icons/tiktok-icon.svg?w=48",
+      "alt": "TikTok",
+      "srcset": ""
+    },
+    {
+      "src": "/icons/youtube-icon.svg?w=48",
+      "alt": "YouTube",
+      "srcset": ""
+    },
+    {
+      "src": "/icons/threads-icon.svg?w=48",
+      "alt": "Threads",
+      "srcset": ""
+    },
+    {
+      "src": "/icons/instagram-icon.svg?w=48",
+      "alt": "Instagram",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FlMK3FnMfQ9O3DiC7hi4J2XBzNf.jpg&amp;w=1920&amp;q=85&amp;output=webp&amp;n=-1",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fmedia.themoviedb.org%2Ft%2Fp%2Foriginal%2F32g5MD6eHPAZ5NAgkNAURb4eupm.jpg&amp;w=1920&amp;q=85&amp;output=webp&amp;n=-1",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FppkOd2CsryRUpEYvRVgIYB6czq.jpg&amp;w=1920&amp;q=85&amp;output=webp&amp;n=-1",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2F9d7sWhj2oJ5sejtwLAiDVI3sCvP.jpg&amp;w=1920&amp;q=85&amp;output=webp&amp;n=-1",
+      "alt": "Poster Thập Vạn Cuồng Hoa Nhập Mộng Lai",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FwJ9FLxq3Q6D4ve8TUepYsr0PL3p.jpg&amp;w=1920&amp;q=85&amp;output=webp&amp;n=-1",
+      "alt": "Poster Bát Tiên",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F5rhTDKUhPYvpdQIijFIs5VoWsON.jpg&amp;w=1920&amp;q=85&amp;output=webp&amp;n=-1",
+      "alt": "Poster Cuộc phiêu lưu",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2FbMXWXKM9ydUmMTNvDnYo9QtCBRt.jpg&amp;w=1920&amp;q=85&amp;output=webp&amp;n=-1",
+      "alt": "Poster [Mùa 3] Chúa Tể Những Chiếc Nhẫn: Những Chiếc Nhẫn Quyền Năng",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2FnZYi7HeXJVfJmZ0kprb1cJBHN2g.jpg&amp;w=1920&amp;q=85&amp;output=webp&amp;n=-1",
+      "alt": "Poster Người Mẹ Khác",
+      "srcset": ""
+    },
+    {
+      "src": "https://p16-lp-sg.ibyteimg.com/origin/tos-alisg-i-375lmtcpo0-sg/486ede16393348299d83fa75f5f6e72f",
+      "alt": "Poster 100 Ngày Lừa Dối",
+      "srcset": ""
+    },
+    {
+      "src": "https://p16-lp-sg.ibyteimg.com/origin/tos-alisg-i-375lmtcpo0-sg/699e8862d6474dd2b1bfefb1f94dde97",
+      "alt": "Poster Hôm Nay Trời Đổ Mưa Bóng Mây",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fa5kWnqgoTOWrv2xZoruQgTSbGgA.jpg&amp;w=1920&amp;q=85&amp;output=webp&amp;n=-1",
+      "alt": "Poster Bác Sĩ X: Mafia Áo Trắng",
+      "srcset": ""
+    },
+    {
+      "src": "https://p16-lp-sg.ibyteimg.com/origin/tos-alisg-i-375lmtcpo0-sg/b82d1cc94a574a32a85924038af9d857",
+      "alt": "Poster Gấp Ánh Trăng",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fmedia.themoviedb.org%2Ft%2Fp%2Fw440_and_h660_face%2F1ERGPNiKtnEcsvJS1ywsmqmcIDO.jpg&amp;w=1920&amp;q=85&amp;output=webp&amp;n=-1",
+      "alt": "Poster Khả Thể Của Tình Yêu",
+      "srcset": ""
+    },
+    {
+      "src": "https://p16-lp-sg.ibyteimg.com/origin/tos-alisg-i-375lmtcpo0-sg/5531b0698490418aad7ae0fbeaa80ffc",
+      "alt": "Poster Hoàng Hậu Tái Hôn",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2FyyA9CI8BLNg6LtVRvmVxki4xiGb.jpg&amp;w=1920&amp;q=85&amp;output=webp&amp;n=-1",
+      "alt": "Poster Việc Ma, Lương Quái",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fmedia.themoviedb.org%2Ft%2Fp%2Fw440_and_h660_face%2FthXJkiBByDitV7iFSv1hU1sg7ij.jpg&amp;w=1920&amp;q=85&amp;output=webp&amp;n=-1",
+      "alt": "Poster Lời Nói Dối Hoàn Hảo",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fdg4IIruyBEtSgjW5fdXi46xrSzC.jpg&amp;w=1920&amp;q=85&amp;output=webp&amp;n=-1",
+      "alt": "Poster Anh Là Nam Chính Đời Em",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fmedia.themoviedb.org%2Ft%2Fp%2Fw440_and_h660_face%2FkSAXIAovLC4z7Wp2Hy8oqLmpkox.jpg&amp;w=1920&amp;q=85&amp;output=webp&amp;n=-1",
+      "alt": "Poster Kẻ Tội Đồ Của Tôi",
+      "srcset": ""
+    },
+    {
+      "src": "https://p16-lp-sg.ibyteimg.com/origin/tos-alisg-i-375lmtcpo0-sg/4aad347312854fd3bd98be6ee3d1826b",
+      "alt": "Bác Sĩ X: Mafia Áo Trắng",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fmedia.themoviedb.org%2Ft%2Fp%2Foriginal%2F32g5MD6eHPAZ5NAgkNAURb4eupm.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Kẻ Tội Đồ Của Tôi",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F3SvKCITqMtjgPIhFBjRc4yTAc4H.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "100 Ngày Lừa Dối",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FgWedDgBsZkuOho2qe3q2sTQmbpO.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Việc Ma, Lương Quái",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fmedia.themoviedb.org%2Ft%2Fp%2Foriginal%2F1ptukf8gx19U1HcBv3aRzzlXuyJ.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Hoàng Hậu Tái Hôn",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fg1LJLlmWP74zv9yXKEXm7g9p10O.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Đặc Vụ Kim Tái Khởi Động",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261109/ke-hoi-sinh-thumb.webp",
+      "alt": "Kẻ Hồi Sinh",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261106/ban-hoc-ma-ca-rong-thumb.webp",
+      "alt": "Bạn Học Ma Cà Rồng",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FsvnZYhAboLrwHEtkKRm2mIdjocB.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Tiếng yêu này anh dịch được không?",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FofFMb0hf4Ve0UPMTzYyFtBRBHEF.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Kế Hoạch Của Quỷ Dữ (Phần 3)",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FoUOytQ13F1vVKXK8cYCYB5Pt5ez.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Kẹo ngọt tình yêu",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FmA4ClzkBvBCiTHQ8zHFsuWRaLW2.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Giữa Những Bước Chân",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fcdn.upanhlaylink.com%2Fi%2FNWXVg4Db.png&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Yêu Một Người Khác Ngoài Em",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F3fCBU4IT091cSPiJTdu60FONeb2.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Nạp Đầy Trái Tim",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FeBD46F44qKGPZiRLffO4q3JF8Hc.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Sếp Chính Là Thần Tượng",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F9LtN1ac91JAqXMke8CAJ6BiBSLS.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Hôm Nay Trời Đổ Mưa Bóng Mây",
+      "srcset": ""
+    },
+    {
+      "src": "https://p16-lp-sg.ibyteimg.com/origin/tos-alisg-i-375lmtcpo0-sg/acae412c1127461faabe7e0a05399f24",
+      "alt": "Gấp Ánh Trăng",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FgAJV0W0RgpxxYJpaE8Hraa3Ohpp.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Gả Kim Thoa",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FccG6WAuf2XBC808HFaeIjvk2hXW.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Thượng Công Chúa",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FvD84yLJVVd7cC2lKF8sEukQG2A3.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Ngọc Điệm Thu",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FlMK3FnMfQ9O3DiC7hi4J2XBzNf.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Bát Tiên",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FppkOd2CsryRUpEYvRVgIYB6czq.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Thập Vạn Cuồng Hoa Nhập Mộng Lai",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FlO2CqipALTHkRblLIRDKgtMgwxX.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Khó Dỗ Dành",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FaRKyXvoTDb2KUCxSx7GJ2HxtCuy.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Lan Hương Như Cố",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FcSXtj5CH4TR1At7Ce5NSqeSGiZO.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Đúng Là Một Cô Gái Ngoan Ngoãn",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fsf-static.upanhlaylink.com%2Fimg%2Fimage_202608275af5a5807e4dbc0353f6f919bb4fc0aa.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Đầu Xuân Tươi Sáng",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fsf-static.upanhlaylink.com%2Fimg%2Fimage_20260816872142e03f145b7ed4ed78b199a04ad8.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Hoa Khai Cẩm Tú",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fsf-static.upanhlaylink.com%2Fimg%2Fimage_202608064d22654a2f354875aea1dbdd1e8a553e.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Bạn Gái Thiên Tài",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fzldji8QZ3HdoosmtUIf59YmDoxZ.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Chó Hoang Và Xương",
+      "srcset": ""
+    },
+    {
+      "src": "https://p16-lp-sg.ibyteimg.com/origin/tos-alisg-i-375lmtcpo0-sg/7ed965b8278c41e0ac5594f27923ae48",
+      "alt": "Mị Ảnh Thần Bộ",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FsSIzzVhhLfgLKVBcAUv0X6cLYz9.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Cuộc phiêu lưu",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FuoXXbN2PrOxH6UKyP7kYwmGpAAP.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Vision: Truy Tìm Bản Ngã",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FhVRWuAY03KfLjjAbwmy9QhrfAPs.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "[Mùa 3] Chúa Tể Những Chiếc Nhẫn: Những Chiếc Nhẫn Quyền Năng",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fh0OC7ouop8YLwbAVfS3UUE2Lw4T.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Lãnh Địa Tử Chiến (Phần 2)",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fncm7djsVTHQQMX2HEbEVxMUFchG.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Người Mẹ Khác",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F3icyRAqgakNcQn6aDVz9libFmBA.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Vùng Đất Quỷ Dữ (2026)",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261109/trai-tim-quai-thu-thumb.webp",
+      "alt": "Trái Tim Quái Thú",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fvcpj6rRDS93ImHCLPY8bwBuFGjR.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Dexter: Hồi Sinh (Phần 2)",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261109/cau-chuyen-ve-derry-thumb.webp",
+      "alt": "Câu Chuyện Về Derry",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fw2xDGa1252imRPgCbiY48AbkRBn.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Quỷ Quyệt: Ranh Giới Vô Định",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FlTejmGdrRLS6IzdQakMbO1hVcbl.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Tàu Buôn Người (2026)",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/upload/vod/20251102-1/1297b833c990b03fec3ea52d3400d890.jpg",
+      "alt": "Gia Đình Thủy Tổ (Phần 1)",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261105/thoi-diem-vang-thumb.webp",
+      "alt": "Thời Điểm Vàng",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F9yCJtipMeDe8uAdSJKvw8BnYfRz.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Carrie (2026)",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/upload/vod/20250815-1/dce44dd4d1fe1b2df5ff6f285984a8a3.jpg",
+      "alt": "Family Guy (Phần 1)",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FppkOd2CsryRUpEYvRVgIYB6czq.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2F9d7sWhj2oJ5sejtwLAiDVI3sCvP.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Thập Vạn Cuồng Hoa Nhập Mộng Lai",
+      "srcset": ""
+    },
+    {
+      "src": "/avatars/viet-nam/16.jpg?w=96",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F2meX1nMdScFOoV4370rqHWKmXhY.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F1QdXdRYfktUSONkl1oD5gc6Be0s.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Trò chơi con mực (Phần 2)",
+      "srcset": ""
+    },
+    {
+      "src": "/avatars/hoat-hinh/37.jpg?w=96",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "/avt_frames/frame_34.png",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FcdlYHuYGs5v29EFfEcBkO3kAJPO.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F2dsw8j5jNOaoq0nFEKLh0PSPEcT.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Mối Liên Kết Bí Ẩn",
+      "srcset": ""
+    },
+    {
+      "src": "/avatars/viet-nam/16.jpg?w=96",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FofFMb0hf4Ve0UPMTzYyFtBRBHEF.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FpLchMEuUbr4sbpCSNsQXCD0l5E7.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Kế Hoạch Của Quỷ Dữ (Phần 3)",
+      "srcset": ""
+    },
+    {
+      "src": "/avatars/viet-nam/16.jpg?w=96",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fl0qVZIpXtIo7km9u5Yqh0nKPOr5.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F2koX1xLkpTQM4IZebYvKysFW1Nh.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Những người bạn (Phần 4)",
+      "srcset": ""
+    },
+    {
+      "src": "/avatars/viet-nam/16.jpg?w=96",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FlMK3FnMfQ9O3DiC7hi4J2XBzNf.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FwJ9FLxq3Q6D4ve8TUepYsr0PL3p.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Bát Tiên",
+      "srcset": ""
+    },
+    {
+      "src": "/avatars/viet-nam/16.jpg?w=96",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FofFMb0hf4Ve0UPMTzYyFtBRBHEF.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FpLchMEuUbr4sbpCSNsQXCD0l5E7.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Kế Hoạch Của Quỷ Dữ (Phần 3)",
+      "srcset": ""
+    },
+    {
+      "src": "/avatars/viet-nam/16.jpg?w=96",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FoaJydi1KwWMK04pIPfiqHD8hGfg.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FuZfEkKi3yn8epQpukKrCtLOv7fc.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Tai Nạn",
+      "srcset": ""
+    },
+    {
+      "src": "/avatars/viet-nam/16.jpg?w=96",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FofFMb0hf4Ve0UPMTzYyFtBRBHEF.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FpLchMEuUbr4sbpCSNsQXCD0l5E7.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Kế Hoạch Của Quỷ Dữ (Phần 3)",
+      "srcset": ""
+    },
+    {
+      "src": "/avatars/meme/05.jpg?w=96",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "/avt_frames/frame_43.png",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FofFMb0hf4Ve0UPMTzYyFtBRBHEF.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FpLchMEuUbr4sbpCSNsQXCD0l5E7.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Kế Hoạch Của Quỷ Dữ (Phần 3)",
+      "srcset": ""
+    },
+    {
+      "src": "/avatars/viet-nam/16.jpg?w=96",
+      "alt": "",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fmxa7YxVln3Rwnd2Va82PoclTznj.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Đặc Vụ Kim Tái Khởi Động",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2FulZRwSHpR48veyusMs98OitwVID.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Sếp Chính Là Thần Tượng",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fwww.themoviedb.org%2Ft%2Fp%2Fw1280%2FcBiwrUwUNNYXTc5xrDEQWcMqftd.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Giấc Mơ Trao Em",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fkdramaworlds.com%2Fwp-content%2Fuploads%2F2026%2F06%2FA-Shop-for-Killers-Season-2.webp&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Cửa Hàng Sát Thủ (Phần 2)",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2FeiFUSgFwmgjZbtJAsbZDrQlK4m1.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Kẹo ngọt tình yêu",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fmxa7YxVln3Rwnd2Va82PoclTznj.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Đặc Vụ Kim Tái Khởi Động",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FfMECSPrTmRClSViMsXFYmiYIcWP.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Bài Học Đáng Đời",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fsf-static.upanhlaylink.com%2Fimg%2Fimage_2026082719dc8000ad1060cd05db5102257e92a8.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Đầu Xuân Tươi Sáng",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2FeiFUSgFwmgjZbtJAsbZDrQlK4m1.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Kẹo ngọt tình yêu",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fa5kWnqgoTOWrv2xZoruQgTSbGgA.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Bác Sĩ X: Mafia Áo Trắng",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F5rhTDKUhPYvpdQIijFIs5VoWsON.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Cuộc phiêu lưu",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FwJ9FLxq3Q6D4ve8TUepYsr0PL3p.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Bát Tiên",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FywkwBd65CMvC33DDVFOQqr4mrVQ.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Khó Dỗ Dành",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fmxa7YxVln3Rwnd2Va82PoclTznj.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Đặc Vụ Kim Tái Khởi Động",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261106/ban-hoc-ma-ca-rong-poster.webp",
+      "alt": "Bạn Học Ma Cà Rồng",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F5Xc7WpWsgflfgEMoBlf9TmWhfbH.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Lãnh Địa Tử Chiến (Phần 2)",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FzgUh4cgalSzBjbsT5P0qmU7Rjzk.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Tiếng yêu này anh dịch được không?",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FiPOn6DinuVyLY17YM9mKuPofV08.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Người Nhện: Khởi Đầu Mới",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FfMECSPrTmRClSViMsXFYmiYIcWP.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Bài Học Đáng Đời",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FmjCChwZcEZ9902tUAG1hWZlfOHm.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Khi Anh Chạy Về Phía Em",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fsf-static.upanhlaylink.com%2Fimg%2Fimage_20260802a58bf6f5c1c487bd8794cd21cc18ad92.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Bạn Gái Thiên Tài",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fa7p6htiJKx68USDAcilJ5rzKAWB.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Bốn bàn tay, hai bản sonata",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FhikbLeofw2epfaEJptSkQ6b22IV.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Con Trai Bạn Mẹ",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fk5Qg5rgPoKdh3yTJJrLtyoyYGwC.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Gia Đình Hiện Đại (Phần 1)",
+      "srcset": ""
+    },
+    {
+      "src": "https://p16-lp-sg.ibyteimg.com/origin/tos-alisg-i-375lmtcpo0-sg/50883bff7f99494bb279a9045552b7b0",
+      "alt": "Bê Bối Triều Đại",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F954dt0dTqoUhIW0EvMFZ0KvVQmk.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Đám Cưới Đom Đóm",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F6mVIY9Y1g4nmhCIeU6mWaa5Kk1w.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Chó Hoang Và Xương",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fy8h2RwUZM5chv9tuaKVwSPoo3KE.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Trung tâm chăm sóc chấn thương",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fk5Qg5rgPoKdh3yTJJrLtyoyYGwC.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Gia Đình Hiện Đại (Phần 2)",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F3jLoiPorNssIfLlEuw8Om7ujca6.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Trúng Số Độc Đắc Vẫn Phải Đi Làm",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FdIHTHoiEJwjQRpYaaP2d50Nyggv.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Bách Hoa Sát",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fcdn.upanhlaylink.com%2Fi%2F4VyB60tz.png&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Bay Vào Tim Anh",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F2koX1xLkpTQM4IZebYvKysFW1Nh.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Những người bạn (Phần 3)",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FwuMc08IPKEatf9rnMNXvIDxqP4W.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Harry Potter và Hòn Đá Phù Thủy",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F8Sud9wqG7WZMXesZhPZ4lergRvp.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Lãng khách",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FxxGomfml0x9iyPBS4StBjbRRu65.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Hậu duệ mặt trời",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FsdEOH0992YZ0QSxgXNIGLq1ToUi.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Harry Potter Và Phòng Chứa Bí Mật",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FkPHv37XVpyWCsae3gtHujw1wPyW.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Chủ Tịch Tập Sự",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F2koX1xLkpTQM4IZebYvKysFW1Nh.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Những người bạn (Phần 4)",
+      "srcset": ""
+    },
+    {
+      "src": "https://p16-lp-sg.ibyteimg.com/origin/tos-alisg-i-375lmtcpo0-sg/03c5b0544c52476b957fda9dc0d47959",
+      "alt": "Nhất Âu Xuân",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fk5Qg5rgPoKdh3yTJJrLtyoyYGwC.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Gia Đình Hiện Đại (Phần 3)",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FuSQzD7TXsL96J5ggDrJFdUs8uXU.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Chó Săn Công Lý (Phần 2)",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FfECBtHlr0RB3foNHDiCBXeg9Bv9.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Harry Potter và Chiếc Cốc Lửa",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fk1uOMMHv0o9xPJuxh0q28nqN83Y.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Vỏ Bọc Ngoại Tình",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fmedia.themoviedb.org%2Ft%2Fp%2Fw440_and_h660_face%2FiAw0KYizPGmSVLh35JGF7zLkmqa.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Ngày Tàn Của Phố Oak",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fgg7Z57buTLxhshathhfza8Lkt57.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Bí Mật Nơi Góc Tối",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261112/chiaroscuro-poster.webp",
+      "alt": "ChiaroScuro",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261112/suzane-von-richthofen-toi-ac-cua-co-con-gai-poster.webp",
+      "alt": "Suzane Von Richthofen: Tội Ác Của Cô Con Gái",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261112/phuc-am-giang-sinh-poster.webp",
+      "alt": "Phúc Âm Giáng Sinh",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261112/cong-vien-giai-thoat-poster.webp",
+      "alt": "Công Viên Giải Thoát",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261112/avedon-poster.webp",
+      "alt": "Avedon",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261112/co-thuat-hac-ngai-poster.webp",
+      "alt": "Cổ Thuật Hắc Ngải",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261112/the-rules-poster.webp",
+      "alt": "The Rules",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261111/tinh-yeu-doc-nhat-poster.webp",
+      "alt": "Tình Yêu Độc Nhất",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261111/quyen-luc-quyen-iv-vu-luc-phan-3-poster.webp",
+      "alt": "Quyền Lực Quyển IV: Vũ Lực (Phần 3)",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261111/cuoc-chien-hoa-hong-2026-poster.webp",
+      "alt": "Cuộc Chiến Hoa Hồng",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261111/quyen-luc-quyen-iv-vu-luc-phan-2-poster.webp",
+      "alt": "Quyền Lực Quyển IV: Vũ Lực (Phần 2)",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261111/quyen-luc-quyen-iii-nuoi-day-kanan-phan-4-poster.webp",
+      "alt": "Quyền Lực Quyển III: Nuôi Dạy Kanan (Phần 4)",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261111/quyen-luc-quyen-iii-nuoi-day-kanan-phan-3-poster.webp",
+      "alt": "Quyền Lực Quyển III: Nuôi Dạy Kanan (Phần 3)",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261111/quyen-luc-quyen-ii-bong-ma-phan-3-poster.webp",
+      "alt": "Quyền Lực Quyển II: Bóng Ma (Phần 3)",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261111/quyen-luc-quyen-ii-bong-ma-phan-4-poster.webp",
+      "alt": "Quyền Lực Quyển II: Bóng Ma (Phần 4)",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261110/nhung-nguoi-con-song-poster.webp",
+      "alt": "Những Người Còn Sống",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261110/ngoc-nu-bao-thu-poster.webp",
+      "alt": "Ngọc Nữ Báo Thù",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261110/luat-su-lap-di-poster.webp",
+      "alt": "Luật Sư Lập Dị",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261110/devils-crest-poster.webp",
+      "alt": "Devils&#x27; Crest",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261109/trai-tim-quai-thu-poster.webp",
+      "alt": "Trái Tim Quái Thú",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261109/den-la-sat-poster.webp",
+      "alt": "Đền La Sát",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261109/cau-chuyen-ve-derry-poster.webp",
+      "alt": "Câu Chuyện Về Derry",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261109/ke-hoi-sinh-poster.webp",
+      "alt": "Kẻ Hồi Sinh",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261108/upin-ipin-phan-19-poster.webp",
+      "alt": "Upin &amp; Ipin (Phần 19)",
+      "srcset": ""
+    },
+    {
+      "src": "https://p16-lp-sg.ibyteimg.com/origin/tos-alisg-i-375lmtcpo0-sg/699e8862d6474dd2b1bfefb1f94dde97",
+      "alt": "Hôm Nay Trời Đổ Mưa Bóng Mây",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fmedia.themoviedb.org%2Ft%2Fp%2Fw440_and_h660_face%2FkSAXIAovLC4z7Wp2Hy8oqLmpkox.jpg&amp;w=1920&amp;q=100&amp;output=webp&amp;n=-1",
+      "alt": "Kẻ Tội Đồ Của Tôi",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fa5kWnqgoTOWrv2xZoruQgTSbGgA.jpg&amp;w=1920&amp;q=100&amp;output=webp&amp;n=-1",
+      "alt": "Bác Sĩ X: Mafia Áo Trắng",
+      "srcset": ""
+    },
+    {
+      "src": "https://p16-lp-sg.ibyteimg.com/origin/tos-alisg-i-375lmtcpo0-sg/486ede16393348299d83fa75f5f6e72f",
+      "alt": "100 Ngày Lừa Dối",
+      "srcset": ""
+    },
+    {
+      "src": "https://p16-lp-sg.ibyteimg.com/origin/tos-alisg-i-375lmtcpo0-sg/b82d1cc94a574a32a85924038af9d857",
+      "alt": "Gấp Ánh Trăng",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2FbMXWXKM9ydUmMTNvDnYo9QtCBRt.jpg&amp;w=1920&amp;q=100&amp;output=webp&amp;n=-1",
+      "alt": "[Mùa 3] Chúa Tể Những Chiếc Nhẫn: Những Chiếc Nhẫn Quyền Năng",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2FozczlsMlKUhzB11ygTj4QVEGS7v.jpg&amp;w=1920&amp;q=100&amp;output=webp&amp;n=-1",
+      "alt": "Gả Kim Thoa",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2F9d7sWhj2oJ5sejtwLAiDVI3sCvP.jpg&amp;w=1920&amp;q=100&amp;output=webp&amp;n=-1",
+      "alt": "Thập Vạn Cuồng Hoa Nhập Mộng Lai",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2FyyA9CI8BLNg6LtVRvmVxki4xiGb.jpg&amp;w=1920&amp;q=100&amp;output=webp&amp;n=-1",
+      "alt": "Việc Ma, Lương Quái",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2FWGyAyBPncfuu8MZhLY9RtfZPM0.jpg&amp;w=1920&amp;q=100&amp;output=webp&amp;n=-1",
+      "alt": "Vision: Truy Tìm Bản Ngã",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2FyyA9CI8BLNg6LtVRvmVxki4xiGb.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Việc Ma, Lương Quái",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2FnZYi7HeXJVfJmZ0kprb1cJBHN2g.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Người Mẹ Khác",
+      "srcset": ""
+    },
+    {
+      "src": "https://p16-lp-sg.ibyteimg.com/origin/tos-alisg-i-375lmtcpo0-sg/7e9888c9ef564dfc8ea72c653bc582d8",
+      "alt": "Vùng Đất Quỷ Dữ (2026)",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261103/khai-huyen-z-the-gioi-moi-poster.webp",
+      "alt": "Khải Huyền Z: Thế Giới Mới",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261109/cau-chuyen-ve-derry-poster.webp",
+      "alt": "Câu Chuyện Về Derry",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2Fu1ZyMm7HcYO1CJwtk28dStDH9Bp.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Quỷ Quyệt: Ranh Giới Vô Định",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/upload/vod/20260620-1/3ed9a180dfc699fbc0502962e67d86b7.jpg",
+      "alt": "Phí Phông: Quỷ Máu Rừng Thiêng",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/upload/vod/20251102-1/b1fd59fb4c6384ff924d2012ff250e75.jpg",
+      "alt": "Gia Đình Thủy Tổ (Phần 1)",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fmedia.themoviedb.org%2Ft%2Fp%2Fw600_and_h900_face%2F15qLAM3QM8DoPL9Fps4JOTdqWqt.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Ám Ảnh (2026)",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FvjTYUTgh9nO88i6HZ4YPRhiFL05.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Cá Voi Nuốt Chửng",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261109/den-la-sat-poster.webp",
+      "alt": "Đền La Sát",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261112/cong-vien-giai-thoat-poster.webp",
+      "alt": "Công Viên Giải Thoát",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FhnXG4O2J4ODwRkP9vtDqO1xiH0t.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Ma Xó",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FtN3WWhiklSI8NErftXqyfkR9GJ.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Dưới Đáy Hồ",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261026/quy-bat-hon-poster.webp",
+      "alt": "Quỷ Bắt Hồn",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2F4i90SNCZb3CFXVs5xlEjm5RuonP.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Liên Khúc Phim Kinh Dị 6",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/upload/vod/20251102-1/1b10a3edd3d06f3afede40e55887c606.jpg",
+      "alt": "Gia Đình Thủy Tổ (Phần 2)",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FnRysfd4JdnPJx82ZYs8atFmSuVC.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Thẩm Mỹ Viện Chết Chóc",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20260723/bay-xac-song-poster.webp",
+      "alt": "Bầy Xác Sống",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FjguB76QbAx6yExiOLIPvOaxW95b.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Sau Đêm Đen",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F41Bo66wbFEXlGEMQ9kYHwXy0hBm.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Chuyện Ma Giảng Đường 4",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/upload/vod/20251102-1/2ae285d6f92a68b2f34a16e20fbfa420.jpg",
+      "alt": "Gia Đình Thủy Tổ (Phần 3)",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261104/quai-dam-tran-tong-gia-poster.webp",
+      "alt": "Quái Đàm Trấn Tống Gia",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261103/me-oi-con-dang-mang-thai-ngoai-hanh-tinh-poster.webp",
+      "alt": "Mẹ Ơi, Con Đang Mang Thai Ngoài Hành Tinh",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FywkwBd65CMvC33DDVFOQqr4mrVQ.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Khó Dỗ Dành",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fmxa7YxVln3Rwnd2Va82PoclTznj.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Đặc Vụ Kim Tái Khởi Động",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261106/ban-hoc-ma-ca-rong-poster.webp",
+      "alt": "Bạn Học Ma Cà Rồng",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F5Xc7WpWsgflfgEMoBlf9TmWhfbH.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Lãnh Địa Tử Chiến (Phần 2)",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FzgUh4cgalSzBjbsT5P0qmU7Rjzk.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Tiếng yêu này anh dịch được không?",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FhikbLeofw2epfaEJptSkQ6b22IV.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Con Trai Bạn Mẹ",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FjNY6UVgvKz03yrSgCflkF5NF25K.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Kế Hoạch Của Quỷ Dữ (Phần 2)",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F6mVIY9Y1g4nmhCIeU6mWaa5Kk1w.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Chó Hoang Và Xương",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fy8h2RwUZM5chv9tuaKVwSPoo3KE.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Trung tâm chăm sóc chấn thương",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FlyZFkKaeDlR3pghgHH6b4Uty1AQ.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Trò Chơi Bắt Cóc (Phần 1)",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261111/quyen-luc-phan-1-poster.webp",
+      "alt": "Quyền Lực (Phần 1)",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FtE5gpl1mUEnyyGS0KpaOqs042Z9.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Yêu Một Kẻ Ngốc",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261111/tinh-yeu-doc-nhat-poster.webp",
+      "alt": "Tình Yêu Độc Nhất",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261111/cuoc-chien-hoa-hong-2026-poster.webp",
+      "alt": "Cuộc Chiến Hoa Hồng",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261104/quy-phi-duoc-nuoc-lan-toi-poster.webp",
+      "alt": "Quý Phi Được Nước Lấn Tới",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FtgsWD4dJI5YFY8Kyk6vVjZoIKfO.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Một ngày nọ kẻ hủy diệt gõ cửa nhà tôi",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261111/quyen-luc-phan-3-poster.webp",
+      "alt": "Quyền Lực (Phần 3)",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FrOYLWCdAifpUtPlTf1WHxyaxeMt.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Ông Trùm vùng Tulsa",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FmGCQQlLobyKPianz2gU0vtVcnvT.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Giác Quan Thứ Sáu: Mặt Trái",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FjfM4j2hQozZeeSikl96AMBgnFSg.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Dữ Thương Long",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261106/am-thanh-cua-nhung-vien-duong-poster.webp",
+      "alt": "Âm Thanh Của Những Viên Đường",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261103/ong-trum-giang-ho-phan-4-poster.webp",
+      "alt": "Ông Trùm Giang Hồ (Phần 4)",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261111/quyen-luc-phan-2-poster.webp",
+      "alt": "Quyền Lực (Phần 2)",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261111/quyen-luc-quyen-ii-bong-ma-phan-2-poster.webp",
+      "alt": "Quyền Lực Quyển II: Bóng Ma (Phần 2)",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FflrrqlpsKlv9aUZme9Ij0zlw6Jy.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Mesdames Thanh Sắc",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FpCzo2iNm1uSzi2kpcvLmAd9JVpy.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Trường hè, 2001",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F2ipE4OEFzqKnhPjZg8yPFelId6N.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Lầu Chú Hỏa",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimg.ophim.live%2Fuploads%2Fmovies%2Ftham-my-vien-am-phu-thumb.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Thẩm Mỹ Viện Âm Phủ",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fd7RdA2lcHtHs1iretDVeRQo5GWu.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Một Thời Ta Đã Yêu",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FlFkMpke7gVK98QLCReMWOff1GiC.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Bus: Chuyến Xe Một Chiều",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FhXCZxaBPicsJ18So96pqJgM34wN.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Heo Năm Móng",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FwZpVMz9MaNAwLGpyjIXj18t8N6t.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Wolfoo &amp; Cuộc Đua Tam Giới",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FmEH96rSqjuDLI5rAnu7sTIDTdc8.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Quỷ Nhập Tràng 2",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FcY1Lh6RUiPDhyEVPiSKveGPIlV8.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Cảm Ơn Người Đã Thức Cùng Tôi",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimg.ophim.live%2Fuploads%2Fmovies%2Fhuyen-tinh-da-trach-thumb.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Huyền Tình Dạ Trạch",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FduZtdpgIKrPUKnYrPwBTH2FSUgm.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Bố Già Trở Lại",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fs4VRZ7evHr0E0REWdqawStHPRjQ.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Mùi Phở",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FaPIQC6RoNpLpqY576CCwluTCaJ1.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Nhà Ba Tôi Một Phòng",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F3aOWznDZIack9tetNihiw8oiujE.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Chiến Nam: Ve Sầu Thoát Xác",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FayDNI6x8g3638uQSTmNqW9CeUUU.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Bẫy Tiền",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FiPOn6DinuVyLY17YM9mKuPofV08.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Người Nhện: Khởi Đầu Mới",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F4tTrW9dXCByS5wt2pXVWb58zNjz.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Quỷ Quyệt: Ranh Giới Vô Định",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fx3YmuQPpmK2WG7FtUyqeNg6Npmc.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Hẹn Em Ngày Nhật Thực",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FbRwnj8WEKBCvmfeUNOukJPwB43K.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Ám Ảnh",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FyihdXomYb5kTeSivtFndMy5iDmf.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Thoát Khỏi Tận Thế",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fmedia.themoviedb.org%2Ft%2Fp%2Fw440_and_h660_face%2FiAw0KYizPGmSVLh35JGF7zLkmqa.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Ngày Tàn Của Phố Oak",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FhnXG4O2J4ODwRkP9vtDqO1xiH0t.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Ma Xó",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FgDc2FCkTFfUg7MWpp7zm0D0b48h.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Anh Hùng",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FmnOMG35LRwN9w0W1FD2MQI9X6zx.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Báu vật trời cho",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F8EsVJLdGGpBmGM7HyygfyOQ81WC.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "TÀI",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FrjmhzdVS3Ia535pFawju857e2Na.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Thư Tình Gửi Ngoại",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FoRuyGUHdoaQxWP3SDfafGkStxTC.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "He-Man và Những Chiến Binh Vũ Trụ",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Ff1v8IcYcQggeq1N0unoMJMrzTd9.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Một Đêm Duy Nhất",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FsfQtVlIHljToOwYjhe21KPGzZWK.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Câu Chuyện Đồ Chơi 5",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fgaet1xQ2nxrG0V1Ep9T20ZMNEIC.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Hành Trình Của Moana",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FrAw86ejG5vFhq8sl8RBAomZez62.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Nhà Hai Chủ",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FemyPseWayexgw83IFMrK3b6VqFF.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Doraemon: Nobita Thám Hiểm Vùng Đất Mới – Peko và 5 Nhà Thám Hiểm",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FtCgs6crEMqgz3ZF0NxwuIjV9xqe.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Địa Đạo: Mặt Trời Trong Bóng Tối",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FxTI42pmsP5EDnvsNJPEDubwWBQO.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Yêu Nữ Thích Hàng Hiệu 2",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FeJW6bkRN8k2kjGWGCYfpuIvYvzZ.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Con Kể Ba Nghe",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2Fz8x77fhtP5kw1t7qsKmJ8WpHeKy.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Làng Khát Máu",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F9DFmYYjRVKeFsrrRODZsVhgyXpc.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Shin - Cậu Bé Bút Chì 26: Kungfu Boys ~ Mì Ramen Đại Chiến ~",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F2ayOQIh18qhJRoajoAxxGuZXry2.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Ác Quỷ Ma Sơ",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F6fXv5b6Mbee6XozuHAVDLRXHbbf.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Phim Điện Ảnh - Lớp Học Ám Sát: Giờ Của Chúng Ta",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F5rhTDKUhPYvpdQIijFIs5VoWsON.jpg&amp;w=1920&amp;q=100&amp;output=webp&amp;n=-1",
+      "alt": "Cuộc phiêu lưu",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261109/ke-hoi-sinh-poster.webp",
+      "alt": "Kẻ Hồi Sinh",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2FnZYi7HeXJVfJmZ0kprb1cJBHN2g.jpg&amp;w=1920&amp;q=100&amp;output=webp&amp;n=-1",
+      "alt": "Người Mẹ Khác",
+      "srcset": ""
+    },
+    {
+      "src": "https://p16-lp-sg.ibyteimg.com/origin/tos-alisg-i-375lmtcpo0-sg/7e9888c9ef564dfc8ea72c653bc582d8",
+      "alt": "Vùng Đất Quỷ Dữ (2026)",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FiPOn6DinuVyLY17YM9mKuPofV08.jpg&amp;w=1920&amp;q=100&amp;output=webp&amp;n=-1",
+      "alt": "Người Nhện: Khởi Đầu Mới",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261109/trai-tim-quai-thu-poster.webp",
+      "alt": "Trái Tim Quái Thú",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261103/khai-huyen-z-the-gioi-moi-poster.webp",
+      "alt": "Khải Huyền Z: Thế Giới Mới",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261109/cau-chuyen-ve-derry-poster.webp",
+      "alt": "Câu Chuyện Về Derry",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fmedia.themoviedb.org%2Ft%2Fp%2Fw440_and_h660_face%2FthXJkiBByDitV7iFSv1hU1sg7ij.jpg&amp;w=1920&amp;q=100&amp;output=webp&amp;n=-1",
+      "alt": "Lời Nói Dối Hoàn Hảo",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Fw500%2Fu1ZyMm7HcYO1CJwtk28dStDH9Bp.jpg&amp;w=1920&amp;q=100&amp;output=webp&amp;n=-1",
+      "alt": "Quỷ Quyệt: Ranh Giới Vô Định",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F3zmB6PLnjf7rNNC2lnvinQtlJMx.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Đám Cưới Đom Đóm",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F8phLVFEXOe02JgFmH9ldn3j4tXW.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Dragon Ball Super: Beerus",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FzYIFOocMfsKAEysBjhZ8akfXFdB.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Tokyo Revengers: Đại Chiến Tam Thần",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FcNICUho5uiAGkfCAQq1ihyaMla4.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Hòn Đảo Quên Lãng",
+      "srcset": ""
+    },
+    {
+      "src": "https://phimimg.com/uploads/movies/20261110/devils-crest-thumb.webp",
+      "alt": "Devils&#x27; Crest",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FoxS6i62MRfIeXFKN2F3uEipKwt7.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Khi Tôi Tái Sinh Thành Nhân Vật Phụ Mạnh Nhất / Chuyển Sinh Thành Nhân Vật Phụ Trong Game Người Lớn",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F37xSbB8Hj87wYiKBcnXZSG3vv9U.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "ITEM - Những Cô Gái Cộng Sinh Ở Thế Giới Ngầm",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FmsusxF6ZPGnQmTGXU9iC4UJOohs.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Pháp Sư Gian Lận Bị Sa Thải Tận Hưởng Cuộc Sống Thứ Hai",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F4p0eH4F2jGnN5N4CwiIQeWTkaOR.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Quang Âm Chi Ngoại",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FAkNQCE7FijTFmneDVLCYpN9aMJ0.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Papa Zola: The Movie",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FwnetymrmY1PksbjqYwq2JlLDJeK.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Đại Đường Thừa Phong Lục",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FlhLbAAwMaeoPxvE7bVUQkSDQZ4m.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Kiếm Lai (Phần 2)",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FlN13BPAEnc5iXmoxxBQHOZ1ScfZ.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Tiến Sĩ Đá: Hồi Sinh Thế Giới (Phần 4)",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FfhTDNfkicAu8lMLjYqtZYJnhcXa.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Tử Xuyên (Phần 2)",
+      "srcset": ""
+    },
+    {
+      "src": "https://wsrv.nl/?url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FxeIkV4e4joAmlRJhqJu2N8jR6zC.jpg&amp;w=1920&amp;q=75&amp;output=webp&amp;n=-1",
+      "alt": "Ánh sáng của thế giới",
+      "srcset": ""
+    }
+  ]
+}

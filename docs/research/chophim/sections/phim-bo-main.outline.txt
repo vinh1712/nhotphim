@@ -1,0 +1,24 @@
+<main .flex-1.pt-16
+  <div .max-w-[1400px].mx-auto.px-4.py-8
+    <div .flex.items-center.justify-between.mb-4
+      <h2 .font-bold.text-text-primary.flex.items-center.gap-2.text-xl.sm:text-2xl
+      <div .mb-8.font-sans
+        <button .flex.items-center.gap-2.text-[15px].font-semibold.text-text-primary.hover:text-white.transition-colors.mb-4
+          <svg .w-4.h-4.transition-transform.duration-300.
+            <path
+        <span
+      <div .grid.grid-cols-2.sm:grid-cols-3.md:grid-cols-4.lg:grid-cols-6.xl:grid-cols-8.gap-x-3.gap-y-6
+        <div .relative.movie-card-wrapper
+          <a .movie-card.block.group href=/phim/phon-hoa-lui-tan-phan-2
+            <div .relative.rounded-lg.overflow-hidden.bg-bg-card.aspect-[2/3].ring-1.ring-white/5.shadow-md.flex.items-center.justify-center
+              <svg .absolute.w-12.h-12.text-white/10
+                <path
+            <img .object-cover.transition-transform.duration-500.relative.z-10
+            <div .absolute.inset-x-0.bottom-0.flex.items-end.pb-1.5.md:pb-0.pointer-events-none.justify-center
+              <div .flex.z-10.w-full.flex-col.md:flex-row.md:flex-nowrap.gap-1.md:gap-0.items-start.md:items-end.justify-start.pl-1.sm:pl-2.md:pl-0.md:justify-center
+                <span .text-[9px].md:text-[10.5px].px-1.5.md:px-2.5.py-[1px].md:py-[3px].rounded-full.text-white.backdrop-blur-sm.shadow-sm.md:rounded-none.whitespace-nowrap.md:first:rounded-tl
+                <div .overlay.absolute.inset-0.bg-black/20.opacity-0.group-hover:opacity-100.transition-opacity.duration-300.pointer-events-none
+              <div .text-center.px-1.mt-2
+                <h3 .text-[12px].sm:text-[13px].font-semibold.text-text-primary.truncate.group-hover:text-yellow-400.transition-colors
+              <div .relative.movie-card-wrapper
+                <a .movie-card.block.group href=/phim/be-toi-duoi-vay-nang

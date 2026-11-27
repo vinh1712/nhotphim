@@ -1,0 +1,248 @@
+ (inner) {
+          inner.innerHTML = '<div style="font-size:22px;">' + (type==='poster'?'🖼':'🌅') + '</div>'
+            + '<div style="font-size:11px;color:var(--muted);margin-top:4px;">Kéo thả hoặc click</div>';
+          inner.style.pointerEvents = 'none';
+        }
+        if (drop) drop.style.borderColor = 'var(--border)';
+        const inp = document.getElementById('e-' + type);
+        if (inp) inp.value = '';
+        const fileInp = document.getElementById('e-' + type + '-file');
+        if (fileInp) fileInp.value = '';
+      }
+
+const MOVIE_API_BASE = "https://phim.nguonc.com/api";
+
+function _extractYearFromName(name) {
+        const m = (name || "").match(/\((19|20)\d{2}\)\s*$/) || (name || "").match(/\b(19|20)\d{2}\b/);
+        return m ? m[0].replace(/[()]/g, "").trim() : "";
+      }
+
+function _normalizeMovieListItem(it) {
+        const totalEp = parseInt(it.total_episodes) || 0;
+        const name = it.name || it.original_name || "";
+        return {
+          name,
+          origin_name: it.original_name || "",
+          slug: it.slug || "",
+          thumb_url: it.thumb_url || it.poster_url || "",
+          poster_url: it.poster_url || it.thumb_url || "",
+          year: it.year || it.release_year || it.nam || _extractYearFromName(name) || "",
+          type: totalEp > 1 ? "series" : "single",
+          episode_current: it.current_episode || "",
+          lang: it.language || "",
+        };
+      }
+
+function _flattenNguonCCategory(category) {
+        const genres = [], countries = [], years = [], statusTags = [];
+        if (category && typeof category === "object") {
+          Object.values(category).forEach((g) => {
+            const groupName = normalizeStr(g?.group?.name || "");
+            const list = g?.list || [];
+            if (groupName.includes("the loai")) list.forEach((x) => genres.push({ name: x.name }));
+            else if (groupName.includes("quoc gia")) list.forEach((x) => countries.push({ name: x.name }));
+            else if (groupName.includes("nam")) list.forEach((x) => years.push(x.name));
+            // Nhóm còn lại (thường tên "Định dạng") chứa các tag như "Phim bộ",
+            // "Đang chiếu", "Hoàn Thành"... — gom hết vào statusTags để nhận biết
+            // phim đang chiếu hay đã hoàn thành (dùng khi sắp xếp danh sách Hot).
+            else list.forEach((x) => statusTags.push(x.name || ""));
+          });
+        }
+        return { genres, countries, years, statusTags };
+      }
+
+async function fetchWithTimeout(url, ms = 12000) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), ms);
+        try {
+          return await fetch(url, { signal: controller.signal, cache: "no-store" });
+        } finally {
+          clearTimeout(timer);
+        }
+      }
+
+const MovieAPI = {
+        async search(keyword, limit) {
+          try {
+            const r = await fetchWithTimeout(`${MOVIE_API_BASE}/films/search?keyword=${encodeURIComponent(keyword)}`);
+            const data = await r.json();
+            console.log("[OPhim/NguonC] search raw response:", data); // DEBUG - xem Console (F12)
+            let items = (data?.items || []).map(_normalizeMovieListItem);
+            if (limit) items = items.slice(0, limit);
+            return { data: { items } };
+          } catch (e) {
+            console.error("MovieAPI.search error:", e);
+            return { data: { items: [] } };
+          }
+        },
+        async latest(page) {
+          try {
+            const r = await fetchWithTimeout(`${MOVIE_API_BASE}/films/phim-moi-cap-nhat?page=${page || 1}`);
+            if (!r.ok) throw new Error(`HTTP ${r.status} ${r.statusText || ""}`.trim());
+            const data = await r.json();
+            const items = (data?.items || []).map(_normalizeMovieListItem);
+            return { data: { items } };
+          } catch (e) {
+            console.error("MovieAPI.latest error:", e);
+            // e.message thường là "Failed to fetch" khi bị chặn CORS hoặc mất mạng,
+            // hoặc "HTTP 4xx/5xx..." khi API trả lỗi, hoặc "The user aborted..." khi timeout.
+            return { data: { items: [] }, _error: e.message || "Lỗi không xác định" };
+          }
+        },
+        async detail(slug, opts) {
+          try {
+            const r = await fetchWithTimeout(`${MOVIE_API_BASE}/film/${slug}`);
+            let data = await r.json();
+            // Số tập có link (server nhiều nhất) so với "tập hiện tại" mà chính API báo. Nếu thiếu -> có thể
+            // đang nhận bản cache cũ của CDN -> thử lại tối đa 2 lần với tham số lạ để bỏ qua cache, lấy bản đầy đủ nhất.
+            const _cntEps = (d) => Math.max(0, ...((d?.movie?.episodes || []).map((sv) => (sv.items || []).length)));
+            const _wantEps = (d) => { const mm = String(d?.movie?.current_episode || "").match(/\d+/); return mm ? parseInt(mm[0]) : 0; };
+            if (data?.movie && _cntEps(data) < _wantEps(data)) {
+              for (let k = 0; k < 2 && _cntEps(data) < _wantEps(data); k++) {
+                try {
+                  const r2 = await fetchWithTimeout(`${MOVIE_API_BASE}/film/${slug}?_=${Date.now()}${k}`);
+                  const d2 = await r2.json();
+                  if (_cntEps(d2) > _cntEps(data)) data = d2;
+                } catch (e) {}
+              }
+            }
+            // minEps: nguồn khác (KKPhim) đã có nhiều tập hơn -> bản NguonC đang nhận rất có thể là cache cũ
+            // (cả "tập hiện tại" lẫn danh sách tập đều cũ nên điều kiện ở trên không bắt được) -> thử lại bỏ cache, chờ dần.
+            const _minEps = (opts && opts.minEps) || 0;
+            if (data?.movie && _minEps && _cntEps(data) < _minEps) {
+              for (let k = 0; k < 4 && _cntEps(data) < _minEps; k++) {
+                await new Promise((res) => setTimeout(res, 1200 * (k + 1)));
+                try {
+                  const r3 = await fetchWithTimeout(`${MOVIE_API_BASE}/film/${slug}?nocache=${Date.now()}_${Math.random().toString(36).slice(2)}`);
+                  const d3 = await r3.json();
+                  if (_cntEps(d3) > _cntEps(data)) data = d3;
+                } catch (e) {}
+              }
+            }
+            const m = data?.movie;
+            if (!m) return { movie: null, episodes: [] };
+            const { genres, countries, years, statusTags } = _flattenNguonCCategory(m.category);
+            const normStatus = statusTags.map(normalizeStr);
+            // Nhận diện "đang chiếu" rộng hơn: một số phim có thể được nguồn
+            // gắn nhãn khác nhau ("Đang chiếu", "Đang phát sóng", "Full HD" +
+            // chưa đủ tập...) — chỉ khớp đúng cụm "dang chieu" trước đây dễ bỏ
+            // sót, khiến phim mới ra tập vẫn không được ưu tiên lên đầu khi sắp xếp.
+            const isAiring = normStatus.some((t) =>
+              t.includes("dang chieu") || t.includes("dang phat song") || t.includes("dang cap nhat")
+            );
+            const movie = {
+              name: m.name || "",
+              origin_name: m.original_name || "",
+              year: m.year || m.release_year || m.nam || years[0] || _extractYearFromName(m.name) || "",
+              content: m.description || "",
+              type: (parseInt(m.total_episodes) || 0) > 1 ? "series" : "single",
+              thumb_url: m.thumb_url || m.poster_url || "",
+              poster_url: m.poster_url || m.thumb_url || "",
+              backdrop_url: m.poster_url || m.thumb_url || "",
+              category: genres,
+              country: countries,
+              lang: m.language || "",
+              episode_total: parseInt(m.total_episodes) || 0,
+              episode_current: m.current_episode || "",
+              isAiring,
+            };
+            // NguonC: mỗi server có { server_name, items:[{name, slug, embed, m3u8}] }
+            const serverList = m.episodes || [];
+            const episodes = serverList.map((sv) => ({
+              server_name: sv.server_name || "Server #1",
+              server_data: (sv.items || []).map((ep) => ({
+                name: ep.name || "",
+                slug: ep.slug || "",
+                link_embed: ep.embed || "",
+                link_m3u8: ep.m3u8 || "",
+              })),
+            }));
+            return { movie, episodes };
+          } catch (e) {
+            console.error("MovieAPI.detail error:", e);
+            return { movie: null, episodes: [] };
+          }
+        },
+      };
+
+const KKPHIM_API_BASE = "https://phimapi.com";
+
+const KKPhimAPI = {
+        async search(keyword) {
+          try {
+            const r = await fetchWithTimeout(`${KKPHIM_API_BASE}/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`);
+            const data = await r.json();
+            console.log("[KKPhim] search raw response:", data); // DEBUG - xem Console (F12) để đối chiếu field
+            const items = (data?.data?.items || []).map((m) => ({
+              name: m.name || "",
+              origin_name: m.origin_name || "",
+              slug: m.slug || "",
+              year: m.year || "",
+              country: m.country || [],
+              // LƯU Ý: KKPhim (phimapi.com) trả NGƯỢC so với NguonC/OPhim —
+              // field "poster_url" của KKPhim mới là ảnh poster (dọc), còn
+              // "thumb_url" của họ là ảnh backdrop/thumb (ngang). Vì thumbnail
+              // preview trong danh sách kết quả cần ảnh poster (dọc) nên ưu
+              // tiên lấy m.poster_url trước, fallback m.thumb_url.
+              thumb_url: (() => {
+                const raw = m.poster_url || m.thumb_url || "";
+                return raw ? (raw.startsWith("http") ? raw : `https://phimimg.com/${raw}`) : "";
+              })(),
+              episode_current: m.episode_current || "",
+            }));
+            return { data: { items } };
+          } catch (e) {
+            console.error("KKPhimAPI.search error:", e);
+            return { data: { items: [] }, _error: e.message };
+          }
+        },
+        // Danh sách "phim mới cập nhật" của KKPhim (phimapi.com) — dùng để bộ
+        // lọc "Phim Hot" quét được cả phim chỉ có bên KKPhim (trước đây chỉ
+        // quét NguonC nên bỏ sót phim chỉ tồn tại ở KKPhim).
+        async latest(page) {
+          try {
+            const r = await fetchWithTimeout(`${KKPHIM_API_BASE}/danh-sach/phim-moi-cap-nhat?page=${page || 1}`);
+            if (!r.ok) throw new Error(`HTTP ${r.status} ${r.statusText || ""}`.trim());
+            const data = await r.json();
+            console.log("[KKPhim] latest raw response:", data); // DEBUG - xem Console (F12)
+            const rawItems = data?.items || data?.data?.items || [];
+            const items = rawItems.map((m) => ({
+              name: m.name || "",
+              origin_name: m.origin_name || "",
+              slug: m.slug || "",
+              year: m.year || "",
+              thumb_url: (() => {
+                const raw = m.poster_url || m.thumb_url || "";
+                return raw ? (raw.startsWith("http") ? raw : `https://phimimg.com/${raw}`) : "";
+              })(),
+              episode_current: m.episode_current || "",
+              _src: "kk",
+            }));
+            return { data: { items } };
+          } catch (e) {
+            console.error("KKPhimAPI.latest error:", e);
+            // Nếu route trên khác với thực tế bên phimapi.com, hàm này chỉ trả
+            // mảng rỗng (không phá vỡ luồng quét NguonC hiện có) — xem Console
+            // (F12) để biết lỗi cụ thể nếu phim KKPhim vẫn không xuất hiện.
+            return { data: { items: [] }, _error: e.message || "Lỗi không xác định" };
+          }
+        },
+        async detail(slug) {
+          try {
+            const r = await fetchWithTimeout(`${KKPHIM_API_BASE}/phim/${slug}`);
+            const data = await r.json();
+            console.log("[KKPhim] detail raw response:", data); // DEBUG - xem Console (F12) để đối chiếu field
+            const m = data?.movie;
+            if (!m) return { movie: null, episodes: [] };
+            // LƯU Ý QUAN TRỌNG: KKPhim (phimapi.com) đặt tên 2 field ảnh NGƯỢC
+            // so với NguonC/OPhim mà phần còn lại của code đang mặc định theo:
+            //   - Toàn bộ code (NguonC/OPhim) coi field "thumb_url" = ảnh POSTER
+            //     (dọc) và "poster_url" = ảnh BACKDROP/thumb (ngang).
+            //   - Nhưng dữ liệu thật từ KKPhim thì "poster_url" của họ mới là
+            //     ảnh poster (dọc), còn "thumb_url" của họ mới là ảnh backdrop
+            //     (ngang) — tức là bị đảo ngược hoàn toàn.
+            // => Phải LẤY NGƯỢC LẠI ở đây thì khi điền vào form (poster/backdrop)
+            //    mới đúng ảnh, không bị lộn ảnh dọc/ngang cho nhau.
+            const realPosterRaw = m.poster_url || m.thumb_url || "";   // ảnh poster THẬT (dọc) của KKPhim nằm ở field poster_url
+            const realBackdropRaw = m.thumb_url || m.poster_url || ""; // ảnh backdrop THẬT (ngang) của KKPhim nằm ở field thumb_url
+            const fixImg = (u) => (!u ? "" : (u.startsWith("http") ? u : `https://phimimg.com/${u}`))

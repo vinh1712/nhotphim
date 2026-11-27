@@ -1,0 +1,465 @@
+<main .flex-1.pt-16
+  <div .max-w-[1400px].mx-auto.px-4.sm:px-4.sm:py-6
+    <div .relative.isolate
+      <div .mt-2.flex.w-full.flex-col.items-center.justify-center.overflow-visible.sm:mt-0
+        <div .flex.w-full.flex-col.lg:w-full.lg:max-w-[1456px].lg:flex-row
+        <div .flex.w-full.flex-col.lg:max-w-[1456px]
+      <div .flex.flex-col.mb-6.-mx-4.overflow-visible.transition-all.duration-500.sm:mx-0.sm:rounded-xl.
+        <div .relative.w-full.aspect-video
+          <div .absolute.inset-0.w-full.h-full
+            <div .relative.flex.h-full.w-full.items-center.justify-center.overflow-visible.font-sans.select-none.focus:outline-none
+              <div .pointer-events-none.absolute.inset-0.z-[-2].bg-black
+              <div .absolute.inset-0.overflow-hidden.sm:rounded-l-xl
+                <video .h-full.w-full.object-contain
+                <button .absolute.left-2.top-1/2.z-50.flex.h-11.w-11.-translate-y-1/2.items-center.justify-center.rounded-full.bg-black/60.text-white.shadow-lg.backdrop-blur-md.transition-opacity
+                  <svg .lucide.lucide-lock-keyhole-open.h-5.w-5
+                    <circle
+                  <rect
+                <path
+          <div .absolute.inset-0.flex.sm:hidden.items-center.justify-center.gap-6.z-30.transition-opacity.duration-300.pointer-events-none.opacity-0
+            <button .hidden.sm:flex.sm:w-16.sm:h-16.rounded-full.bg-black/40.backdrop-blur-sm.items-center.justify-center.text-white.hover:bg-black/60.transition-all.pointer-events-none
+              <svg .lucide.lucide-rotate-ccw.w-6.h-6.sm:w-8.sm:h-8
+                <path
+              <path
+        <button .w-[60px].h-[60px].sm:w-[72px].sm:h-[72px].rounded-full.bg-black/35.backdrop-blur-[2px].flex.items-center.justify-center.shadow-xl.transition-transform.hover:scale-105.poi
+          <svg .lucide.lucide-pause.w-7.h-7.sm:w-9.sm:h-9.text-white
+            <rect
+          <rect
+    <button .hidden.sm:flex.sm:w-16.sm:h-16.rounded-full.bg-black/40.backdrop-blur-sm.items-center.justify-center.text-white.hover:bg-black/60.transition-all.pointer-events-none
+      <svg .lucide.lucide-rotate-cw.w-6.h-6.sm:w-8.sm:h-8
+        <path
+      <path
+<div .absolute.inset-0.hidden.sm:flex.items-center.justify-center.z-30.transition-all.duration-300.pointer-events-none.transform-gpu.opacity-0.scale-125
+  <button .w-[72px].h-[72px].rounded-full.bg-black/35.backdrop-blur-[2px].flex.items-center.justify-center.shadow-xl.transition-transform.hover:scale-105.pointer-events-none
+    <svg .lucide.lucide-pause.w-9.h-9.text-white
+      <rect
+    <rect
+<div .absolute.top-0.left-0.right-0.p-3.sm:p-6.transition-opacity.duration-500.pointer-events-none.z-10.flex.items-start.justify-between.opacity-0
+  <h2 .text-white.font-medium.text-sm.sm:text-lg.lg:text-xl.drop-shadow-md.truncate.tracking-wide.flex-1.mr-4
+    <div .pointer-events-auto.flex.shrink-0.flex-col.items-end.gap-2
+      <button .hidden.flex-row.items-center.gap-1.5.p-1.text-xs.font-medium.text-white/90.transition-colors.hover:text-[#eab308].sm:flex.sm:text-[15px]
+        <svg .w-4.h-4.sm:w-5.sm:h-5.text-current
+          <g#_07_playlist
+            <path
+      <span .hidden.sm:inline
+  <div .absolute.inset-0.right-0.z-50.transition-all.duration-300.ease-in-out.pointer-events-none.delay-200
+    <button .absolute.inset-0.z-0.bg-black/50.transition-opacity.duration-300.ease-in-out.opacity-0
+    <div .absolute.right-0.top-0.z-10.h-full.w-full.max-w-full.bg-[#1a1b20].border-l.border-white/5.shadow-2xl.flex.flex-col.pointer-events-auto.transition-transform.duration-300.e
+      <div .flex.items-center.justify-between.p-3.sm:px-4.sm:py-3.5.border-b.border-white/5
+        <h3 .text-white.font-bold.text-[15px].leading-tight.line-clamp-1.pr-4
+          <button .w-7.h-7.flex.items-center.justify-center.bg-white/10.hover:bg-white/20.rounded-full.text-white.transition-colors.shrink-0
+            <svg .lucide.lucide-x.w-3.5.h-3.5
+              <path
+            <path
+    <div .flex-1.overflow-y-auto.custom-scrollbar.p-0.flex.flex-col.content-start.block-selection
+      <button .flex.items-center.gap-3.5.p-3.sm:px-4.sm:py-3.border-b.border-white/5.transition-colors.outline-none.text-left.cursor-pointer.bg-white/10
+        <div .relative.w-[90px].sm:w-[100px].aspect-[16/9].rounded.shrink-0.overflow-hidden.bg-black/50.bg-cover.bg-center.ring-2.ring-[#eab308].ring-offset-[2px].ring-offset-[#1f2025]
+        <div .flex-1.min-w-0
+          <p .text-sm.font-medium.text-[#eab308]
+        <button .flex.items-center.gap-3.5.p-3.sm:px-4.sm:py-3.border-b.border-white/5.transition-colors.outline-none.text-left.cursor-pointer.bg-transparent.hover:bg-white/5.text-white/8
+          <div .relative.w-[90px].sm:w-[100px].aspect-[16/9].rounded.shrink-0.overflow-hidden.bg-black/50.bg-cover.bg-center.
+          <div .flex-1.min-w-0
+            <p .text-sm.font-medium.text-white/90
+          <button .flex.items-center.gap-3.5.p-3.sm:px-4.sm:py-3.border-b.border-white/5.transition-colors.outline-none.text-left.cursor-pointer.bg-transparent.hover:bg-white/5.text-white/8
+            <div .relative.w-[90px].sm:w-[100px].aspect-[16/9].rounded.shrink-0.overflow-hidden.bg-black/50.bg-cover.bg-center.
+            <div .flex-1.min-w-0
+              <p .text-sm.font-medium.text-white/90
+            <button .flex.items-center.gap-3.5.p-3.sm:px-4.sm:py-3.border-b.border-white/5.transition-colors.outline-none.text-left.cursor-pointer.bg-transparent.hover:bg-white/5.text-white/8
+              <div .relative.w-[90px].sm:w-[100px].aspect-[16/9].rounded.shrink-0.overflow-hidden.bg-black/50.bg-cover.bg-center.
+              <div .flex-1.min-w-0
+                <p .text-sm.font-medium.text-white/90
+              <button .flex.items-center.gap-3.5.p-3.sm:px-4.sm:py-3.border-b.border-white/5.transition-colors.outline-none.text-left.cursor-pointer.bg-transparent.hover:bg-white/5.text-white/8
+                <div .relative.w-[90px].sm:w-[100px].aspect-[16/9].rounded.shrink-0.overflow-hidden.bg-black/50.bg-cover.bg-center.
+                <div .flex-1.min-w-0
+                  <p .text-sm.font-medium.text-white/90
+                <button .flex.items-center.gap-3.5.p-3.sm:px-4.sm:py-3.border-b.border-white/5.transition-colors.outline-none.text-left.cursor-pointer.bg-transparent.hover:bg-white/5.text-white/8
+                  <div .relative.w-[90px].sm:w-[100px].aspect-[16/9].rounded.shrink-0.overflow-hidden.bg-black/50.bg-cover.bg-center.
+                  <div .flex-1.min-w-0
+                    <p .text-sm.font-medium.text-white/90
+                  <button .flex.items-center.gap-3.5.p-3.sm:px-4.sm:py-3.border-b.border-white/5.transition-colors.outline-none.text-left.cursor-pointer.bg-transparent.hover:bg-white/5.text-white/8
+                    <div .relative.w-[90px].sm:w-[100px].aspect-[16/9].rounded.shrink-0.overflow-hidden.bg-black/50.bg-cover.bg-center.
+                    <div .flex-1.min-w-0
+                    <button .flex.items-center.gap-3.5.p-3.sm:px-4.sm:py-3.border-b.border-white/5.transition-colors.outline-none.text-left.cursor-pointer.bg-transparent.hover:bg-white/5.text-white/8
+                    <div .relative.flex.items-center.justify-center
+                  <div .absolute.-top-1.5.-right-3.bg-white.text-black.text-[9px].font-bold.px-1.rounded-sm.shadow-sm.pointer-events-none.leading-tight.transition-transform.duration-200.group-ho
+                <div .hidden.sm:flex
+                  <div .relative.flex.items-center.justify-center.
+                    <button .group.relative.flex.h-9.sm:h-auto.w-9.sm:w-auto.items-center.justify-center.text-white.transition-all.duration-200.hover:scale-105.hover:text-white/80.active:scale-95.foc
+                    <path
+                  <path
+                <path
+              <path
+          <svg .lucide.lucide-signal-zero.pointer-events-none.absolute.-right-3.-top-1.5.h-4.w-4.rounded-sm.bg-black/60.p-0.5.shadow-sm.text-white/45
+            <path
+  <button .hidden.sm:flex.text-white.hover:text-white/80.transition-all.focus:outline-none.items-center.justify-center
+    <svg .lucide.lucide-picture-in-picture2.lucide-picture-in-picture-2.w-7.h-7
+      <path
+    <rect
+<div .relative.flex.items-center.justify-center
+  <button .relative.flex.h-9.w-9.items-center.justify-center.text-white.transition-all.hover:text-white/80.focus:outline-none.sm:h-auto.sm:w-auto
+    <svg .lucide.lucide-settings.h-5.w-5.transition-transform.duration-300.sm:h-7.sm:w-7
+      <path
+    <circle
+<button .text-white.hover:text-white/80.transition-all.focus:outline-none.flex.h-9.w-9.sm:h-auto.sm:w-auto.items-center.justify-center
+  <svg .lucide.lucide-maximize.w-5.h-5.sm:w-7.sm:h-7
+    <path
+  <path
+<path
+<path
+<div .relative.z-30.flex.items-center.justify-between.gap-3.bg-white/[0.04].px-4.py-2.text-white.md:hidden
+  <div .relative.flex.items-center.justify-center.
+    <button .group.relative.flex.h-8.w-auto.items-center.justify-center.text-white.transition-all.duration-200.hover:scale-105.hover:text-white/80.active:scale-95.focus:outline-none.h
+      <svg .lucide.lucide-router.h-4.w-4.transition-transform.duration-300.h-4.w-4
+        <rect
+      <path
+    <path
+  <path
+<path
+<path
+<span .text-xs.font-semibold.leading-none
+  <svg .lucide.lucide-signal-zero.pointer-events-none.absolute.-right-3.-top-1.5.h-4.w-4.rounded-sm.bg-black/60.p-0.5.shadow-sm.text-white/45
+    <path
+<button .inline-flex.shrink-0.items-center.gap-1.5.text-[13px].font-medium.text-white/75.transition-colors.hover:text-white.whitespace-nowrap
+  <svg .lucide.lucide-captions.h-4.w-4
+    <rect
+  <path
+<span
+<div .relative.z-20.flex.items-center.justify-between.gap-10.overflow-x-auto.bg-white/[0.04].px-4.py-3.text-white.hide-scrollbar.md:gap-0.md:px-6.md:py-4.xl:px-8
+  <div .flex.items-center.gap-6.md:gap-8.shrink-0
+    <button .group/fav.flex.items-center.justify-center.gap-2.5.transition-all.outline-none.active:scale-95
+      <svg .transition-all.duration-500.ease-[cubic-bezier(0.175,0.885,0.32,1.275)].w-4.h-4.group-hover/fav:scale-110.text-white/90.scale-100
+        <path
+    <span .hidden.sm:inline-block.text-[13px].font-medium.transition-colors.text-white
+    <div .relative
+      <button .group/add.flex.items-center.justify-center.gap-2.5.transition-all.outline-none.active:scale-95
+        <svg .transition-all.duration-300.w-4.h-4.group-hover/add:scale-110.text-white/90
+          <path
+      <span .hidden.sm:inline-block.text-[13px].font-medium.transition-colors.text-white
+  <div .flex.items-center.gap-3.md:gap-4.shrink-0
+    <button .flex.items-center.gap-2.hover:bg-white/10.transition-colors.group.outline-none.py-1.5.px-2.md:px-3.rounded-lg
+      <svg .lucide.lucide-skip-forward.w-5.h-5.text-[#FFD166]
+        <path
+      <path
+  <span .hidden.md:inline-block.text-[13px].font-medium.transition-colors.text-[#FFD166]
+    <span .hidden.md:inline-block.text-[10px].font-bold.px-1.5.py-[3px].rounded.transition-colors.text-[#FECF59].bg-[#FECF59]/10
+    <button .hidden.items-center.gap-2.rounded-lg.px-3.py-1.5.outline-none.transition-colors.hover:bg-white/10.md:flex.group
+      <svg .lucide.lucide-chevron-last.w-5.h-5.text-white/70.group-hover:text-white
+        <path
+      <path
+  <span .hidden.md:inline-block.text-[13px].font-medium.transition-colors.text-white/90.group-hover:text-white
+    <span .hidden.md:inline-block.text-[10px].font-bold.px-1.5.py-[3px].rounded.transition-colors.text-white/40
+    <button .hidden.items-center.gap-2.rounded-lg.px-3.py-1.5.outline-none.transition-colors.hover:bg-white/10.md:flex.group
+      <svg .lucide.lucide-lightbulb.w-5.h-5.text-white/70.transition-colors.group-hover:text-[#FFD166]
+        <path
+      <path
+    <path
+<span .hidden.md:inline-block.text-[13px].font-medium.text-white/90.transition-colors.group-hover:text-[#FFD166]
+  <span .hidden.md:inline-block.rounded.bg-white/[0.06].px-1.5.py-[3px].text-[10px].font-bold.text-white/40.transition-colors.group-hover:bg-[#FECF59]/10.group-hover:text-[#FECF59
+  <button .flex.items-center.gap-2.hover:bg-white/10.transition-colors.group.outline-none.py-1.5.px-2.md:px-3.rounded-lg
+    <svg .lucide.lucide-bug.w-5.h-5.text-white/70.group-hover:text-[#eab308].transition-colors
+      <path
+    <path
+  <path
+<path
+<path
+<path
+<path
+<path
+<path
+<path
+<path
+<span .hidden.md:inline-block.text-[13px].font-medium.text-white/70.group-hover:text-[#eab308].transition-colors
+<button .flex.items-center.justify-center.py-1.5.px-2.rounded-lg.hover:bg-white/10.transition-colors
+  <svg .lucide.lucide-circle-question-mark.w-5.h-5.transition-colors.text-white/40
+    <circle
+  <path
+<path
+<div .flex.w-full.flex-col.items-center.justify-center.gap-0.overflow-visible.py-2
+  <div .flex.w-full.flex-col.items-center.justify-center.gap-0.overflow-visible.lg:max-w-[1456px].lg:flex-row
+    <div .flex.w-full.max-w-full.shrink-0.items-end.justify-center.overflow-visible.lg:w-1/2
+    <div .flex.w-full.max-w-full.shrink-0.items-end.justify-center.overflow-visible.lg:w-1/2
+  <div .flex.w-full.flex-col.lg:max-w-[1456px]
+<div .flex.flex-col.xl:flex-row.gap-8.mt-4.xl:mt-8
+  <div .flex-1.min-w-0
+    <div .flex.sm:hidden.items-center.mb-4
+      <a .flex.items-center.gap-3.text-white.hover:text-accent.transition-colors href=/phim/bac-si-x-mafia-ao-trang
+        <div .w-8.h-8.rounded-full.border.border-white/20.flex.items-center.justify-center.shrink-0
+          <svg .lucide.lucide-chevron-left.w-4.h-4
+            <path
+      <h1 .text-[13px].font-bold.leading-tight.line-clamp-1
+    <div .mb-2.5.flex.items-start.gap-2.5.rounded-lg.border.border-[#eab308]/20.bg-[#eab308]/10.px-3.py-2.sm:items-center.sm:py-3
+      <svg .lucide.lucide-info.w-4.h-4.text-[#eab308].shrink-0.mt-0.5.sm:mt-0
+        <circle
+      <path
+    <path
+<p .text-[12px].md:text-[13px].text-white/80.leading-relaxed.font-medium
+<div .mb-4
+  <a .inline-flex.w-full.items-center.justify-center.gap-2.rounded-lg.border.border-[#229ED9]/20.bg-[#229ED9]/10.px-3.py-2.5.text-[12px].font-medium.text-[#8bd8ff].transition-c href=https://telegram.dog/chophim
+    <img .h-4.w-4.shrink-0
+  <div .hidden.sm:flex.flex-col.sm:flex-row.items-center.sm:items-start.gap-6.lg:gap-8
+    <div .shrink-0.relative.w-32.md:w-40.lg:w-[150px].aspect-[2/3].rounded-xl.overflow-hidden.shadow-2xl
+      <img .object-cover
+    <div .flex-1.flex.flex-col.gap-4.pt-1.w-full.text-center.sm:text-left
+      <div
+        <h1 .text-2xl.md:text-[28px].font-bold.text-white.mb-2.leading-tight
+          <h2 .text-[#eab308].text-sm.md:text-[15px].font-medium.opacity-90
+          <div .flex.flex-wrap.justify-center.sm:justify-start.items-center.gap-2
+            <div .flex.items-center.text-[11px].font-bold.rounded.overflow-hidden.border.border-solid.border-[rgba(1,180,228,0.5)]
+              <span .bg-[#01B4E4].text-white.px-1.5.py-0.5
+                <span .bg-[rgba(1,180,228,0.1)].text-white.px-1.5.py-0.5
+                <span .text-[11px].font-medium.px-2.py-0.5.border.border-white/20.rounded.text-white/90
+                  <span .text-[11px].font-medium.px-2.py-0.5.border.border-white/20.rounded.text-white/90
+                    <span .text-[11px].font-medium.px-2.py-0.5.border.border-white/20.rounded.text-white/90
+                    <div .flex.flex-wrap.justify-center.sm:justify-start.items-center.gap-2
+                    <div#episodes-section .mt-8.mb-12.scroll-mt-24
+                    <path
+                  <path
+              <div .flex.min-w-0.items-center.gap-2
+                <span .text-[13px].text-white/60.font-medium.hidden.sm:inline-block.shrink-0
+                  <div .relative.min-w-0.sm:w-auto
+                    <button .flex.items-center.justify-between.w-full.sm:w-auto.sm:min-w-[180px].bg-[#12121a].hover:bg-[#12121a].border.border-white/10.text-white.text-[13px].md:text-sm.font-medium.r
+              <div .mb-5.flex.items-center.justify-between.gap-4
+                <h3 .text-sm.font-bold.text-white/80
+                <button .inline-flex.items-center.gap-1.5.px-1.py-0.5.text-xs.font-normal.text-white/65.transition-colors.hover:text-white
+                  <span
+                    <span .relative.h-6.w-10.rounded-full.transition-colors.bg-white/20
+                <div .mb-6.flex.flex-wrap.gap-2
+                  <button .group.flex.items-center.gap-1.5.rounded-md.px-3.py-1.5.text-xs.transition-colors.border.border-white/30.text-white.bg-white/5.font-medium
+                    <svg .lucide.lucide-languages.h-3.5.w-3.5
+                    <path
+                  <path
+                <path
+              <path
+            <path
+        <span
+          <span .ml-1.flex.h-[16px].w-[16px].shrink-0.items-center.justify-center.rounded-full.text-[9px].font-bold.transition-colors.bg-white.text-black
+          <button .group.flex.items-center.gap-1.5.rounded-md.px-3.py-1.5.text-xs.transition-colors.text-white/60.hover:text-white.border.border-transparent.bg-white/5
+            <svg .lucide.lucide-captions.h-3.5.w-3.5
+              <rect
+            <path
+        <span
+          <span .ml-1.flex.h-[16px].w-[16px].shrink-0.items-center.justify-center.rounded-full.text-[9px].font-bold.transition-colors.bg-white/10.text-white/50.group-hover:text-white/80
+        <div .grid.grid-cols-3.gap-x-2.5.gap-y-2.5.sm:grid-cols-4.md:grid-cols-6.lg:grid-cols-8
+          <button .group.flex.items-center.justify-center.gap-1.5.rounded-lg.border-2.border-transparent.px-2.py-2.text-[13px].transition-colors.hover:border-[#FFD166].bg-[#FFD166].text-[#1
+            <svg .lucide.lucide-play.h-3.w-3.shrink-0.fill-[#1c1c1c]
+              <path
+          <button .group.flex.items-center.justify-center.gap-1.5.rounded-lg.border-2.border-transparent.px-2.py-2.text-[13px].transition-colors.hover:border-[#FFD166].bg-[#191b24].text-whi
+            <svg .lucide.lucide-play.h-3.w-3.shrink-0.fill-white/80.group-hover:fill-[#FFD166]
+              <path
+          <button .group.flex.items-center.justify-center.gap-1.5.rounded-lg.border-2.border-transparent.px-2.py-2.text-[13px].transition-colors.hover:border-[#FFD166].bg-[#191b24].text-whi
+            <svg .lucide.lucide-play.h-3.w-3.shrink-0.fill-white/80.group-hover:fill-[#FFD166]
+              <path
+          <button .group.flex.items-center.justify-center.gap-1.5.rounded-lg.border-2.border-transparent.px-2.py-2.text-[13px].transition-colors.hover:border-[#FFD166].bg-[#191b24].text-whi
+            <svg .lucide.lucide-play.h-3.w-3.shrink-0.fill-white/80.group-hover:fill-[#FFD166]
+              <path
+          <button .group.flex.items-center.justify-center.gap-1.5.rounded-lg.border-2.border-transparent.px-2.py-2.text-[13px].transition-colors.hover:border-[#FFD166].bg-[#191b24].text-whi
+            <svg .lucide.lucide-play.h-3.w-3.shrink-0.fill-white/80.group-hover:fill-[#FFD166]
+              <path
+          <button .group.flex.items-center.justify-center.gap-1.5.rounded-lg.border-2.border-transparent.px-2.py-2.text-[13px].transition-colors.hover:border-[#FFD166].bg-[#191b24].text-whi
+            <svg .lucide.lucide-play.h-3.w-3.shrink-0.fill-white/80.group-hover:fill-[#FFD166]
+              <path
+          <button .group.flex.items-center.justify-center.gap-1.5.rounded-lg.border-2.border-transparent.px-2.py-2.text-[13px].transition-colors.hover:border-[#FFD166].bg-[#191b24].text-whi
+            <svg .lucide.lucide-play.h-3.w-3.shrink-0.fill-white/80.group-hover:fill-[#FFD166]
+              <path
+          <button .group.flex.items-center.justify-center.gap-1.5.rounded-lg.border-2.border-transparent.px-2.py-2.text-[13px].transition-colors.hover:border-[#FFD166].bg-[#191b24].text-whi
+            <svg .lucide.lucide-play.h-3.w-3.shrink-0.fill-white/80.group-hover:fill-[#FFD166]
+              <path
+          <button .group.flex.items-center.justify-center.gap-1.5.rounded-lg.border-2.border-transparent.px-2.py-2.text-[13px].transition-colors.hover:border-[#FFD166].bg-[#191b24].text-whi
+            <svg .lucide.lucide-play.h-3.w-3.shrink-0.fill-white/80.group-hover:fill-[#FFD166]
+              <path
+          <button .group.flex.items-center.justify-center.gap-1.5.rounded-lg.border-2.border-transparent.px-2.py-2.text-[13px].transition-colors.hover:border-[#FFD166].bg-[#191b24].text-whi
+            <svg .lucide.lucide-play.h-3.w-3.shrink-0.fill-white/80.group-hover:fill-[#FFD166]
+              <path
+          <button .group.flex.items-center.justify-center.gap-1.5.rounded-lg.border-2.border-transparent.px-2.py-2.text-[13px].transition-colors.hover:border-[#FFD166].bg-[#191b24].text-whi
+            <svg .lucide.lucide-play.h-3.w-3.shrink-0.fill-white/80.group-hover:fill-[#FFD166]
+              <path
+          <button .group.flex.items-center.justify-center.gap-1.5.rounded-lg.border-2.border-transparent.px-2.py-2.text-[13px].transition-colors.hover:border-[#FFD166].bg-[#191b24].text-whi
+            <svg .lucide.lucide-play.h-3.w-3.shrink-0.fill-white/80.group-hover:fill-[#FFD166]
+              <path
+      <div .mb-12
+        <div
+          <div .flex.flex-wrap.items-center.justify-between.gap-3.mb-6
+            <div .flex.items-center.gap-2.5
+              <svg .lucide.lucide-message-circle.w-6.h-6.text-white.fill-white
+                <path
+            <h2 .text-xl.font-bold.text-white
+          <div .flex.items-center.rounded-lg.border.border-white/10.bg-white/[0.03].p-0.5.text-[12px].font-medium
+            <button .rounded-md.px-2.5.py-1.5.transition-colors.bg-white/10.text-white
+              <button .rounded-md.px-2.5.py-1.5.transition-colors.text-white/45.hover:text-white/80
+            <div .flex.items-center.gap-3.mb-8.p-4.bg-[#1a1a24].border.border-white/10.rounded-xl
+              <svg .lucide.lucide-log-in.w-5.h-5.text-text-muted.shrink-0
+                <path
+              <path
+            <path
+        <p .text-sm.text-text-muted
+        <div .divide-y.divide-white/5
+          <div#comment-6d29c5d7-6d9b-499b-93f8-368e4c2e4c1d .relative
+            <div .relative.z-[1].flex.items-start.gap-2.5.sm:gap-3
+              <div .shrink-0.mt-0.5
+                <div .relative.shrink-0
+                  <div .avatar-ring-premium.
+                    <img .w-9.h-9.sm:w-11.sm:h-11.rounded-full.object-cover.relative.z-10
+                  <img .pointer-events-none.absolute.inset-0.z-10.object-contain
+              <div .flex-1.min-w-0
+                <div .flex.items-center.gap-1.5.mb-1.5.text-[11px].font-bold
+                  <svg .lucide.lucide-pin.w-3.5.h-3.5.fill-[#FFD166].text-[#FFD166]
+                    <path
+                  <path
+              <span .text-[#FFD166]
+              <div .flex.items-center.gap-1.5.flex-wrap
+                <span .inline-flex.items-center.px-1.5.py-[1px].rounded.bg-[#FFD166].text-[#0f111a].text-[9px].font-black.tracking-wider.shrink-0
+                  <span .font-bold.text-[12px].sm:text-[13px]
+                    <img .w-[18px].h-[18px].sm:w-[20px].sm:h-[20px].object-contain.shrink-0
+                    <span .text-blue-400
+                    <circle
+              <span .text-[11px].sm:text-[12px].text-text-muted.ml-3
+              <div .mt-1.5
+                <div .relative.text-[#AAAAAA].leading-[1.7].whitespace-pre-wrap.break-words.mb-2.sm:mb-2.5.text-[12px].sm:text-[13px].
+                  <div ..transition-all.duration-300.relative.z-0
+                    <span
+                <div .flex.items-center.gap-3
+                  <button .flex.items-center.gap-1.5.rounded-full.text-xs.transition-colors.text-text-muted.hover:text-white
+                    <svg .lucide.lucide-thumbs-up.w-4.h-4
+                    <path
+                <span .font-semibold
+                <button .flex.items-center.gap-1.rounded-full.text-xs.transition-colors.text-text-muted.hover:text-white
+                  <svg .lucide.lucide-thumbs-down.w-4.h-4
+                    <path
+                  <path
+          <button .flex.items-center.gap-1.5.mt-3.text-[13px].text-[#FFD166].hover:text-[#FFD166]/80.font-medium.transition-colors
+            <svg .lucide.lucide-chevron-down.w-4.h-4
+              <path
+    <div#comment-d8dcd57f-4417-4ad4-a7e1-8a0cdd562647 .relative
+      <div .relative.z-[1].flex.items-start.gap-2.5.sm:gap-3
+        <div .shrink-0.mt-0.5
+          <div .relative.shrink-0
+            <div .ring-1.ring-white/15.rounded-full.p-[2px].transition-colors.
+              <img .w-9.h-9.sm:w-11.sm:h-11.rounded-full.object-cover.relative.z-10
+            <img .pointer-events-none.absolute.inset-0.z-10.object-contain
+        <div .flex-1.min-w-0
+          <div .flex.items-center.gap-1.5.flex-wrap
+            <span .font-bold.text-[12px].sm:text-[13px].text-white
+              <img .w-[18px].h-[18px].sm:w-[20px].sm:h-[20px].object-contain.shrink-0
+              <span .text-white/30
+                <svg .lucide.lucide-infinity.w-4.h-4
+                  <path
+            <span .text-[11px].sm:text-[12px].text-text-muted.ml-3
+            <div .mt-1.5
+              <div .relative.text-[#AAAAAA].leading-[1.7].whitespace-pre-wrap.break-words.mb-2.sm:mb-2.5.text-[12px].sm:text-[13px].
+                <div ..transition-all.duration-300.relative.z-0
+                  <span
+              <div .flex.items-center.gap-3
+                <button .flex.items-center.gap-1.5.rounded-full.text-xs.transition-colors.text-text-muted.hover:text-white
+                  <svg .lucide.lucide-thumbs-up.w-4.h-4
+                    <path
+                  <path
+            <button .flex.items-center.gap-1.rounded-full.text-xs.transition-colors.text-text-muted.hover:text-white
+              <svg .lucide.lucide-thumbs-down.w-4.h-4
+                <path
+              <path
+<div#comment-bc5f9aa0-6227-4964-b84e-351973ab04c6 .relative
+  <div .relative.z-[1].flex.items-start.gap-2.5.sm:gap-3
+    <div .shrink-0.mt-0.5
+      <div .relative.shrink-0
+        <div .ring-1.ring-white/15.rounded-full.p-[2px].transition-colors.
+          <img .w-9.h-9.sm:w-11.sm:h-11.rounded-full.object-cover.relative.z-10
+        <img .pointer-events-none.absolute.inset-0.z-10.object-contain
+    <div .flex-1.min-w-0
+      <div .flex.items-center.gap-1.5.flex-wrap
+        <span .font-bold.text-[12px].sm:text-[13px].text-white
+          <img .w-[18px].h-[18px].sm:w-[20px].sm:h-[20px].object-contain.shrink-0
+          <span .text-white/30
+            <svg .lucide.lucide-infinity.w-4.h-4
+              <path
+        <span .text-[11px].sm:text-[12px].text-text-muted.ml-3
+        <div .mt-1.5
+          <div .relative.text-[#AAAAAA].leading-[1.7].whitespace-pre-wrap.break-words.mb-2.sm:mb-2.5.text-[12px].sm:text-[13px].
+            <div ..transition-all.duration-300.relative.z-0
+              <span
+          <div .flex.items-center.gap-3
+            <button .flex.items-center.gap-1.5.rounded-full.text-xs.transition-colors.text-text-muted.hover:text-white
+              <svg .lucide.lucide-thumbs-up.w-4.h-4
+                <path
+              <path
+        <button .flex.items-center.gap-1.rounded-full.text-xs.transition-colors.text-text-muted.hover:text-white
+          <svg .lucide.lucide-thumbs-down.w-4.h-4
+            <path
+          <path
+<div#comment-49616c70-5a2d-4553-8927-4118b1049486 .relative
+  <div .relative.z-[1].flex.items-start.gap-2.5.sm:gap-3
+    <div .shrink-0.mt-0.5
+      <div .relative.shrink-0
+        <div .ring-1.ring-white/15.rounded-full.p-[2px].transition-colors.
+          <img .w-9.h-9.sm:w-11.sm:h-11.rounded-full.object-cover.relative.z-10
+    <div .flex-1.min-w-0
+      <div .flex.items-center.gap-1.5.flex-wrap
+        <span .font-bold.text-[12px].sm:text-[13px].text-white
+          <span .text-white/30
+            <svg .lucide.lucide-infinity.w-4.h-4
+              <path
+        <span .text-[11px].sm:text-[12px].text-text-muted.ml-3
+        <div .mt-1.5
+          <div .relative.text-[#AAAAAA].leading-[1.7].whitespace-pre-wrap.break-words.mb-2.sm:mb-2.5.text-[12px].sm:text-[13px].
+            <div ..transition-all.duration-300.relative.z-0
+              <span
+          <div .flex.items-center.gap-3
+            <button .flex.items-center.gap-1.5.rounded-full.text-xs.transition-colors.text-text-muted.hover:text-white
+              <svg .lucide.lucide-thumbs-up.w-4.h-4
+                <path
+              <path
+          <span .font-semibold
+          <button .flex.items-center.gap-1.rounded-full.text-xs.transition-colors.text-text-muted.hover:text-white
+            <svg .lucide.lucide-thumbs-down.w-4.h-4
+              <path
+            <path
+<div#comment-f68b204e-1cc4-494e-9e95-008b5b8bfd1c .relative
+  <div .relative.z-[1].flex.items-start.gap-2.5.sm:gap-3
+    <div .shrink-0.mt-0.5
+      <div .relative.shrink-0
+        <div .ring-1.ring-white/15.rounded-full.p-[2px].transition-colors.
+          <img .w-9.h-9.sm:w-11.sm:h-11.rounded-full.object-cover.relative.z-10
+        <img .pointer-events-none.absolute.inset-0.z-10.object-contain
+    <div .flex-1.min-w-0
+      <div .flex.items-center.gap-1.5.flex-wrap
+        <span .font-bold.text-[12px].sm:text-[13px].text-white
+          <span .text-white/30
+            <svg .lucide.lucide-infinity.w-4.h-4
+              <path
+        <span .text-[11px].sm:text-[12px].text-text-muted.ml-3
+        <div .mt-1.5
+          <div .relative.text-[#AAAAAA].leading-[1.7].whitespace-pre-wrap.break-words.mb-2.sm:mb-2.5.text-[12px].sm:text-[13px].
+            <div ..transition-all.duration-300.relative.z-0
+              <span
+          <div .flex.items-center.gap-3
+            <button .flex.items-center.gap-1.5.rounded-full.text-xs.transition-colors.text-text-muted.hover:text-white
+              <svg .lucide.lucide-thumbs-up.w-4.h-4
+                <path
+              <path
+          <span .font-semibold
+          <button .flex.items-center.gap-1.rounded-full.text-xs.transition-colors.text-text-muted.hover:text-white
+            <svg .lucide.lucide-thumbs-down.w-4.h-4
+              <path
+            <path
+<div .flex.justify-center.gap-3.mt-4
+  <button .flex.items-center.gap-2.px-5.py-2.5.rounded-xl.bg-white/5.hover:bg-white/10.text-sm.text-white/70.hover:text-white.transition-all.disabled:opacity-50
+    <svg .lucide.lucide-chevron-down.w-4.h-4
+      <path
+<aside .xl:w-[320px].shrink-0.xl:border-l.xl:border-white/5.xl:pl-8
+  <div .px-4.xl:px-0
+    <h3 .text-xl.font-bold.text-white.mb-6
+      <div .flex.flex-col.gap-4
+        <a .flex.gap-3.rounded.overflow-hidden.bg-[#1A1A24].group href=/phim/phi-vu-chung-cu
+          <div .relative.w-[56px].sm:w-[64px].shrink-0.aspect-[2/3]
+            <img .object-cover
+          <div .flex.flex-col.justify-center.gap-1.5.py-2.pr-3.min-w-0
+            <h4 .text-[13px].sm:text-[14px].font-medium.text-white/90.leading-snug.line-clamp-2.group-hover:text-yellow-400.transition-colors
+              <p .text-[11px].sm:text-[12px].text-white/50.truncate
+                <div .flex.items-center.gap-1.5.mt-1
+                  <span .text-[10px].sm:text-[11px].text-white/40
+                    <div .w-[3px].h-[3px].rounded-full.bg-white/20
+                    <span .text-[10px].sm:text-[11px].text-white/40.truncate
+                <a .flex.gap-3.rounded.overflow-hidden.bg-[#1A1A24].group href=/phim/tro-choi-bat-coc-phan-1
+                  <div .relative.w-[56px].sm:w-[64px].shrink-0.aspect-[2/3]
+                    <img .object-cover
+                  <div .flex.flex-col.justify-center.gap-1.5.py-2.pr-3.min-w-0
+                    <h4 .text-[13px].sm:text-[14px].font-medium.text-white/90.leading-snug.line-clamp-2.group-hover:text-yellow-400.transition-colors
