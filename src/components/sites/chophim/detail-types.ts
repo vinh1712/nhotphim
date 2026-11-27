@@ -65,6 +65,8 @@ export type MovieDetail = {
   status: string;
   current: number | null;
   total: number | null;
+  /** currentep thô từ DB, trước khi clamp theo số link — để phát hiện bản tĩnh cũ. */
+  episodeRevision?: number | null;
   type: "series" | "movie";
   genres: string[];
   countries: string[];

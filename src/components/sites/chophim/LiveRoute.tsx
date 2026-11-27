@@ -5,7 +5,7 @@
  * HTML build sẵn được render ngay; khi Supabase trả về thì tự thay bằng bản mới
  * nhất (kể cả phim admin vừa thêm sau khi đã deploy).
  */
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { detailHref, liveSuggestions, useLiveData } from "@/lib/live-data";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
@@ -86,21 +86,34 @@ export function LiveRoute({
   const [detailTried, setDetailTried] = useState(false);
   const detailId = liveMovie?.id;
   const hasLiveServers = !!liveMovie?.servers?.length;
+  const detailLoadedFor = useRef<string | null>(null);
 
-  // Danh sách chỉ lấy cột gọn. Phim đã có trong bản tĩnh đã được gắn lại servers;
-  // phim mới (không có initialMovie) mới cần tải đúng 1 dòng có episodes.
+  // Danh sách chỉ lấy cột gọn, nên row từ DB không có episodes: makeNormalizer mượn
+  // servers của bản tĩnh. Nếu DB báo số tập/tổng khác bản tĩnh thì đó chỉ là bản mượn
+  // lỗi thời — phải tải đúng 1 dòng có episodes để lấy link mới.
+  const staticRevision = initialMovie?.episodeRevision ?? initialMovie?.current ?? 0;
+  const liveRevision = liveMovie?.episodeRevision ?? 0;
+  const liveEpisodesChanged =
+    live.ready &&
+    !!liveMovie &&
+    (liveRevision !== staticRevision || (liveMovie.total ?? 0) !== (initialMovie?.total ?? 0));
+  const needDetail = !!detailId && (!initialMovie || !hasLiveServers || liveEpisodesChanged);
+
   useEffect(() => {
+    if (!detailId || !needDetail) return;
+    const key = String(detailId);
+    if (detailLoadedFor.current === key) return;
+    detailLoadedFor.current = key;
+    let cancelled = false;
     setDetail(null);
     setDetailTried(false);
-    if (!detailId || hasLiveServers || initialMovie) return;
-    let cancelled = false;
     void live
       .loadDetail(detailId)
       .then((rec) => { if (!cancelled) setDetail(rec); })
       .catch(() => {})
       .finally(() => { if (!cancelled) setDetailTried(true); });
     return () => { cancelled = true; };
-  }, [detailId, hasLiveServers, initialMovie, live.loadDetail]);
+  }, [detailId, needDetail, live.loadDetail]);
 
   const movie = (detail?.servers?.length ? detail : liveMovie) || initialMovie;
   const comments = liveMovie

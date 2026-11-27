@@ -68,7 +68,7 @@ type LiveState = {
 
 type LiveContextValue = LiveState & {
   refresh: () => Promise<void>;
-  /** Chỉ gọi cho phim mới không có trong bản tĩnh: tải đúng 1 dòng có episodes. */
+  /** Tải đúng 1 dòng có episodes cho phim mới hoặc phim mà bản tĩnh đã lỗi thời. */
   loadDetail: (id: number | string) => Promise<MovieDetail | null>;
 };
 
@@ -410,6 +410,7 @@ function makeNormalizer(ctx: {
       status,
       current,
       total,
+      episodeRevision: rawCurrent,
       type: row.type === "movie" ? "movie" : "series",
       genres,
       countries,
