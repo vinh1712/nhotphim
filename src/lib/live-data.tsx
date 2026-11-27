@@ -27,7 +27,7 @@ import { VN_FLAG_AVATAR } from "./avatar-fallback";
 import { stripBasePath, withBasePath } from "./base-path";
 import { SKIP_OVERLAY_KEY } from "./overlay";
 import { SB_KEY, SB_URL, sbFetch, sbTable } from "./supabase";
-import { commentTimestamp } from "@/components/sites/chophim/detail-types";
+import { commentTimestamp, playableCount } from "@/components/sites/chophim/detail-types";
 import type {
   DetailComment,
   MovieDetail,
@@ -319,7 +319,7 @@ function makeNormalizer(ctx: {
     const resolvedServers = servers.length ? servers : fallback?.servers || servers;
     // Admin có khi lưu currentep/totalep theo số tập dự kiến của nguồn (vd 16)
     // trong khi thực tế mới chỉ có 1-2 tập. Luôn hiển thị theo số tập có thật.
-    const available = resolvedServers.reduce((max, s) => Math.max(max, s.episodes.length), 0);
+    const available = resolvedServers.reduce((max, s) => Math.max(max, playableCount(s)), 0);
     const rawCurrent = num(row.currentep);
     const rawTotal = num(row.totalep);
     const current = available && rawCurrent != null && rawCurrent > available ? available : rawCurrent;
@@ -400,7 +400,7 @@ const normTitle = (s: string): string =>
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
 
-const movieScore = (m: MovieDetail): number => (m.servers[0]?.episodes.length || 0) * 100 + (m.current || 0);
+const movieScore = (m: MovieDetail): number => playableCount(m.servers[0]) * 100 + (m.current || 0);
 
 /** Nhiều row trong bảng admin có cùng ophim_slug (dữ liệu cũ bị lặp). Mỗi tên
  *  phim khác nhau được cấp một slug riêng; slug gốc luôn giữ cho phim đã có trong

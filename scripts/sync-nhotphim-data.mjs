@@ -213,6 +213,8 @@ const directM3u8 = (u) => {
   return null;
 };
 const isKkEmbed = (u) => str(u).includes("player.phimapi.com");
+/** Chỉ đếm tập có link — admin giữ dòng trống để căn SV1/SV2/SV3. */
+const playableCount = (s) => (s?.episodes || []).filter((e) => !!e?.url).length;
 
 // Admin có khi lưu "Tập 1" / "Tập 01" — chỉ lấy số rồi tự tạo một chữ "Tập".
 const episodeLabel = (value, type) => {
@@ -308,7 +310,7 @@ function makeNormalizer({ genreMap, catNameToSlug, homeSlugs, taxonomies }) {
     const servers = buildServers(row, sub);
     // currentep/totalep có thể là số tập dự kiến của nguồn (vd 16) trong khi
     // thực tế mới chỉ có vài tập — luôn hiển thị theo số tập có thật.
-    const available = servers.reduce((max, s) => Math.max(max, s.episodes.length), 0);
+    const available = servers.reduce((max, s) => Math.max(max, playableCount(s)), 0);
     const rawCurrent = num(row.currentep);
     const rawTotal = num(row.totalep);
     const current = available && rawCurrent != null && rawCurrent > available ? available : rawCurrent;
@@ -399,7 +401,7 @@ function buildMovieDb(rows, normalize) {
       .replace(/đ/g, "d")
       .replace(/[^a-z0-9]+/g, " ")
       .trim();
-  const score = (x) => (x.servers[0]?.episodes.length || 0) * 100 + (x.current || 0);
+  const score = (x) => playableCount(x.servers[0]) * 100 + (x.current || 0);
 
   const db = {};
   let collisions = 0;

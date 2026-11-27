@@ -5,6 +5,47 @@ export type Episode = { label: string; url: string | null };
 
 export type MovieServer = { name: string; episodes: Episode[] };
 
+/** Chỉ tập có URL mới là tập xem được. Admin giữ cả dòng trống để căn SV1/SV2/SV3,
+ *  nên không được đếm `episodes.length` khi hiển thị số tập của từng server. */
+export function playableEpisodes(server: MovieServer | null | undefined): Array<{ index: number; episode: Episode }> {
+  return (server?.episodes ?? [])
+    .map((episode, index) => ({ index, episode }))
+    .filter(({ episode }) => !!episode.url);
+}
+
+export function playableCount(server: MovieServer | null | undefined): number {
+  return playableEpisodes(server).length;
+}
+
+/** Chỉ số thật trong `episodes` — giữ nguyên để hash `#tap=` và tiến trình không đổi. */
+export function nearestPlayableIndex(server: MovieServer | null | undefined, index: number): number {
+  const episodes = server?.episodes ?? [];
+  if (!episodes.length) return 0;
+  if (episodes[index]?.url) return index;
+
+  const from = Math.min(Math.max(index, 0), episodes.length - 1);
+  for (let i = from; i >= 0; i--) if (episodes[i]?.url) return i;
+  for (let i = from + 1; i < episodes.length; i++) if (episodes[i]?.url) return i;
+  return 0;
+}
+
+export function nextPlayableIndex(server: MovieServer | null | undefined, index: number): number {
+  const episodes = server?.episodes ?? [];
+  for (let i = index + 1; i < episodes.length; i++) if (episodes[i]?.url) return i;
+  return -1;
+}
+
+/** Số tập hiển thị cho server đang chọn: current không vượt quá số tập có link. */
+export function serverEpisodeProgress(
+  movie: MovieDetail,
+  server: MovieServer | null | undefined
+): { current: number; total: number } {
+  const total = playableCount(server);
+  if (!total) return { current: 0, total: 0 };
+  const current = Math.min(Math.max(movie.current ?? total, 0), total);
+  return { current, total };
+}
+
 export type MovieDetail = {
   slug: string;
   title: string;

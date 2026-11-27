@@ -17,7 +17,14 @@ import { fillStyle } from "./types";
 import { CommentsSection } from "./DetailPage";
 import { IconLanguages } from "./icons";
 import type { DetailComment, MovieDetail } from "./detail-types";
-import { enc } from "./detail-types";
+import {
+  enc,
+  nearestPlayableIndex,
+  nextPlayableIndex,
+  playableCount,
+  playableEpisodes,
+  serverEpisodeProgress,
+} from "./detail-types";
 
 /* ── kiểu dữ liệu ───────────────────────────────────────────────────────── */
 
@@ -350,7 +357,7 @@ function serverHosts(movie: MovieDetail): ServerHost[] {
       idx,
       name: kind === "dub" ? "Thuyết minh" : kind === "vs" ? "Vietsub" : s.name,
       kind,
-      count: s.episodes.length,
+      count: playableCount(s),
     });
   });
   hosts.sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
@@ -459,7 +466,8 @@ export function WatchPage({
   const server = movie.servers[sIdx];
   const hasStills = !!movie.episodeStills && Object.keys(movie.episodeStills).length > 0;
   const showThumb = hasStills && !hideImg;
-  const eIdx = server ? Math.min(epIdx, Math.max(server.episodes.length - 1, 0)) : 0;
+  // Không cho phép đứng ở dòng tập trống của server khác (vd KK có 6 dòng nhưng chỉ 2 link).
+  const eIdx = server ? nearestPlayableIndex(server, epIdx) : 0;
   const episode = server?.episodes[eIdx] ?? null;
   const url = episode?.url ?? null;
   const hls = isHlsUrl(url);
@@ -570,7 +578,7 @@ export function WatchPage({
     pendingAttemptsRef.current = 0;
     pendingStartedRef.current = Date.now();
 
-    ei = Math.max(0, Math.min(ei, (movie.servers[si]?.episodes.length ?? 1) - 1));
+    ei = nearestPlayableIndex(movie.servers[si], ei);
     setServerIdx(si);
     setEpIdx(ei);
     pendingTimeRef.current = Number.isFinite(resumeTime) && resumeTime > 0 ? resumeTime : 0;
@@ -612,7 +620,7 @@ export function WatchPage({
 
   const changeServer = useCallback(
     (si: number) => {
-      const ei = Math.min(epIdx, Math.max((movie.servers[si]?.episodes.length ?? 1) - 1, 0));
+      const ei = nearestPlayableIndex(movie.servers[si], epIdx);
       selectEp(si, ei);
     },
     [epIdx, movie, selectEp]
@@ -978,7 +986,9 @@ export function WatchPage({
     if (next > 0 && v.muted) v.muted = false;
   }, []);
   const nextEpisode = useCallback(() => {
-    if (server && eIdx < server.episodes.length - 1) selectEp(sIdx, eIdx + 1);
+    // Tự sang tập kế tiếp có link thật; bỏ qua các dòng trống của server này.
+    const next = nextPlayableIndex(server, eIdx);
+    if (next >= 0) selectEp(sIdx, next);
   }, [eIdx, selectEp, server, sIdx]);
 
   const skipIntro = useCallback(() => {
@@ -1421,8 +1431,7 @@ export function WatchPage({
   // Luôn tự ẩn sau khi hết idle — kể cả đang phát, đang tạm dừng hay fullscreen.
   // Chỉ giữ hiện khi đang kéo thanh tua hoặc đang mở popover.
   const showCtl = !nativeFullscreen && !locked && (hover || scrubbing || menu !== null);
-  const curCount = movie.current ?? server?.episodes.length ?? 0;
-  const totalCount = movie.total ?? server?.episodes.length ?? 0;
+  const { current: curCount, total: totalCount } = serverEpisodeProgress(movie, server);
 
   return (
     <div className="max-w-[1400px] mx-auto px-4 sm:px-4 sm:py-6">
@@ -1571,7 +1580,7 @@ export function WatchPage({
                 >
                   <h2 className="text-white font-medium text-sm sm:text-lg lg:text-xl drop-shadow-md truncate tracking-wide flex-1 mr-4">
                     {movie.title}
-                    {server && server.episodes.length > 1 ? ` - ${episode?.label}` : ""}
+                    {playableCount(server) > 1 ? ` - ${episode?.label}` : ""}
                   </h2>
                   <div className="pointer-events-auto flex shrink-0 flex-col items-end gap-2">
                     <button
@@ -1611,7 +1620,7 @@ export function WatchPage({
                       </button>
                     </div>
                     <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col content-start">
-                      {(server?.episodes ?? []).map((ep, i) => {
+                      {playableEpisodes(server).map(({ index: i, episode: ep }) => {
                         const active = i === eIdx;
                         return (
                           <button
@@ -1639,7 +1648,7 @@ export function WatchPage({
                           </button>
                         );
                       })}
-                      {(!server || server.episodes.length === 0) && (
+                      {playableCount(server) === 0 && (
                         <p className="p-4 text-sm text-white/50">Chưa có tập nào.</p>
                       )}
                     </div>
@@ -2226,7 +2235,7 @@ export function WatchPage({
 
               {/* lưới tập */}
               <div className={showThumb ? "grid grid-cols-2 items-start gap-3 lg:grid-cols-4" : "grid grid-cols-3 gap-x-2.5 gap-y-2.5 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8"}>
-                {(server?.episodes ?? []).map((ep, i) => {
+                {playableEpisodes(server).map(({ index: i, episode: ep }) => {
                   const active = i === eIdx;
                   const disabled = !ep.url && firstPlayable >= 0;
                   const still = showThumb ? stillFor(movie.episodeStills, ep.label) : null;

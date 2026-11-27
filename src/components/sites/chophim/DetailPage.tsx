@@ -30,7 +30,14 @@ import {
   IconInfinity,
 } from "./icons";
 import type { DetailComment, MovieDetail, Suggestion } from "./detail-types";
-import { commentTimestamp, enc, sortComments } from "./detail-types";
+import {
+  commentTimestamp,
+  enc,
+  playableCount,
+  playableEpisodes,
+  serverEpisodeProgress,
+  sortComments,
+} from "./detail-types";
 
 const TABS = ["Tập phim", "Gallery", "Diễn viên", "Đề xuất"] as const;
 
@@ -956,8 +963,9 @@ export function DetailPage({
   const hasStills = !!movie.episodeStills && Object.keys(movie.episodeStills).length > 0;
   const showThumb = hasStills && !hideImg;
 
-  const cur = movie.current ?? server?.episodes.length ?? 0;
-  const total = movie.total ?? server?.episodes.length ?? 0;
+  // Mỗi server có số tập có link riêng (SV1/SV2/SV3). Không dùng movie.total
+  // chung cho cả 3 — KK thường chỉ có vài tập dù NC/VP đã đầy đủ.
+  const { current: cur, total } = serverEpisodeProgress(movie, server);
 
   const goComment = () => document.getElementById("comment-section")?.scrollIntoView({ behavior: "smooth" });
 
@@ -1111,7 +1119,7 @@ export function DetailPage({
                                     active ? "bg-white text-black" : "bg-white/10 text-white/50 group-hover:text-white/80"
                                   }`}
                                 >
-                                  {s.episodes.length}
+                                  {playableCount(s)}
                                 </span>
                               </button>
                             );
@@ -1139,7 +1147,7 @@ export function DetailPage({
                         </div>
 
                         <div className={showThumb ? "grid grid-cols-2 items-start gap-3 lg:grid-cols-4" : "grid grid-cols-3 gap-x-2.5 gap-y-2.5 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8"}>
-                          {server?.episodes.map((ep, i) => {
+                          {playableEpisodes(server).map(({ index: i, episode: ep }) => {
                             const href = watchHref(movie.slug, `#tap=tap-${i + 1}&sv=${enc(server.name)}&channel=0&server_id=${serverIdx}`);
                             const still = showThumb ? stillFor(movie.episodeStills, ep.label) : null;
                             if (still) {
