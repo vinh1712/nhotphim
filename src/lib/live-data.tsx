@@ -589,7 +589,18 @@ function buildHome(
   const bottomText = (m: MovieDetail): string => {
     if (m.status === "Sắp Chiếu") return "Sắp chiếu";
     if (m.type === "movie") return "PĐ. Full";
-    if (m.current && m.total) return `PĐ. ${m.current}TM. ${m.total}`;
+    // badge của thẻ là số tập CÓ LINK của từng loại server, KHÔNG phải current/total.
+    // totalep là tổng số tập đang chiếu (vd 10), không phải số tập thuyết minh (vd 2).
+    const isDub = (name: string) => /thuy[eế]t|lồng|long/i.test(name);
+    let pd = 0, tm = 0;
+    for (const s of m.servers || []) {
+      const n = playableCount(s);
+      if (isDub(s.name)) tm = Math.max(tm, n);
+      else pd = Math.max(pd, n);
+    }
+    if (pd && tm) return `PĐ. ${pd}TM. ${tm}`;
+    if (pd) return `PĐ. ${pd}`;
+    if (tm) return `TM. ${tm}`;
     if (m.current) return `PĐ. ${m.current}`;
     return "PĐ. Full";
   };
