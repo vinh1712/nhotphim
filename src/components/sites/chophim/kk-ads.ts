@@ -6,6 +6,7 @@ export type AdRange = { start: number; end: number };
 const DISC = "#EXT-X-DISCONTINUITY";
 const NONE_KEY = /^#EXT-X-KEY:(?:[^,]*,)*METHOD=NONE(?:,|$)/i;
 const V_SEGMENT = /^\/v\d+\//i;
+const CONVERT_SEGMENT = /(?:^|\/)convertv\d+\//i;
 const EXTINF = /^#EXTINF:([\d.]+)/i;
 
 const isSegment = (line: string) => {
@@ -46,6 +47,42 @@ export function stripKkAds(text: string): string | null {
   const remove = new Set<number>();
   for (const b of blocks) for (let i = b.start; i < b.end; i++) remove.add(i);
   return lines.filter((_, i) => !remove.has(i)).join("\n");
+}
+
+/**
+ * Cắt block QC đầu dạng `convertvN/xxx.ts` (chữ bet "i999.ai tài trợ..." ở
+ * ~02:57) mà stripKkAds cũ không bắt được vì block này không có METHOD=NONE.
+ * Các nguồn m3u8 của KK (Máy chủ 2) thường có thêm block này.
+ * Block /vN/ ở ~15:01 đã có cơ chế cũ xử lý, không đụng vào.
+ */
+export function stripConvertAds(text: string): string | null {
+  if (!text.includes("#EXTINF") || !text.includes("convertv")) return null;
+  const lines = text.split(/\r?\n/);
+  const remove = new Set<number>();
+  for (let i = 0; i < lines.length; i++) {
+    const t = lines[i].trim();
+    if (!isSegment(t) || !CONVERT_SEGMENT.test(t)) continue;
+    remove.add(i);
+    // Xóa luôn #EXTINF đứng ngay trước segment QC.
+    for (let j = i - 1; j >= 0; j--) {
+      const p = lines[j].trim();
+      if (/^#EXTINF:/i.test(p)) {
+        remove.add(j);
+        break;
+      }
+      if (p && !p.startsWith("#")) break;
+    }
+  }
+  if (!remove.size) return null;
+  const out: string[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    if (remove.has(i)) continue;
+    const t = lines[i].trim();
+    // Sau khi cắt QC thường dư vài DISCONTINUITY liên tiếp -> gom lại còn 1.
+    if (t === DISC && out.length && out[out.length - 1].trim() === DISC) continue;
+    out.push(lines[i]);
+  }
+  return out.join("\n");
 }
 
 /** Tính khoảng thời gian quảng cáo tính từ đầu video (dùng cho Safari/native HLS). */

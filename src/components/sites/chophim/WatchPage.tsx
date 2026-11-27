@@ -12,7 +12,7 @@ import Hls, {
   type LoaderResponse,
   type LoaderStats,
 } from "hls.js";
-import { loadKkAdRanges, stripKkAds, type AdRange } from "./kk-ads";
+import { loadKkAdRanges, stripConvertAds, stripKkAds, type AdRange } from "./kk-ads";
 import { fillStyle } from "./types";
 import { CommentsSection } from "./DetailPage";
 import { IconLanguages } from "./icons";
@@ -298,8 +298,11 @@ function makeAdFreeLoader(): HlsLoaderCtor {
           ((ctx.type as string) === "manifest" || (ctx.type as string) === "level") &&
           typeof response.data === "string"
         ) {
-          const clean = stripKkAds(response.data);
-          if (clean) response.data = clean;
+          // KK (Máy chủ 2): block /vN/ đã có stripKkAds xử lý; chỉ bổ sung
+          // cắt block convertvN/ (chữ bet ở ~02:57) mà hàm cũ không bắt được.
+          const kkClean = stripKkAds(response.data);
+          const stripped = kkClean ?? response.data;
+          response.data = stripConvertAds(stripped) ?? stripped;
         }
         success(response, stats, context, networkDetails);
       };
