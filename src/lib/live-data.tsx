@@ -78,11 +78,13 @@ const VERSION_KEY = "nhotphim:site:version";
 /** Chỉ dùng khi trigger site_version chưa có: fallback cache 10 phút. */
 const CACHE_TTL_MS = 10 * 60 * 1000;
 
-/** 22 cột gọn cho danh sách: 329 dòng chỉ ~165 KB (select=* là ~3,4 MB).
+/** Cột gọn cho danh sách: select=* là ~3,4 MB, bản này chỉ ~215 KB.
  *  Chỉ kéo 2 field điểm từ extra thay vì cả cột JSON episodes/dubEmbeds.
- *  Mô tả/backdrop/logo/episodes chỉ lấy ở bản tĩnh hoặc trang chi tiết. */
+ *  Vẫn lấy backdrop: phim mới do auto-sync thêm chưa có bản tĩnh, nếu thiếu
+ *  cột này makeNormalizer rơi vào fallback null -> trang chi tiết dùng poster
+ *  dọc làm ảnh nền ngang (và mọi chỗ dùng live.movies cũng mất backdrop). */
 const MOVIE_LIST_COLUMNS = [
-  "id,hidden,created_at,ophim_slug,title,titleen,poster,year,quality,sub,epstatus,currentep,totalep,ep,rating,genre,country,type,series_group,part_number",
+  "id,hidden,created_at,ophim_slug,title,titleen,poster,backdrop,year,quality,sub,epstatus,currentep,totalep,ep,rating,genre,country,type,series_group,part_number",
   "extra->>imdbScore",
   "extra->>tmdbScore",
   "extra->>episodesRevision",
